@@ -61,4 +61,6 @@ Project Stuzha/
 ---
 
 ## 👥 Kolaborator
-- **GitHub:** [@azurre13](https://github.com/azurre13)
+- [@azurre13](https://github.com/azurre13)
+- [@Garnie104](https://github.com/Garnie104)
+
