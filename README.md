@@ -29,7 +29,8 @@ Project Stuzha/
 │   ├── AQ kasifikasi random forest mq7 & mq135.pdf
 │   ├── Applying machine learning for large scale field calibration of low cost PM2.5 and PM10.pdf
 │   ├── Permen_LHK_Nomor_14_Tahun_2020.pdf
-│   └── sensors-21-00256.pdf
+│   ├── sensors-21-00256.pdf
+│   └── README.md                       # Daftar 21 jurnal referensi & fungsinya dalam riset
 └── README.md
 ```
 
