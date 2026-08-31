@@ -9,6 +9,8 @@ BANNER = "=" * 70
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+DATA_DIR = os.path.join(BASE_DIR, "Program", "data") if os.path.exists(os.path.join(BASE_DIR, "Program", "data")) else os.path.join(BASE_DIR, "data")
+
 # ============================================================
 # 1. DATASET MENDELEY
 # ============================================================
@@ -16,7 +18,7 @@ print(f"\n{BANNER}")
 print("  DATASET 1: MENDELEY — Indoor Air Pollutants (GP2Y1010AU0F)")
 print(BANNER)
 
-mendeley_path = os.path.join(BASE_DIR, "data", "mendeley", "Indoor_Air_Pollution_Data.csv")
+mendeley_path = os.path.join(DATA_DIR, "mendeley", "Indoor_Air_Pollution_Data.csv")
 try:
     with open(mendeley_path, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
@@ -105,7 +107,7 @@ print(f"\n\n{BANNER}")
 print("  DATASET 2: UCI — Air Quality (CO Reference Analyzer)")
 print(BANNER)
 
-uci_path = os.path.join(BASE_DIR, "data", "uci", "AirQualityUCI.csv")
+uci_path = os.path.join(DATA_DIR, "uci", "AirQualityUCI.csv")
 try:
     with open(uci_path, "r", encoding="utf-8") as f:
         reader = csv.reader(f, delimiter=";")

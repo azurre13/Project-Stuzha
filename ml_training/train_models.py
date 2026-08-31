@@ -23,8 +23,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, root_mean_squared_error, mean_absolute_error
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUTPUT_HEADER_DIR = os.path.join(BASE_DIR, "Kode", "include")
+DATA_DIR = os.path.join(BASE_DIR, "Program", "data") if os.path.exists(os.path.join(BASE_DIR, "Program", "data")) else os.path.join(BASE_DIR, "data")
+OUTPUT_HEADER_DIR = os.path.join(BASE_DIR, "Program", "Kode", "include") if os.path.exists(os.path.join(BASE_DIR, "Program", "Kode")) else os.path.join(BASE_DIR, "Kode", "include")
 os.makedirs(OUTPUT_HEADER_DIR, exist_ok=True)
+
 
 
 def export_rf_to_c_header(model, feature_names, header_name, func_name, filepath):
@@ -78,7 +80,7 @@ def train_pm_model():
     print(" 1. TRAINING MODEL RF_PM (GP2Y1010 + DHT22 -> PM2.5)")
     print("=" * 60)
     
-    mendeley_path = os.path.join(BASE_DIR, "data", "mendeley", "Indoor_Air_Pollution_Data.csv")
+    mendeley_path = os.path.join(DATA_DIR, "mendeley", "Indoor_Air_Pollution_Data.csv")
     df = pd.read_csv(mendeley_path)
     
     # Pilih kolom yang relevan & bersihkan
@@ -134,7 +136,7 @@ def train_co_model():
     print(" 2. TRAINING MODEL RF_CO (MOS/MQ-7 + DHT22 -> CO ppm)")
     print("=" * 60)
     
-    uci_path = os.path.join(BASE_DIR, "data", "uci", "AirQualityUCI.csv")
+    uci_path = os.path.join(DATA_DIR, "uci", "AirQualityUCI.csv")
     df = pd.read_csv(uci_path, sep=';', decimal=',')
     
     # Kolom: CO(GT), PT08.S1(CO), T, RH
