@@ -24,6 +24,8 @@ Proyek ini merupakan peningkatan (*upgrade*) dari sistem pemantauan dan filtrasi
 Project Stuzha/
 ├── MD/
 │   └── konteks _planing_jurnal_AQI.md   # Catatan lengkap arsitektur, rumus matematis, & roadmap jurnal
+├── kode_program/                       # Source code firmware ESP32 (legacy & upgrade)
+│   └── kode_program_lama.cpp           # Firmware baseline purwarupa awal (rule-based)
 ├── referensi/                           # Koleksi referensi paper, standar ISPU, dan jurnal sebelumnya
 │   ├── (Jurnal lama kita) Sistem Pemantauan dan Filtrasi Udara.pdf
 │   ├── AQ kasifikasi random forest mq7 & mq135.pdf
