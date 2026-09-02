@@ -88,7 +88,8 @@ void setup() {
     }
     
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.println(F("\n[WiFi] Terhubung dengan IP: ") + WiFi.localIP().toString());
+        Serial.print(F("\n[WiFi] Terhubung dengan IP: "));
+        Serial.println(WiFi.localIP());
     } else {
         Serial.println(F("\n[WiFi] Mode Offline (Tidak ada koneksi). Tetap menjalankan Edge AI lokal."));
     }
@@ -136,9 +137,10 @@ void initSensorsAndPins() {
     pinMode(PIN_BUZZER, OUTPUT);
     digitalWrite(PIN_BUZZER, LOW);
 
-    // Inisialisasi PWM Kipas (ESP32 Core v3 LEDC)
-    ledcAttach(PIN_FAN_PWM, FAN_PWM_FREQ, FAN_PWM_RES);
-    ledcWrite(PIN_FAN_PWM, FAN_SPEED_STANDBY);
+    // Inisialisasi PWM Kipas (ESP32 LEDC PWM)
+    ledcSetup(FAN_PWM_CHANNEL, FAN_PWM_FREQ, FAN_PWM_RES);
+    ledcAttachPin(PIN_FAN_PWM, FAN_PWM_CHANNEL);
+    ledcWrite(FAN_PWM_CHANNEL, FAN_SPEED_STANDBY);
 
     dht.begin();
 }
@@ -253,7 +255,7 @@ void controlActuators() {
         g_data.fan_percent   = 85;
     }
 
-    ledcWrite(PIN_FAN_PWM, g_data.fan_pwm_value);
+    ledcWrite(FAN_PWM_CHANNEL, g_data.fan_pwm_value);
 }
 
 void playIndustrialAlarm() {
