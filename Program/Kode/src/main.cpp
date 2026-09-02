@@ -25,18 +25,17 @@ DHT dht(PIN_DHT22, DHT22);
 // STRUKTUR DATA MONITORING
 // ============================================================
 struct AirQualityData {
-    // Data Sensor Mentah & Pra-Kalkulasi Fisik
+    // Data Sensor Mentah
     float raw_pm_adc;
-    float pm_raw_ug;       // Estimasi awal rumus datasheet GP2Y (µg/m³)
+    float raw_pm_ug;     // Estimasi awal tegangan GP2Y (µg/m³) sebelum kalibrasi ML
     float raw_co_adc;
-    float rs_r0_ratio;     // Rasio resistansi MQ-7 (Rs/R0)
     float raw_voc_adc;
     float suhu;
     float kelembapan;
 
     // Output Kalibrasi TinyML (Random Forest)
-    float pm25_calibrated; // µg/m³ (Bebas bias kelembapan)
-    float co_calibrated;   // ppm / mg/m³
+    float pm25_calibrated; // µg/m³
+    float co_calibrated;   // ppm
 
     // Standarisasi ISPU (Permen LHK No. 14 Tahun 2020)
     int sub_ispu_pm25;
@@ -160,35 +159,25 @@ void readSensors() {
     delayMicroseconds(9680);
     g_data.raw_pm_adc = (float)rawDust;
 
-    // Konversi Tegangan & Rumus Fisik Datasheet Sharp GP2Y (Jurnal 3):
-    // Vout = ADC * (3.3 / 4095.0)
-    // PM_raw = (0.17 * Vout - 0.1) * 1000.0 (µg/m³)
-    float v_dust = (g_data.raw_pm_adc * 3.3f) / 4095.0f;
-    float pm_raw = (0.17f * v_dust - 0.1f) * 1000.0f;
-    g_data.pm_raw_ug = (pm_raw > 0.0f) ? pm_raw : 0.0f;
+    // Konversi ADC ke Tegangan & Hitung Estimasi Awal Datasheet Sharp (µg/m³)
+    float v_dust = (g_data.raw_pm_adc * VREF_VOLTAGE) / ADC_MAX_VALUE;
+    float pm_raw_calc = (0.17f * v_dust - 0.1f) * 1000.0f;
+    g_data.raw_pm_ug = (pm_raw_calc > 0.0f) ? pm_raw_calc : 0.0f;
 
-    // 3. Baca Sensor Gas MQ-7 (CO) & Hitung Rasio Resistansi Rs/R0:
-    g_data.raw_co_adc = (float)analogRead(PIN_MQ7_ANALOG);
-    float v_co = (g_data.raw_co_adc * 3.3f) / 4095.0f;
-    if (v_co < 0.1f) v_co = 0.1f;
-    // Rs = RL * (Vcc - Vout) / Vout (dengan RL = 10kOhm)
-    float rs_co = 10.0f * (3.3f - v_co) / v_co;
-    // R0 di udara bersih ruangan tipikal ~10kOhm
-    g_data.rs_r0_ratio = rs_co / 10.0f;
-
-    // 4. Baca Sensor Gas VOC (MQ-135)
+    // 3. Baca Sensor Gas (MQ-7 untuk CO dan MQ-135 untuk VOC)
+    g_data.raw_co_adc  = (float)analogRead(PIN_MQ7_ANALOG);
     g_data.raw_voc_adc = (float)analogRead(PIN_MQ135_ANALOG);
 }
 
 void runMachineLearningInference() {
     // TAHAP 1: Kalibrasi Machine Learning (Random Forest Regression)
-    // Mengoreksi drift suhu & pembiasan uap air (hygroscopic growth) pada sensor murah
+    // Mengoreksi drift suhu & kelembapan pada sensor berbiaya rendah
 
-    // Fitur PM: [PM_raw (µg/m³), Suhu (°C), Kelembapan (%)] — Skala 100% Matched!
-    float input_pm[3] = { g_data.pm_raw_ug, g_data.suhu, g_data.kelembapan };
-
-    // Fitur CO: [Rs/R0 Ratio, Suhu (°C), Kelembapan (%)] — Skala 100% Matched!
-    float input_co[3] = { g_data.rs_r0_ratio, g_data.suhu, g_data.kelembapan };
+    // Array Fitur PM2.5: [PM_raw (µg/m³), Suhu (°C), Kelembapan (%)]
+    float input_pm[3] = { g_data.raw_pm_ug, g_data.suhu, g_data.kelembapan };
+    
+    // Array Fitur CO: [Raw ADC MQ-7 (0-4095), Suhu (°C), Kelembapan (%)]
+    float input_co[3] = { g_data.raw_co_adc, g_data.suhu, g_data.kelembapan };
 
     // Eksekusi model TinyML yang berjalan offline di ESP32-S3
     g_data.pm25_calibrated = model_pm_predict(input_pm);
@@ -276,13 +265,12 @@ void playIndustrialAlarm() {
 }
 
 void sendSerialTelemetry() {
-    // Format Serial Logger (Menampilkan nilai Mentah vs Terkalibrasi ML):
-    Serial.printf("[TELEMETRI] T:%.1f C | RH:%.1f %% | PM[Raw:%.1f -> ML:%.1f ug/m3] | CO[Rs/R0:%.2f -> ML:%.2f ppm] | ISPU:%d (%s) | Kritis:%s | Fan:%d %%\r\n",
+    // Format Serial Logger: Menampilkan perbandingan nilai Mentah vs Terkalibrasi ML
+    Serial.printf("[TELEMETRI] T:%.1f C | RH:%.1f %% | PM2.5:[Raw:%.1f -> ML:%.1f] ug/m3 | CO:%.2f ppm | ISPU:%d (%s) | Dominan:%s | Kipas:%d %%\r\n",
                   g_data.suhu,
                   g_data.kelembapan,
-                  g_data.pm_raw_ug,
+                  g_data.raw_pm_ug,
                   g_data.pm25_calibrated,
-                  g_data.rs_r0_ratio,
                   g_data.co_calibrated,
                   g_data.ispu_final,
                   g_data.kategori_ispu,
