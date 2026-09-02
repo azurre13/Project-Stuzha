@@ -1,0 +1,3 @@
+Parameter,Sensor,R2_Sebelum,R2_Sesudah_ML,RMSE_Sebelum,RMSE_Sesudah_ML,Penurunan_RMSE_%,MAE_Sebelum,MAE_Sesudah_ML,Penurunan_MAE_%
+Partikulat PM2.5 (µg/m³),Sharp GP2Y1010AU0F + DHT22,0.9833,0.9997,15.05,1.98,86.9%,7.68,0.58,92.4%
+Karbon Monoksida CO (ppm),MQ-7 (MOS) + DHT22,0.7788,0.8087,0.66,0.61,7.0%,0.48,0.44,9.8%
