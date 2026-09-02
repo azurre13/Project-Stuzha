@@ -49,3 +49,8 @@ ENV/
 # Temporary data files
 *.tmp
 *.log
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
