@@ -208,51 +208,44 @@ void calculateISPU() {
 
 void controlActuators() {
     // Kendali Kipas Adaptif Tertutup (Closed-Loop Adaptive PWM)
-    // Berdasarkan Kategori ISPU Resmi
+    // Berdasarkan Kategori ISPU Resmi (Sesuai Jurnal 16, 17, 18)
     if (g_data.ispu_final <= 50) {
-        // Kategori BAIK
+        // Kategori BAIK: Silent Sampling Draft (15% ~960 RPM)
         g_data.fan_pwm_value = FAN_SPEED_STANDBY;
-        g_data.fan_percent   = 10;
+        g_data.fan_percent   = 15;
         g_data.alarm_active  = false;
         noTone(PIN_BUZZER);
         digitalWrite(PIN_BUZZER, LOW);
     } 
     else if (g_data.ispu_final <= 100) {
-        // Kategori SEDANG
+        // Kategori SEDANG: Gentle Filtration (35% ~2240 RPM)
         g_data.fan_pwm_value = FAN_SPEED_LOW;
-        g_data.fan_percent   = 30;
+        g_data.fan_percent   = 35;
         g_data.alarm_active  = false;
         noTone(PIN_BUZZER);
         digitalWrite(PIN_BUZZER, LOW);
     } 
     else if (g_data.ispu_final <= 200) {
-        // Kategori TIDAK SEHAT
+        // Kategori TIDAK SEHAT: Active Filtration (55% ~3520 RPM)
         g_data.fan_pwm_value = FAN_SPEED_MEDIUM;
-        g_data.fan_percent   = 60;
+        g_data.fan_percent   = 55;
         g_data.alarm_active  = false;
         noTone(PIN_BUZZER);
         digitalWrite(PIN_BUZZER, LOW);
     } 
     else if (g_data.ispu_final <= 300) {
-        // Kategori SANGAT TIDAK SEHAT
+        // Kategori SANGAT TIDAK SEHAT: Heavy Purge (75% ~4800 RPM)
         g_data.fan_pwm_value = FAN_SPEED_HIGH;
-        g_data.fan_percent   = 85;
+        g_data.fan_percent   = 75;
         g_data.alarm_active  = true;
         playIndustrialAlarm();
     } 
     else {
-        // Kategori BERBAHAYA
+        // Kategori BERBAHAYA: Max Emergency Purge (100% 6400 RPM)
         g_data.fan_pwm_value = FAN_SPEED_MAX;
         g_data.fan_percent   = 100;
         g_data.alarm_active  = true;
         playIndustrialAlarm();
-    }
-
-    // Secondary Safety Guard (MQ-135 VOC Boost)
-    // Jika gas VOC campuran terdeteksi sangat pekat, paksa kecepatan kipas naik
-    if (g_data.raw_voc_adc > 2500.0f && g_data.fan_percent < 85) {
-        g_data.fan_pwm_value = FAN_SPEED_HIGH;
-        g_data.fan_percent   = 85;
     }
 
     ledcWrite(FAN_PWM_CHANNEL, g_data.fan_pwm_value);
