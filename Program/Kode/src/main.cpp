@@ -261,11 +261,12 @@ void playIndustrialAlarm() {
 
 void sendSerialTelemetry() {
     // Format Serial Logger: Menampilkan perbandingan nilai Mentah vs Terkalibrasi ML
-    Serial.printf("[TELEMETRI] T:%.1f C | RH:%.1f %% | PM2.5:[Raw:%.1f -> ML:%.1f] ug/m3 | CO:%.2f ppm | ISPU:%d (%s) | Dominan:%s | Kipas:%d %%\r\n",
+    Serial.printf("[TELEMETRI] T:%.1f C | RH:%.1f %% | PM2.5:[Raw:%.1f -> ML:%.1f] ug/m3 | CO:[ADC:%.0f -> ML:%.2f ppm] | ISPU:%d (%s) | Dominan:%s | Kipas:%d %%\r\n",
                   g_data.suhu,
                   g_data.kelembapan,
                   g_data.raw_pm_ug,
                   g_data.pm25_calibrated,
+                  g_data.raw_co_adc,
                   g_data.co_calibrated,
                   g_data.ispu_final,
                   g_data.kategori_ispu,

@@ -5,9 +5,9 @@
 // DEFINISI PIN HARDWARE (ESP32-S3) — PROJECT STUZHA
 // ============================================================
 
-// Pin Sensor (Sesuai Skematik Blueprint Hardware)
-#define PIN_MQ7_ANALOG      35   // Sensor Gas CO (ADC Out -> Pin 35)
-#define PIN_MQ135_ANALOG    32   // Sensor Gas VOC/Campuran (ADC Out -> Pin 32)
+// Pin Sensor (Sesuai Kabel Fisik Terpasang di ESP32)
+#define PIN_MQ7_ANALOG      32   // Sensor Gas CO (Kabel Fisik -> Pin 32)
+#define PIN_MQ135_ANALOG    33   // Sensor Gas VOC/Campuran (Kabel Fisik -> Pin 33)
 #define PIN_DUST_VO         34   // Sensor Partikulat GP2Y1010AU0F (ADC Out -> Pin 34)
 #define PIN_DUST_ILED        5   // Sensor Partikulat GP2Y1010AU0F (LED Pulse Drive)
 #define PIN_DHT22            4   // Sensor Suhu & Kelembapan DHT22
