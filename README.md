@@ -48,12 +48,24 @@ Project Stuzha/
 │   ├── explore_datasets.py              # Skrip eksplorasi statistik data
 │   └── train_models.py                  # Skrip training Random Forest & C Header Exporter
 ├── MD/
-│   └── konteks _planing_jurnal_AQI.md  # Catatan lengkap arsitektur, rumus, & roadmap jurnal
+│   ├── konteks _planing_jurnal_AQI.md  # Catatan lengkap arsitektur, rumus, & roadmap jurnal
+│   └── roadmap_dan_langkah_selanjutnya.md # Panduan aksi kolaborasi tim: Fase 2 (Uji Hardware) & Fase 3 (Paper)
 ├── referensi/                           # Koleksi referensi paper, standar ISPU, dan metadata jurnal
 │   └── referensi garnie/
 └── README.md
 ```
 
+
+---
+
+## 🧭 Roadmap & Tahap Selanjutnya
+
+Untuk detail panduan pengujian dan rencana penulisan artikel jurnal ilmiah, silakan merujuk ke dokumen:  
+👉 **[MD/roadmap_dan_langkah_selanjutnya.md](file:///c:/Users/LENOVO/Documents/Project%20Stuzha/MD/roadmap_dan_langkah_selanjutnya.md)**
+
+* **Fase 1 (Selesai):** Kalibrasi Machine Learning, evaluasi metrik ($R^2$, RMSE, MAE), grafik 300 DPI, dan ekspor C Header.
+* **Fase 2 (Berikutnya):** Uji komputasi TinyML di ESP32-S3, uji respons kipas adaptif PWM, dan validasi fisik polutan ruangan.
+* **Fase 3 (Target Akhir):** Penyusunan draf naskah artikel jurnal ilmiah (Target Sinta 3 / Sinta 2).
 
 ---
 
