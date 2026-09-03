@@ -3,6 +3,8 @@
 #include <WiFiClient.h>
 #include <ThingSpeak.h>
 #include <DHT.h>
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 #include "pin_config.h"
 #include "ispu_calc.h"
@@ -12,11 +14,11 @@
 // ============================================================
 // KONFIGURASI WIFI & CLOUD THINGSPEAK
 // ============================================================
-const char* ssid     = "Redmi 12";
-const char* password = "12345678";
+const char* ssid     = "Kinagara c18_7";
+const char* password = "kucinggarong";
 
-unsigned long myChannelNumber = 3404261;
-const char*   myWriteAPIKey   = "8H9F253CU87BIGFZ";
+unsigned long myChannelNumber = 3480764;
+const char*   myWriteAPIKey   = "684DE2U5UW9ZJSUK";
 
 WiFiClient client;
 DHT dht(PIN_DHT22, DHT22);
@@ -66,6 +68,9 @@ void playIndustrialAlarm();
 // SETUP
 // ============================================================
 void setup() {
+    // Matikan Brownout Detector hardware agar tidak bootloop saat lonjakan arus WiFi
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
     Serial.begin(115200);
     delay(1000);
     Serial.println(F("\n=================================================="));
@@ -75,9 +80,11 @@ void setup() {
 
     initSensorsAndPins();
 
-    // Koneksi WiFi
+    // Koneksi WiFi dengan pengaturan daya hemat arus (mencegah drop tegangan)
     Serial.print(F("Menghubungkan ke WiFi: "));
     Serial.println(ssid);
+    WiFi.mode(WIFI_STA);
+    WiFi.setTxPower(WIFI_POWER_15dBm); // Kurangi daya transmisi RF untuk cegah brownout
     WiFi.begin(ssid, password);
     
     int wifiTimeout = 20; // 10 detik timeout
@@ -102,6 +109,15 @@ void setup() {
 // LOOP UTAMA
 // ============================================================
 void loop() {
+    // Auto-reconnect WiFi di background (tiap 10 detik jika sempat putus)
+    static unsigned long lastWifiCheck = 0;
+    if (millis() - lastWifiCheck >= 10000) {
+        lastWifiCheck = millis();
+        if (WiFi.status() != WL_CONNECTED) {
+            WiFi.reconnect();
+        }
+    }
+
     // 1. Baca data sensor fisik (Sampling interval ~1 detik)
     static unsigned long lastSampleTime = 0;
     if (millis() - lastSampleTime >= 1000) {
@@ -286,6 +302,19 @@ void sendThingSpeakTelemetry() {
     ThingSpeak.setField(5, (float)g_data.ispu_final);
     ThingSpeak.setField(6, (float)g_data.fan_percent);
     ThingSpeak.setField(7, g_data.raw_voc_adc);
+
+    // Field 8: Kode Numerik Kategori ISPU (1: Baik, 2: Sedang, 3: Tidak Sehat, 4: Sangat Tidak Sehat, 5: Berbahaya)
+    int kategori_code = 1;
+    if (g_data.ispu_final <= 50)       kategori_code = 1;
+    else if (g_data.ispu_final <= 100) kategori_code = 2;
+    else if (g_data.ispu_final <= 200) kategori_code = 3;
+    else if (g_data.ispu_final <= 300) kategori_code = 4;
+    else                               kategori_code = 5;
+    ThingSpeak.setField(8, (float)kategori_code);
+
+    // Kirim deskripsi status teks ke dashboard web ThingSpeak
+    String statusMsg = String(g_data.kategori_ispu) + " | Kritis: " + String(g_data.parameter_kritis);
+    ThingSpeak.setStatus(statusMsg);
 
     int status = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
     if (status == 200) {
