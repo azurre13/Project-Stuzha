@@ -50,7 +50,8 @@ ENV/
 *.tmp
 *.log
 
-# PlatformIO
+# PlatformIO & Build Tools
 .pio/
 .pioenvs/
 .piolibdeps/
+compile_commands.json
