@@ -144,13 +144,17 @@ Sesuai landasan teoritis pada **Jurnal ke-16 (*Atmosphere*, MDPI)** dan **Jurnal
 * Kipas **tidak pernah dimatikan ke 0%**, karena sensor Sharp GP2Y1010AU0F tidak memiliki kipas mikro internal (bersifat pasif). Aliran udara konstan dibutuhkan untuk menarik partikel debu kamar masuk melewati rongga optik sensor secara kontinu.
 * Pengaturan kecepatan dinamis terbukti memangkas konsumsi daya motor kipas hingga $70\%$ dibanding berjalan pada RPM tinggi terus-menerus.
 
-| Kategori ISPU | Rentang Skor ISPU | Duty Cycle PWM | Estimasi RPM | Mode Aerodinamika |
+| Kategori ISPU | Rentang Skor ISPU | Duty Cycle PWM | Estimasi RPM | Mode Aerodinamika & Kebisingan |
 |---|:---:|:---:|:---:|---|
-| **Baik** | **0 – 50** | **12% (PWM 31)** | **~760 RPM** | **Ultra-Silent Standby:** Suara nyaris tak terdengar (< 25 dB), menyedot udara kamar secara laminer ke rongga sensor. |
-| **Sedang** | **51 – 100** | **15% (PWM 38)** | **~960 RPM** | **Silent Sleep Purify:** Suara hening (< 28 dB), menyedot dan menyaring sirkulasi udara kamar secara kontinu tanpa mengganggu tidur. |
-| **Tidak Sehat** | **101 – 200** | **55% (PWM 140)** | **~3.520 RPM** | **Active HEPA Filtration:** Pembersihan aktif saat ruangan terdeteksi asap/debu sedang. |
-| **Sangat Tidak Sehat** | **201 – 300** | **75% (PWM 191)** | **~4.800 RPM** | **Heavy Purge:** Filtrasi intensif beban polutan pekat; buzzer aktif berselang. |
-| **Berbahaya** | **> 300** | **100% (PWM 255)** | **6.400 RPM** | **Emergency Max Purge:** Sirkulasi darurat putaran penuh untuk mengevakuasi polusi ekstrem. |
+| **Baik** | **0 – 50** | **13% (PWM 33)** | **~806 RPM** | **Ultra-Silent Standby:** Suara nyaris tak terdengar (< 22 dB), aliran laminer konstan ke sensor. |
+| **Sedang** | **51 – 100** | **15% (PWM 38)** | **~930 RPM** | **Silent Sleep Purify:** Suara hening (< 28 dB), batas maksimal kenyamanan tidur malam hari. |
+| **Tidak Sehat** | **101 – 200** | **22% (PWM 56)** | **~1.364 RPM** | **Active Clean:** Pembersihan aktif, desiran halus (< 38 dB) tanpa suara raungan kasar! |
+| **Sangat Tidak Sehat** | **201 – 300** | **50% (PWM 128)** | **~3.100 RPM** | **Heavy Purge:** Evakuasi polutan berat; buzzer alarm audio aktif berselang. |
+| **Berbahaya** | **> 300** | **85% (PWM 217)** | **~5.270 RPM** | **Max Emergency Purge:** Sirkulasi darurat daya tinggi untuk mengevakuasi polusi ekstrem. |
+
+> [!TIP]
+> **Kontrol Histeresis (Deadband Anti-Hunting):**
+> Firmware menerapkan ambang histeresis 5 poin (misal level baru turun jika ISPU stabil di bawah 95 atau 45). Hal ini mencegah kipas berakselerasi bolak-balik secara mendadak saat konsentrasi polutan berfluktuasi tipis di sekitar batas kategori.
 
 ---
 

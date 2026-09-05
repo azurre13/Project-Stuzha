@@ -223,45 +223,83 @@ void calculateISPU() {
 }
 
 void controlActuators() {
-    // Kendali Kipas Adaptif Tertutup (Closed-Loop Adaptive PWM)
-    // Berdasarkan Kategori ISPU Resmi (Sesuai Jurnal 16, 17, 18)
+    // Kendali Kipas Adaptif Tertutup (Closed-Loop Adaptive PWM) dengan Histeresis
+    // Khusus aktuator industri 6200 RPM 12V 1.65A (Sesuai Jurnal 16, 17, 18)
+    static int current_level = 1; // 1: Baik, 2: Sedang, 3: Tidak Sehat, 4: S.Tdk Sehat, 5: Berbahaya
+
+    // Logika Histeresis Deadband (mencegah chattering/hunting di batas ambang polutan)
     if (g_data.ispu_final <= 50) {
-        // Kategori BAIK: Ultra-Silent Standby (12% ~760 RPM, < 25 dB)
-        g_data.fan_pwm_value = FAN_SPEED_STANDBY;
-        g_data.fan_percent   = 12;
-        g_data.alarm_active  = false;
-        noTone(PIN_BUZZER);
-        digitalWrite(PIN_BUZZER, LOW);
+        if (current_level > 1 && g_data.ispu_final > 45) {
+            // Tahan di level 2 jika belum turun stabil di bawah 45
+        } else {
+            current_level = 1;
+        }
     } 
     else if (g_data.ispu_final <= 100) {
-        // Kategori SEDANG: Silent Continuous Sleep Purify (15% ~960 RPM, < 28 dB)
-        g_data.fan_pwm_value = FAN_SPEED_LOW;
-        g_data.fan_percent   = 15;
-        g_data.alarm_active  = false;
-        noTone(PIN_BUZZER);
-        digitalWrite(PIN_BUZZER, LOW);
+        if (current_level > 2 && g_data.ispu_final > 95) {
+            // Tahan di level 3 jika belum turun stabil di bawah 95 (mencegah bolak-balik meraung)
+        } else {
+            current_level = 2;
+        }
     } 
     else if (g_data.ispu_final <= 200) {
-        // Kategori TIDAK SEHAT: Active Filtration (55% ~3520 RPM)
-        g_data.fan_pwm_value = FAN_SPEED_MEDIUM;
-        g_data.fan_percent   = 55;
-        g_data.alarm_active  = false;
-        noTone(PIN_BUZZER);
-        digitalWrite(PIN_BUZZER, LOW);
+        if (current_level > 3 && g_data.ispu_final > 195) {
+            // Tahan di level 4 jika belum turun stabil di bawah 195
+        } else {
+            current_level = 3;
+        }
     } 
     else if (g_data.ispu_final <= 300) {
-        // Kategori SANGAT TIDAK SEHAT: Heavy Purge (75% ~4800 RPM)
-        g_data.fan_pwm_value = FAN_SPEED_HIGH;
-        g_data.fan_percent   = 75;
-        g_data.alarm_active  = true;
-        playIndustrialAlarm();
+        current_level = 4;
     } 
     else {
-        // Kategori BERBAHAYA: Max Emergency Purge (100% 6400 RPM)
-        g_data.fan_pwm_value = FAN_SPEED_MAX;
-        g_data.fan_percent   = 100;
-        g_data.alarm_active  = true;
-        playIndustrialAlarm();
+        current_level = 5;
+    }
+
+    // Eksekusi PWM Sesuai Level Kategori (Setiap level memiliki persentase unik & berbeda)
+    switch (current_level) {
+        case 1:
+            // Kategori BAIK: Ultra-Silent Standby (13% ~806 RPM, < 22 dB)
+            g_data.fan_pwm_value = FAN_SPEED_STANDBY;
+            g_data.fan_percent   = 13;
+            g_data.alarm_active  = false;
+            noTone(PIN_BUZZER);
+            digitalWrite(PIN_BUZZER, LOW);
+            break;
+
+        case 2:
+            // Kategori SEDANG: Silent Sleep Purify (15% ~930 RPM, Batas Maksimal Kenyamanan Anda)
+            g_data.fan_pwm_value = FAN_SPEED_LOW;
+            g_data.fan_percent   = 15;
+            g_data.alarm_active  = false;
+            noTone(PIN_BUZZER);
+            digitalWrite(PIN_BUZZER, LOW);
+            break;
+
+        case 3:
+            // Kategori TIDAK SEHAT: Active Clean (22% ~1364 RPM, Adem & Tidak Bising!)
+            g_data.fan_pwm_value = FAN_SPEED_MEDIUM;
+            g_data.fan_percent   = 22;
+            g_data.alarm_active  = false;
+            noTone(PIN_BUZZER);
+            digitalWrite(PIN_BUZZER, LOW);
+            break;
+
+        case 4:
+            // Kategori SANGAT TIDAK SEHAT: Heavy Purge (50% ~3100 RPM)
+            g_data.fan_pwm_value = FAN_SPEED_HIGH;
+            g_data.fan_percent   = 50;
+            g_data.alarm_active  = true;
+            playIndustrialAlarm();
+            break;
+
+        case 5:
+            // Kategori BERBAHAYA: Max Emergency Purge (85% ~5270 RPM)
+            g_data.fan_pwm_value = FAN_SPEED_MAX;
+            g_data.fan_percent   = 85;
+            g_data.alarm_active  = true;
+            playIndustrialAlarm();
+            break;
     }
 
     ledcWrite(FAN_PWM_CHANNEL, g_data.fan_pwm_value);

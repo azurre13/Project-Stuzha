@@ -25,11 +25,11 @@
 #define FAN_PWM_RES             8
 #define FAN_PWM_CHANNEL         0
 
-// Level Kecepatan Kipas (PWM 8-bit: 0 - 255) — Kipas 6400 RPM (Jurnal 16, 17, 18)
-#define FAN_SPEED_STANDBY      31   // 12% (Kategori Baik - Ultra-Silent Standby ~760 RPM, < 25 dB)
-#define FAN_SPEED_LOW          38   // 15% (Kategori Sedang - Silent Continuous Sleep Purify ~960 RPM, < 28 dB)
-#define FAN_SPEED_MEDIUM      140   // 55% (Kategori Tidak Sehat - Active Filtration ~3520 RPM)
-#define FAN_SPEED_HIGH        191   // 75% (Kategori Sangat Tidak Sehat - Heavy Purge ~4800 RPM)
-#define FAN_SPEED_MAX         255   // 100% (Kategori Berbahaya - Max Emergency 6400 RPM)
+// Level Kecepatan Kipas Khusus Kipas Industri 6200 RPM 12V 1.65A (PWM 8-bit: 0 - 255)
+#define FAN_SPEED_STANDBY      33   // 13% (~806 RPM - Kategori Baik: Ultra-Silent Standby)
+#define FAN_SPEED_LOW          38   // 15% (~930 RPM - Kategori Sedang: Silent Sleep Purify, Max Batas Nyaman)
+#define FAN_SPEED_MEDIUM       56   // 22% (~1364 RPM - Kategori Tidak Sehat: Active Clean, Adem & Tidak Bising!)
+#define FAN_SPEED_HIGH        128   // 50% (~3100 RPM - Kategori Sangat Tidak Sehat: Heavy Purge)
+#define FAN_SPEED_MAX         217   // 85% (~5270 RPM - Kategori Berbahaya: Max Emergency Purge)
 
 #endif // PIN_CONFIG_H
