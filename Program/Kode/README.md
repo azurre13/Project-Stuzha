@@ -146,7 +146,7 @@ Sesuai landasan teoritis pada **Jurnal ke-16 (*Atmosphere*, MDPI)** dan **Jurnal
 
 | Kategori ISPU | Rentang Skor ISPU | Duty Cycle PWM | Estimasi RPM | Mode Aerodinamika |
 |---|:---:|:---:|:---:|---|
-| **Baik** | **0 – 50** | **15% (PWM 38)** | **~960 RPM** | **Silent Sampling Draft:** Suara hening ($< 30\text{ dB}$), menyedot udara kamar secara laminer ke rongga sensor. |
+| **Baik** | **0 – 50** | **12% (PWM 31)** | **~760 RPM** | **Ultra-Silent Standby:** Suara nyaris tak terdengar (< 25 dB), menyedot udara kamar secara laminer ke rongga sensor. |
 | **Sedang** | **51 – 100** | **15% (PWM 38)** | **~960 RPM** | **Silent Sleep Purify:** Suara hening (< 28 dB), menyedot dan menyaring sirkulasi udara kamar secara kontinu tanpa mengganggu tidur. |
 | **Tidak Sehat** | **101 – 200** | **55% (PWM 140)** | **~3.520 RPM** | **Active HEPA Filtration:** Pembersihan aktif saat ruangan terdeteksi asap/debu sedang. |
 | **Sangat Tidak Sehat** | **201 – 300** | **75% (PWM 191)** | **~4.800 RPM** | **Heavy Purge:** Filtrasi intensif beban polutan pekat; buzzer aktif berselang. |

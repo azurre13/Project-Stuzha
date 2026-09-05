@@ -26,7 +26,7 @@
 #define FAN_PWM_CHANNEL         0
 
 // Level Kecepatan Kipas (PWM 8-bit: 0 - 255) — Kipas 6400 RPM (Jurnal 16, 17, 18)
-#define FAN_SPEED_STANDBY      38   // 15% (Kategori Baik - Silent Sampling Draft ~960 RPM)
+#define FAN_SPEED_STANDBY      31   // 12% (Kategori Baik - Ultra-Silent Standby ~760 RPM, < 25 dB)
 #define FAN_SPEED_LOW          38   // 15% (Kategori Sedang - Silent Continuous Sleep Purify ~960 RPM, < 28 dB)
 #define FAN_SPEED_MEDIUM      140   // 55% (Kategori Tidak Sehat - Active Filtration ~3520 RPM)
 #define FAN_SPEED_HIGH        191   // 75% (Kategori Sangat Tidak Sehat - Heavy Purge ~4800 RPM)

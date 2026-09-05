@@ -226,9 +226,9 @@ void controlActuators() {
     // Kendali Kipas Adaptif Tertutup (Closed-Loop Adaptive PWM)
     // Berdasarkan Kategori ISPU Resmi (Sesuai Jurnal 16, 17, 18)
     if (g_data.ispu_final <= 50) {
-        // Kategori BAIK: Silent Sampling Draft (15% ~960 RPM)
+        // Kategori BAIK: Ultra-Silent Standby (12% ~760 RPM, < 25 dB)
         g_data.fan_pwm_value = FAN_SPEED_STANDBY;
-        g_data.fan_percent   = 15;
+        g_data.fan_percent   = 12;
         g_data.alarm_active  = false;
         noTone(PIN_BUZZER);
         digitalWrite(PIN_BUZZER, LOW);
