@@ -55,5 +55,5 @@ cd data/uci && unzip air_quality.zip
 ## Eksplorasi Data
 
 ```bash
-python data/explore_datasets.py
+python ml_training/explore_datasets.py
 ```

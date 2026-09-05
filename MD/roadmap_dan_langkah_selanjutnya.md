@@ -16,7 +16,7 @@ Seluruh langkah dalam dokumen ini diturunkan langsung dari **21 referensi jurnal
 
 ## ✅ 2. Status Terkini: FASE 1 Telah Rampung (Data Science & TinyML)
 
-Semua kebutuhan data science di laptop/PC telah berhasil dieksekusi dan tersimpan rapi di folder [`Fase_1_Evaluasi_ML/`](file:///c:/Users/LENOVO/Documents/Project%20Stuzha/Fase_1_Evaluasi_ML):
+Semua kebutuhan data science di laptop/PC telah berhasil dieksekusi dan tersimpan rapi di folder [`Fase_1_Evaluasi_ML/`](../Fase_1_Evaluasi_ML/):
 
 1. **Pelatihan Model Bebas Leakage:**
    - Model **RF_PM** (GP2Y1010AU0F + DHT22) dan **RF_CO** (MQ-7 + DHT22) telah dilatih menggunakan 167.000+ data valid.

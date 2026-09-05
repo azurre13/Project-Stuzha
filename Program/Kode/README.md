@@ -47,7 +47,7 @@ Firmware ini berjalan pada modul **ESP32 Dual-Core (Xtensa LX6 @ 240 MHz)** meng
 ### Langkah Menjalankan:
 1. **Buka Proyek:** Buka folder repositori di editor, lalu pastikan terminal Anda berada di sub-folder `Program/Kode/`.
 2. **Cek Port USB (`platformio.ini`):**
-   Buka file [`platformio.ini`](file:///c:/Users/daffa/Documents/Project%20Stuzha/Program/Kode/platformio.ini). Pastikan port COM sesuai dengan nomor port di laptop Anda (misal `COM3` di Windows atau `/dev/ttyUSB0` di Linux):
+   Buka file [`platformio.ini`](platformio.ini). Pastikan port COM sesuai dengan nomor port di laptop Anda (misal `COM3` di Windows atau `/dev/ttyUSB0` di Linux):
    ```ini
    upload_port = COM3
    monitor_port = COM3
@@ -156,20 +156,34 @@ Sesuai landasan teoritis pada **Jurnal ke-16 (*Atmosphere*, MDPI)** dan **Jurnal
 
 ## 📶 5. Konfigurasi WiFi & ThingSpeak Cloud
 
-Pengaturan koneksi cloud berada di bagian atas file [`src/main.cpp`](file:///c:/Users/daffa/Documents/Project%20Stuzha/Program/Kode/src/main.cpp#L7-L13):
+Pengaturan koneksi cloud berada di bagian atas file [`src/main.cpp`](src/main.cpp):
 
 ```cpp
 // Konfigurasi WiFi Hotspot
-char ssid[] = "Redmi 12";            // Ganti dengan SSID WiFi Anda
-char pass[] = "password_wifi_anda";  // Ganti dengan kata sandi WiFi
+const char* ssid     = "Kinagara c18_7";     // Ganti dengan SSID WiFi Anda
+const char* password = "kucinggarong";       // Ganti dengan kata sandi WiFi
 
 // Kredensial Channel ThingSpeak IoT
-unsigned long myChannelNumber = 3404261;                     // Nomor Channel
-const char * myWriteAPIKey    = "YOUR_THINGSPEAK_WRITE_KEY"; // Write API Key
+unsigned long myChannelNumber = 3480764;            // Nomor Channel
+const char*   myWriteAPIKey   = "684DE2U5UW9ZJSUK"; // Write API Key
 ```
 
+### Tabel Pemetaan 8 Field ThingSpeak
+| Field | Parameter | Satuan | Deskripsi Ilmiah |
+|:---:|---|:---:|---|
+| **Field 1** | Suhu | °C | Pembacaan suhu lingkungan dari sensor DHT22 |
+| **Field 2** | Kelembapan | RH % | Pembacaan kelembapan relatif dari sensor DHT22 |
+| **Field 3** | PM2.5 Calibrated | µg/m³ | Konsentrasi partikulat hasil koreksi AI Random Forest (GP2Y) |
+| **Field 4** | CO Calibrated | ppm | Konsentrasi gas CO hasil koreksi AI Random Forest (MQ-7) |
+| **Field 5** | ISPU Final | 0 – 500 | Indeks Standar Pencemar Udara resmi Permen LHK 14/2020 |
+| **Field 6** | Kipas PWM | % | Sinyal daya motor kipas tertutup (12%, 15%, 55%, 75%, 100%) |
+| **Field 7** | Raw VOC | ADC | Indikator proksi gas campuran sekunder dari sensor MQ-135 |
+| **Field 8** | Kategori ISPU | 1 – 5 | Kode Numerik (1: Baik, 2: Sedang, 3: Tidak Sehat, 4: Sangat Tidak Sehat, 5: Berbahaya) |
+| **Status Feed** | Status Teks Live | String | Pesan real-time: Nama Status Kategori dan Polutan Kritis Dominan |
+
 * **Mode Offline Otomatis:** Jika WiFi tidak terjangkau dalam waktu 10 detik setelah dinyalakan, ESP32 akan otomatis masuk ke **Mode Offline**. Seluruh inferensi AI lokal, perhitungan ISPU, dan kendali kipas tetap berjalan $100\%$ normal tanpa internet.
-* **Interval Pengiriman:** Data dikirim ke ThingSpeak setiap **20 detik** (sesuai regulasi kuota gratis ThingSpeak $15\text{ detik}$, menghasilkan $\approx 4.320$ baris data berkualitas per hari).
+* **Auto-Reconnect:** Firmware secara otomatis memulihkan koneksi WiFi setiap 10 detik di latar belakang jika jaringan sempat terputus.
+* **Interval Pengiriman:** Data dikirim ke ThingSpeak setiap **20 detik** (sesuai kuota gratis ThingSpeak $15\text{ detik}$, menghasilkan $\approx 4.320$ baris data berkualitas per hari).
 
 ---
 
