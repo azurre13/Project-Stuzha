@@ -36,6 +36,14 @@ Firmware ini berjalan pada modul **ESP32 Dual-Core (Xtensa LX6 @ 240 MHz)** meng
 > * Kabel analog sensor **MQ-135 wajib terhubung ke GPIO 33**.
 > * Jangan menyambungkan pin analog sensor ke pin ADC2 (GPIO 0, 2, 4, 12-15, 25-27) karena ADC2 tidak dapat membaca analog saat modul WiFi ESP32 sedang aktif. Pin 32, 33, dan 34 berada di ADC1 sehingga 100% aman dan stabil bersama WiFi.
 
+### Desain Fisik Mekanikal & Orientasi Alat
+* **Spesifikasi Kipas:** High-Speed Industrial Brushless DC (BLDC) Fan 12V 1.65A, kecepatan maksimal ~6.200 – 6.400 RPM, dimensi 12 cm × 12 cm × 3.8 cm (120 mm × 120 mm × 38 mm).
+* **Dimensi Lubang Box (Duct Port):** Lubang intake/exhaust dibuat berbentuk bukaan **kotak 12 cm × 12 cm** presisi mengikuti rangka luar kipas untuk menekan hambatan tekanan balik (*backpressure*) dan meniadakan turbulensi akustik.
+* **Orientasi Operasional: Wajib Posisi Berdiri (Vertikal):**
+  1. *Proteksi Lensa Debu:* Mencegah partikel debu jatuh dan menumpuk pada celah lensa optik sensor Sharp GP2Y1010AU0F.
+  2. *Disipasi Panas Vertikal:* Panas dari elemen pemanas sensor gas MOS (MQ-7 & MQ-135) naik ke atas secara alami (*upward convection*) sehingga tidak memanaskan sensor DHT22 (suhu/RH) dan optik debu.
+  3. *Efisiensi Sirkulasi:* Mendukung pola sirkulasi hisap bawah/samping dan hembus atas (*chimney effect*) di dalam ruangan.
+
 ---
 
 ## 🚀 2. Panduan Cepat Memulai (Quickstart)
@@ -180,7 +188,7 @@ const char*   myWriteAPIKey   = "684DE2U5UW9ZJSUK"; // Write API Key
 | **Field 3** | PM2.5 Calibrated | µg/m³ | Konsentrasi partikulat hasil koreksi AI Random Forest (GP2Y) |
 | **Field 4** | CO Calibrated | ppm | Konsentrasi gas CO hasil koreksi AI Random Forest (MQ-7) |
 | **Field 5** | ISPU Final | 0 – 500 | Indeks Standar Pencemar Udara resmi Permen LHK 14/2020 |
-| **Field 6** | Kipas PWM | % | Sinyal daya motor kipas tertutup (12%, 15%, 55%, 75%, 100%) |
+| **Field 6** | Kipas PWM | % | Sinyal daya motor kipas tertutup (13%, 15%, 22%, 50%, 85%) |
 | **Field 7** | Raw VOC | ADC | Indikator proksi gas campuran sekunder dari sensor MQ-135 |
 | **Field 8** | Kategori ISPU | 1 – 5 | Kode Numerik (1: Baik, 2: Sedang, 3: Tidak Sehat, 4: Sangat Tidak Sehat, 5: Berbahaya) |
 | **Status Feed** | Status Teks Live | String | Pesan real-time: Nama Status Kategori dan Polutan Kritis Dominan |
@@ -196,8 +204,9 @@ const char*   myWriteAPIKey   = "684DE2U5UW9ZJSUK"; // Write API Key
 Pada baud rate **115200**, firmware mengeluarkan data terstruktur setiap detik dengan format:
 
 ```text
-[TELEMETRI] T:24.3 C | RH:50.6 % | PM2.5:[Raw:9.9 -> ML:2.5] ug/m3 | CO:[ADC:1616 -> ML:1.51 ppm] | ISPU:17 (Baik) | Dominan:CO (Karbon Monoksida) | Kipas:15 %
-[TELEMETRI] T:24.4 C | RH:50.6 % | PM2.5:[Raw:461.0 -> ML:372.3] ug/m3 | CO:[ADC:1619 -> ML:1.53 ppm] | ISPU:398 (Berbahaya) | Dominan:PM2.5 (Partikulat) | Kipas:100 %
+[TELEMETRI] T:24.3 C | RH:50.6 % | PM2.5:[Raw:9.9 -> ML:2.5] ug/m3 | CO:[ADC:1616 -> ML:1.51 ppm] | ISPU:17 (Baik) | Dominan:CO (Karbon Monoksida) | Kipas:13 %
+[TELEMETRI] T:25.4 C | RH:52.8 % | PM2.5:[Raw:57.4 -> ML:50.0] ug/m3 | CO:[ADC:2214 -> ML:3.45 ppm] | ISPU:93 (Sedang) | Dominan:PM2.5 (Partikulat) | Kipas:15 %
+[TELEMETRI] T:25.4 C | RH:52.9 % | PM2.5:[Raw:74.1 -> ML:62.1] ug/m3 | CO:[ADC:2176 -> ML:3.33 ppm] | ISPU:108 (Tidak Sehat) | Dominan:PM2.5 (Partikulat) | Kipas:22 %
 ```
 
 ### Arti Kolom Telemetri:
@@ -207,6 +216,11 @@ Pada baud rate **115200**, firmware mengeluarkan data terstruktur setiap detik d
 4. `ISPU`: Skor komputasi indeks kualitas udara resmi berdasarkan Permen LHK 14/2020 beserta status kategorinya.
 5. `Dominan`: Parameter pencemar kritis (polutan bernilai sub-indeks tertinggi yang memicu ISPU total).
 6. `Kipas`: Persentase sinyal daya PWM yang saat itu sedang dialirkan ke motor kipas.
+
+> [!NOTE]
+> **Mengapa Nilai VOC (MQ-135) Tidak Muncul di Teks Telemetri Serial?**  
+> Sensor MQ-135 (GPIO 33) dibaca secara aktif setiap siklus sensor (`analogRead(PIN_MQ135_ANALOG)`) dan nilainya **selalu dikirim ke ThingSpeak Cloud di Field 7** (dan terekam di CSV dataset otomatis).  
+> Di baris teks serial monitor, VOC sengaja tidak dimasukkan ke dalam baris telemetri satu baris tersebut agar tampilan serial tetap ringkas, bersih, dan fokus pada dua polutan resmi penentu nilai ISPU (*PM2.5* dan *CO*). Jadi, status pembacaan dan penyimpanan VOC adalah **100% aman, aktif, dan terekam di cloud**.
 
 ---
 *© 2026 Project Stuzha — Tim Riset Kualitas Udara Cerdas IoT & TinyML.*

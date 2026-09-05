@@ -18,6 +18,36 @@ Proyek ini merupakan peningkatan (*upgrade*) dari sistem pemantauan dan filtrasi
 
 ---
 
+## 📐 Desain Fisik Purifier, Dimensi Kipas, & Orientasi Alat
+
+Sistem Project Stuzha mengintegrasikan modul purifikasi udara aktif dengan desain mekanikal dan akustik yang disesuaikan untuk kenyamanan ruang tidur:
+
+### 1. Spesifikasi Kipas & Saluran Udara (Duct Port)
+* **Tipe Kipas:** *High-Speed Industrial Brushless DC (BLDC) Axial Fan*.
+* **Spesifikasi Kelistrikan:** **12V DC, Arus 1.65A** (High-Power Server-Grade Motor).
+* **Kecepatan Maksimum:** **~6.200 – 6.400 RPM**.
+* **Dimensi Fisik Kipas:** **12 cm × 12 cm × 3.8 cm (120 mm × 120 mm × 38 mm)**.
+* **Dimensi Lubang Saluran:** Lubang intake/exhaust dirancang berbentuk **kotak simetris 12 cm × 12 cm** presisi mengikuti dimensi luar penampang kipas. Desain rasio 1:1 ini bertujuan untuk:
+  1. Mencegah penyempitan aliran (*airflow constriction*) dan menekan hambatan tekanan balik (*backpressure*).
+  2. Meniadakan turbulensi udara pada sudut bodi box yang sering memicu resonansi bising.
+  3. Memaksimalkan laju aliran udara volumetrik (*CFM / Clean Air Delivery Rate*) pada putaran rendah.
+
+### 2. Orientasi Fisik: Wajib Posisi Berdiri (Vertical Standing)
+Purifier dirancang untuk diletakkan dalam **posisi berdiri tegak (vertikal)**, bukan posisi tidur/horizontal. Hal ini didasari oleh tiga pertimbangan teknis krusial:
+1. **Proteksi Optik Sensor Debu (Sharp GP2Y1010AU0F):** Posisi vertikal mencegah partikel debu gravitasi kasar mengendap dan melapisi lensa LED inframerah serta fototransistor optik. Posisi tidur akan membuat optik cepat berdebu dan memicu drift pembiasan permanen.
+2. **Manajemen Termal Sensor Gas (Pencegahan Thermal Drift):** Sensor gas semikonduktor (MQ-7 dan MQ-135) memiliki koil pemanas internal (*heater coil*). Dalam posisi vertikal, panas konveksi alami bergerak lurus ke atas (*natural upward convection / chimney effect*) dan langsung terbuang, sehingga panasnya tidak terperangkap atau memanaskan sensor DHT22 (suhu/RH) dan optik PM2.5.
+3. **Pola Sirkulasi Udara Kamar (*Chimney Effect*):** Udara kamar dihisap dari bukaan samping/bawah melewati filter HEPA & ruang sensor, lalu dihembuskan keluar secara aksial melalui exhaust fan atas, menghasilkan sirkulasi perputaran udara (*air changes per hour*) yang merata ke seluruh ruangan tidur.
+
+### 3. Logika PWM Multi-Tier & Akustik (Kenyamanan Tidur)
+Mengingat kipas 6.200 RPM memiliki daya dorong dan kebisingan sangat tinggi pada kecepatan penuh, firmware menerapkan kendali PWM berjenjang dengan deadband histeresis 5-poin:
+* **Baik (ISPU ≤ 50):** 13% PWM (~806 RPM, < 22 dB) — *Ultra-Silent Standby*.
+* **Sedang (ISPU 51–100):** 15% PWM (~930 RPM, < 28 dB) — *Silent Sleep Purify* (memenuhi baku mutu kebisingan tidur malam WHO/ASHRAE).
+* **Tidak Sehat (ISPU 101–200):** 22% PWM (~1.364 RPM, < 38 dB) — *Active Clean* (pembersihan polutan aktif tanpa suara kasar).
+* **Sangat Tidak Sehat (ISPU 201–300):** 50% PWM (~3.100 RPM) — *Heavy Purge*.
+* **Berbahaya (ISPU > 300):** 85% PWM (~5.270 RPM) — *Max Emergency Purge* + Buzzer Alarm.
+
+---
+
 ## 📂 Struktur Repositori
 
 ```text

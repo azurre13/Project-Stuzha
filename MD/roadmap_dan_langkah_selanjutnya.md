@@ -43,11 +43,12 @@ Semua kebutuhan data science di laptop/PC telah berhasil dieksekusi dan tersimpa
 
 ### B. Pengujian Respons Aktuator Kipas Adaptif PWM
 * **Apa yang diuji:**
-  - Mengamati apakah putaran kipas DC benar-benar berubah halus secara *closed-loop* mengikuti kategori ISPU resmi:
-    * **Baik ($I \le 50$):** PWM 10% (Silent / Standby)
-    * **Sedang ($I \le 100$):** PWM 30% (Low)
-    * **Tidak Sehat ($I \le 200$):** PWM 60% (Medium)
-    * **Sangat Tidak Sehat & Berbahaya ($I > 200$):** PWM 85%–100% (Turbo) + Alarm Aktif.
+  - Mengamati apakah putaran kipas DC (12V 1.65A 6.200 RPM, lubang kotak 12x12 cm) berubah halus secara *closed-loop* mengikuti kategori ISPU resmi dengan deadband histeresis 5-poin:
+    * **Baik ($I \le 50$):** PWM 13% (~806 RPM, Ultra-Silent Standby < 22 dB)
+    * **Sedang ($I \le 100$):** PWM 15% (~930 RPM, Silent Sleep Purify < 28 dB)
+    * **Tidak Sehat ($I \le 200$):** PWM 22% (~1.364 RPM, Active Clean < 38 dB)
+    * **Sangat Tidak Sehat ($I \le 300$):** PWM 50% (~3.100 RPM, Heavy Purge)
+    * **Berbahaya ($I > 300$):** PWM 85% (~5.270 RPM, Max Emergency Purge) + Alarm Aktif.
 * **Landasan Referensi:** **Jurnal 16 & 17** (*Dynamic Ventilation & Energy Efficiency*). Menjadi bukti bahwa kendali adaptif lebih efisien energi dibanding saklar *on-off* statis pada purwarupa lama (**Jurnal 19**).
 
 ### C. Validasi Logika ISPU & Secondary Safety Guard (MQ-135)
