@@ -234,9 +234,9 @@ void controlActuators() {
         digitalWrite(PIN_BUZZER, LOW);
     } 
     else if (g_data.ispu_final <= 100) {
-        // Kategori SEDANG: Quiet Night Sleep Purify (20% ~1280 RPM, < 38 dB)
+        // Kategori SEDANG: Silent Continuous Sleep Purify (15% ~960 RPM, < 28 dB)
         g_data.fan_pwm_value = FAN_SPEED_LOW;
-        g_data.fan_percent   = 20;
+        g_data.fan_percent   = 15;
         g_data.alarm_active  = false;
         noTone(PIN_BUZZER);
         digitalWrite(PIN_BUZZER, LOW);
