@@ -59,6 +59,11 @@ Project Stuzha/
 │   ├── tabel_metrik_evaluasi.csv        # Tabel metrik dalam format CSV
 │   ├── run_fase1_evaluation.py          # Skrip eksekusi evaluasi & training model
 │   └── README.md
+├── Hardware/                            # Dokumentasi Fisik, Blueprint, Skematik & Foto Prototipe
+│   ├── foto_alat/                       # Galeri foto prototipe fisik nyata (tampak samping, sensor, dll.)
+│   ├── skematik/                        # Diagram rangkaian kelistrikan & wiring ESP32
+│   ├── blueprint/                       # Desain mekanikal, dimensi bodi box, & duct kipas
+│   └── README.md                        # Panduan teknis hardware & tata letak komponen
 ├── Program/
 │   ├── download_thingspeak_dataset.py   # Skrip pengunduh otomatis IoT Cloud ke CSV (WIB)
 │   ├── data/                            # Dataset Ground Truth, Benchmark, & Rekaman IoT
