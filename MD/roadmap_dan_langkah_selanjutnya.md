@@ -25,8 +25,7 @@ Diperbarui 8 September 2026. Fokus: prototipe monitoring indoor; filter dan kipa
 - [ ] Tambahkan raw ADC semua sensor analog, suhu/RH, status validitas, output model, dan perintah PWM ke log.
 - [ ] Catat uptime, alasan reset, versi firmware/model, dan kejadian jaringan.
 - [ ] Pisahkan nilai fallback DHT dari pengukuran valid.
-- [ ] Sediakan log lokal selama offline; tandai perubahan AC, aktivitas, posisi, dan awal/akhir sesi.
-- [ ] Perbaiki downloader dengan rentang tanggal/waktu, deduplikasi, pemeriksaan cakupan, serta arsip yang tidak tertimpa hasil parsial.
+- [x] Perbaiki downloader dengan rentang tanggal/waktu, deduplikasi, pemeriksaan cakupan, serta arsip yang tidak tertimpa hasil parsial. *(Selesai 8 September 2026 via [download_thingspeak_dataset.py](../Program/download_thingspeak_dataset.py))*
 
 Hasil yang diharapkan: setiap rekaman dapat ditelusuri ke input dan versi perangkat. Sesi sebelum/sesudah perubahan tetap dapat dibedakan. Tidak perlu membuang data 18 jam; gunakan sebagai uji pendahuluan.
 

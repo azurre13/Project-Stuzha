@@ -49,6 +49,7 @@ ENV/
 # Temporary data files
 *.tmp
 *.log
+Program/data/backup/*_backup_*.csv
 
 # PlatformIO & Build Tools
 .pio/

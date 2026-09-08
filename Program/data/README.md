@@ -61,11 +61,48 @@ CSV belum memuat raw ADC GP2Y dan sensor gas utama, flag kegagalan, uptime/reset
 - Pemetaan PT08.S1(CO) ke 800–3.600 tidak membuktikan kesetaraan dengan ADC MQ-7 pada Stuzha.
 - Fungsi: benchmark model pada dataset UCI, bukan bukti akurasi sensor Stuzha.
 
-## Downloader: batas implementasi saat ini
+## Skrip Pengunduh Telemetri (Downloader)
 
-[download_thingspeak_dataset.py](../download_thingspeak_dataset.py) mengunduh feed dan menulis CSV. Implementasi pagination saat ini mengisi parameter start dengan Entry_ID, padahal API mengharuskan tanggal/waktu. Batas per permintaan adalah 8.000 rekaman. [Dokumentasi API MathWorks](https://www.mathworks.com/help/thingspeak/readdata.html).
+Skrip: [download_thingspeak_dataset.py](../download_thingspeak_dataset.py)
 
-Klaim lama “download satu minggu lengkap” belum dapat diandalkan. Pada interval nominal 20 detik, satu minggu sekitar 30.240 rekaman. Perbaikan yang diperlukan: rentang waktu bertahap, deduplikasi ID, pemeriksaan cakupan, penanganan respons gagal, dan penulisan yang tidak menimpa arsip baik dengan hasil parsial. Jangan menjalankan ulang downloader pada satu-satunya salinan arsip.
+Skrip ini mengunduh rekaman telemetri dari ThingSpeak (Channel `3480764`), mengonversinya ke Waktu Indonesia Barat (WIB), dan menyimpannya dalam format CSV standar ilmiah.
+
+### Status Implementasi (Diperbarui 8 September 2026)
+- **Time-Windowing Pagination**: Batasan limit MathWorks 8.000 baris telah diatasi menggunakan metode *sliding window* berbasis waktu UTC (`start` dan `end`). Skrip mampu menarik data jangka panjang (>30.000 baris untuk periode 7 hari ke atas) tanpa terpotong.
+- **Proteksi Data Historis (Auto-Backup)**: Skrip otomatis membuat salinan cadangan bertanggal di folder `Program/data/backup/` sebelum memperbarui file utama, sehingga data sesi sebelumnya tidak akan hilang tertimpa.
+- **Atomic File Write**: Data ditulis ke berkas sementara `.tmp` terlebih dahulu, memastikan file CSV tidak akan rusak/korup jika koneksi terputus di tengah jalan.
+- **Deduplikasi**: Pengecekan `entry_id` memastikan data tidak memiliki rekaman ganda di batas jendela waktu.
+
+### Cara Penggunaan
+
+1. **Unduh Otomatis Seluruh Rekaman (Default)**:
+   ```bash
+   python Program/download_thingspeak_dataset.py
+   ```
+   *Mengecek status channel, menarik seluruh data yang ada, dan menyimpannya ke `Program/data/Dataset_Project_Stuzha_ThingSpeak_Lengkap.csv`.*
+
+2. **Unduh dengan Filter Tanggal Tertentu**:
+   ```bash
+   # Contoh: hanya dari tanggal 8 September 2026 ke atas
+   python Program/download_thingspeak_dataset.py --start 2026-09-08
+
+   # Contoh: rentang tanggal spesifik (WIB)
+   python Program/download_thingspeak_dataset.py --start 2026-09-08 --end 2026-09-10
+   ```
+
+3. **Simpan ke File Berbeda (Tanpa Mengubah File Utama)**:
+   ```bash
+   python Program/download_thingspeak_dataset.py --output "Program/data/Dataset_Uji_Sesi2.csv"
+   ```
+
+4. **Daftar Opsi CLI**:
+   - `--channel`: ID Channel ThingSpeak (default: `3480764`).
+   - `--api-key`: Read API Key (kosongkan jika channel public).
+   - `--start`: Waktu awal dalam format `YYYY-MM-DD` atau ISO.
+   - `--end`: Waktu akhir dalam format `YYYY-MM-DD` atau ISO.
+   - `--window-hours`: Ukuran jendela waktu per batch (default: `24` jam).
+   - `--output`: Lokasi file keluaran CSV.
+   - `--no-backup`: Lewati pembuatan file backup cadangan.
 
 ## Format pengambilan berikutnya
 
