@@ -1,6 +1,6 @@
 # Training dan eksplorasi model Stuzha
 
-Folder ini berisi skrip Python pendukung eksperimen model. Fokus proyek tetap prototipe monitoring; status validasi dijelaskan di [evaluasi ML](../Fase_1_Evaluasi_ML/README.md).
+Folder ini berisi skrip Python pendukung eksperimen model. Fokus proyek tetap prototipe monitoring; status validasi dijelaskan di [evaluasi ML](../Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md).
 
 ## Peran skrip
 
@@ -17,7 +17,7 @@ Dua pipeline training tersedia; belum ada satu pipeline terversi yang ditetapkan
 - PM memakai input sintetis yang dibentuk dari target dan gangguan buatan.
 - CO memakai sensor UCI; pemetaan skala ADC belum memvalidasi transfer ke MQ-7.
 - Identitas MQ-7/MQ-135 pada perangkat sudah dikonfirmasi. MQ-135 digunakan untuk proksi VOC/gas campuran dan tidak memiliki model kalibrasi VOC pada kedua pipeline.
-- Satuan, split evaluasi, dan baseline masih perlu diperbaiki. Rincian serta metrik arsip ada di [README evaluasi](../Fase_1_Evaluasi_ML/README.md) dan [README data](../Program/data/README.md).
+- Satuan, split evaluasi, dan baseline masih perlu diperbaiki. Rincian serta metrik arsip ada di [evaluasi ML](../Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md) dan [data](../Program/data/dataset_stuzha.md).
 - Docstring, pesan terminal, dan generator laporan masih mengandung klaim lama seperti perbaikan leakage/kalibrasi selesai. Itu tidak menggantikan hasil pemeriksaan metode.
 
 ## Sebelum training berikutnya

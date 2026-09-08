@@ -1,6 +1,6 @@
 # Planning penelitian Stuzha
 
-Acuan diperbarui 8 September 2026 setelah penegasan pemilik: **tujuan utama adalah prototipe monitoring kualitas udara indoor**. Kipas dan filter merupakan fitur pendukung. Detail fisik mengacu pada [Hardware](../Hardware/README.md).
+Acuan diperbarui 8 September 2026 setelah penegasan pemilik: **tujuan utama adalah prototipe monitoring kualitas udara indoor**. Kipas dan filter merupakan fitur pendukung. Detail fisik mengacu pada [Hardware](../Hardware/hardware_stuzha.md).
 
 ## Pertanyaan penelitian
 
@@ -20,7 +20,7 @@ Casing gabus keras, intake bawah, exhaust atas. Susunan: intake → karbon kotak
 
 Kode telah memakai MQ-7 dan MQ-135 sesuai klarifikasi pemilik. Sebagian komentar menyebut ESP32-S3, sedangkan PlatformIO memakai esp32dev; varian board masih perlu dicocokkan dengan marking. Posisi MQ-135 serta DHT22 perlu dilengkapi dalam dokumentasi fisik. Koreksi identitas sensor tidak menyelesaikan validasi model atau konsentrasi.
 
-Pemilik menilai pemetaan pin sudah benar. Gunakan konfigurasi kerja yang ada; jangan menganggap pin bermasalah hanya dari perbedaan penyebutan board. Detail status dan tabel pin dimiliki oleh [README Hardware](../Hardware/README.md).
+Pemilik menilai pemetaan pin sudah benar. Gunakan konfigurasi kerja yang ada; jangan menganggap pin bermasalah hanya dari perbedaan penyebutan board. Detail status dan tabel pin dimiliki oleh [Hardware](../Hardware/hardware_stuzha.md).
 
 ## Status bukti
 
@@ -94,6 +94,6 @@ SINTA 3/2 merupakan target yang harus disesuaikan dengan scope jurnal dan kebaru
 - [Zimmerman dkk.: random forest calibration](https://doi.org/10.5194/amt-11-291-2018).
 - [Han dkk.: calibrations of low-cost sensors](https://www.mdpi.com/1424-8220/21/1/256).
 - [WHO 2021 guidelines](https://iris.who.int/handle/10665/345329), sebagai konteks konsentrasi/paparan, bukan tabel interpolasi ISPU.
-- [Koleksi referensi tim](../referensi/referensi%20garnie/README.md).
+- [Koleksi referensi tim](../referensi/referensi%20garnie/daftar_referensi.md).
 
 Hasil studi lain tidak otomatis berlaku pada rakitan ini. Tindak lanjut berada di [roadmap](roadmap_dan_langkah_selanjutnya.md).

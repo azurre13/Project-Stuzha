@@ -22,7 +22,7 @@ Penurunan RMSE yang dicatat skrip adalah 86,9% untuk PM dan 7,0% untuk CO. Ini m
 5. Grafik residual RH belum membuktikan eliminasi bias kelembapan pada alat fisik; feature importance bukan bukti kausal.
 6. Ketersediaan header C belum membuktikan latensi, akurasi sensor, atau kesesuaian Python/C; masing-masing memerlukan pengujian tersendiri.
 
-Lihat [penjelasan metode](README.md) dan [asal dataset](../Program/data/README.md). Belum tersedia instrumen pembanding. Untuk naskah monitoring, hasil ini hanya dapat digunakan sebagai eksperimen pendukung yang diberi batasan, bukan klaim kontribusi kalibrasi tervalidasi.
+Lihat [penjelasan metode](evaluasi_ml_stuzha.md) dan [asal dataset](../Program/data/dataset_stuzha.md). Belum tersedia instrumen pembanding. Untuk naskah monitoring, hasil ini hanya dapat digunakan sebagai eksperimen pendukung yang diberi batasan, bukan klaim kontribusi kalibrasi tervalidasi.
 
 ## Status artefak
 

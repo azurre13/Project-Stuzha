@@ -6,7 +6,7 @@ Dokumentasi implementasi yang ada pada 8 September 2026. Pada rangkaian pembarua
 
 [platformio.ini](platformio.ini) menggunakan environment dan board `esp32dev`, framework Arduino, serta port COM3. Sebutan ESP32-S3 di komentar/banner kode belum dikonfirmasi pada board fisik.
 
-Pemilik telah mengonfirmasi **MQ-7 untuk CO** dan **MQ-135 sebagai indikator/proksi VOC atau gas campuran**. Kode membaca MQ-7 melalui `PIN_MQ7_ANALOG` (GPIO 32) dan MQ-135 melalui `PIN_MQ135_ANALOG` (GPIO 33), sesuai identitas tersebut. MQ-7 berada di intake sebelum filter. Dokumentasikan wiring serta varian board; pin yang didefinisikan kode tercantum di [Hardware](../../Hardware/README.md).
+Pemilik telah mengonfirmasi **MQ-7 untuk CO** dan **MQ-135 sebagai indikator/proksi VOC atau gas campuran**. Kode membaca MQ-7 melalui `PIN_MQ7_ANALOG` (GPIO 32) dan MQ-135 melalui `PIN_MQ135_ANALOG` (GPIO 33), sesuai identitas tersebut. MQ-7 berada di intake sebelum filter. Dokumentasikan wiring serta varian board; pin yang didefinisikan kode tercantum di [Hardware](../../Hardware/hardware_stuzha.md).
 
 Pemilik menilai pin saat ini sudah benar. Pertahankan pemetaan tersebut; pemeriksaan ini belum menemukan bukti kesalahan pin. Jangan mengganti pin hanya untuk mengikuti sebutan board pada komentar lama. Varian board masih perlu dicatat, tetapi hal itu tidak membatalkan keterangan pemilik tentang pin.
 
@@ -19,7 +19,7 @@ Pemilik menilai pin saat ini sudah benar. Pertahankan pemetaan tersebut; pemerik
 | [include/model_pm.h](include/model_pm.h) | Model PM dari eksperimen data sintetis |
 | [include/model_co.h](include/model_co.h) | Model CO dari benchmark UCI |
 | [include/ispu_calc.h](include/ispu_calc.h) | Interpolasi indeks; kesesuaian ISPU masih perlu diperbaiki |
-| [legacy/](legacy/README.md) | Arsip implementasi sebelumnya; bukan konfigurasi sensor saat ini |
+| [legacy/](legacy/arsip_legacy.md) | Arsip implementasi sebelumnya; bukan konfigurasi sensor saat ini |
 
 Model menggunakan 30 pohon dengan kedalaman maksimum 8. Training dilakukan di komputer; fungsi C digunakan untuk inferensi lokal.
 
@@ -28,7 +28,7 @@ Model menggunakan 30 pohon dengan kedalaman maksimum 8. Training dilakukan di ko
 - `model_pm_predict(const float *features)`: input [estimasi debu dari ADC, suhu, RH].
 - `model_co_predict(const float *features)`: input [ADC sensor gas utama, suhu, RH].
 
-Keluaran adalah estimasi eksperimental, belum konsentrasi tervalidasi pada perangkat. Label `pm25_calibrated` dan `co_calibrated` dipertahankan dalam kode lama. Target CO UCI bersatuan mg/m³, sementara kode memberi label ppm; kesalahan satuan ini belum diperbaiki. Lihat [evaluasi ML](../../Fase_1_Evaluasi_ML/README.md).
+Keluaran adalah estimasi eksperimental, belum konsentrasi tervalidasi pada perangkat. Label `pm25_calibrated` dan `co_calibrated` dipertahankan dalam kode lama. Target CO UCI bersatuan mg/m³, sementara kode memberi label ppm; kesalahan satuan ini belum diperbaiki. Lihat [evaluasi ML](../../Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md).
 
 ### API indeks
 

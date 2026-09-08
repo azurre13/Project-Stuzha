@@ -4,7 +4,7 @@
 
 1. Baca [README utama](README.md) untuk tujuan, keputusan pemilik, dan status terkini.
 2. Baca [planning](MD/konteks%20_planing_jurnal_AQI.md) dan [roadmap](MD/roadmap_dan_langkah_selanjutnya.md) untuk ruang lingkup serta pekerjaan terbuka.
-3. Baca README pada bagian yang dikerjakan: [hardware](Hardware/README.md), [firmware](Program/Kode/README.md), [data](Program/data/README.md), [training](ml_training/README.md), atau [evaluasi ML](Fase_1_Evaluasi_ML/README.md).
+3. Baca dokumentasi pada bagian yang dikerjakan: [hardware](Hardware/hardware_stuzha.md), [firmware](Program/Kode/firmware_stuzha.md), [data](Program/data/dataset_stuzha.md), [training](ml_training/training_ml_stuzha.md), atau [evaluasi ML](Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md).
 4. Cocokkan klaim implementasi dengan kode aktif. Untuk klaim numerik, periksa data dan metode yang menghasilkan angka tersebut.
 
 ## Keputusan proyek yang harus dipertahankan

@@ -27,13 +27,13 @@ Berdasarkan penjelasan pemilik pada 8 September 2026:
 - Konfigurasi kode memakai target `esp32dev`. Varian board fisik perlu dicocokkan dengan marking sebelum memakai sebutan ESP32-S3 dalam naskah.
 - Pemilik menyatakan pin saat ini seharusnya sudah benar. Pemetaan dipertahankan sebagai konfigurasi kerja; belum ada bukti kesalahan pin dari pemeriksaan ini. Ini bukan hasil pengukuran wiring independen, dan terpisah dari pencatatan varian board.
 
-Detail ada di [Hardware](Hardware/README.md). Efisiensi filtrasi, CADR, penghilangan CO, kebisingan, RPM aktual, dan penghematan energi belum diukur pada perangkat ini.
+Detail ada di [Hardware](Hardware/hardware_stuzha.md). Efisiensi filtrasi, CADR, penghilangan CO, kebisingan, RPM aktual, dan penghematan energi belum diukur pada perangkat ini.
 
 ## Bukti yang tersedia
 
 Snapshot CSV lokal yang diperiksa pada 8 September 2026 memuat uji kamar tanggal 6 September 2026: 3.126 baris dari 01.00.11 sampai 18.22.33 WIB, selama 17 jam 22 menit 22 detik. Pemilik menyebut setelan AC 24–27°C. Ini merupakan uji pendahuluan operasional, bukan validasi akurasi sensor atau bukti efektivitas purifier. Jika CSV diperbarui, hitung ulang sebelum mengutip statistik ini sebagai kondisi file terbaru.
 
-Sebanyak 84,39% keluaran model PM bernilai persis 0,00031 dan terdapat tiga lonjakan di atas 100 pada label skala CSV. Penyebab belum diketahui karena raw PM dan raw sensor gas utama belum tersimpan di CSV. Nilai rendah tidak membuktikan udara bebas partikel. Lihat [catatan dataset](Program/data/README.md).
+Sebanyak 84,39% keluaran model PM bernilai persis 0,00031 dan terdapat tiga lonjakan di atas 100 pada label skala CSV. Penyebab belum diketahui karena raw PM dan raw sensor gas utama belum tersimpan di CSV. Nilai rendah tidak membuktikan udara bebas partikel. Lihat [catatan dataset](Program/data/dataset_stuzha.md).
 
 ## Alur implementasi saat ini
 
@@ -53,12 +53,12 @@ Indeks saat ini belum dapat disebut pelaporan ISPU resmi: satuan, breakpoint CO,
 |---|---|
 | [Planning](MD/konteks%20_planing_jurnal_AQI.md) | Ruang lingkup, kontribusi, batas klaim |
 | [Roadmap](MD/roadmap_dan_langkah_selanjutnya.md) | Urutan perbaikan dan pengujian |
-| [Hardware](Hardware/README.md) | Rakitan aktual dan dokumentasi fisik |
-| [Firmware](Program/Kode/README.md) | Pin pada kode, API, telemetri, masalah terbuka |
-| [Data](Program/data/README.md) | Rekaman kamar, dataset publik, downloader |
-| [Evaluasi ML](Fase_1_Evaluasi_ML/README.md) | Simulasi, benchmark, artefak lama |
-| [Training](ml_training/README.md) | Dua pipeline model, keluaran dan efek samping eksekusi |
-| [Referensi](referensi/referensi%20garnie/README.md) | Sumber dan batas penggunaannya |
+| [Hardware](Hardware/hardware_stuzha.md) | Rakitan aktual dan dokumentasi fisik |
+| [Firmware](Program/Kode/firmware_stuzha.md) | Pin pada kode, API, telemetri, masalah terbuka |
+| [Data](Program/data/dataset_stuzha.md) | Rekaman kamar, dataset publik, downloader |
+| [Evaluasi ML](Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md) | Simulasi, benchmark, artefak lama |
+| [Training](ml_training/training_ml_stuzha.md) | Dua pipeline model, keluaran dan efek samping eksekusi |
+| [Referensi](referensi/referensi%20garnie/daftar_referensi.md) | Sumber dan batas penggunaannya |
 
 Skrip training berada di `ml_training/`. Pengunduh berada di `Program/download_thingspeak_dataset.py`, dengan launcher `Download_Dataset_ThingSpeak.bat`.
 
