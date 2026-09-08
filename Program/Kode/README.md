@@ -1,226 +1,104 @@
-# 📡 Dokumentasi Firmware & Panduan API — Project Stuzha
+# Firmware prototipe monitoring Stuzha
 
-Dokumentasi teknis resmi untuk firmware mikrokontroler **ESP32 Edge AI Air Purifier & ISPU Monitor** (Project Stuzha). Panduan ini disusun untuk memudahkan seluruh anggota tim dan kolaborator (*Daffa, Garnie, Riq-Z*) dalam mengompilasi, mengunggah, memahami arsitektur kode, serta melakukan pengujian perangkat fisik.
+Dokumentasi implementasi yang ada pada 8 September 2026. Pada rangkaian pembaruan ini, komentar sensor firmware diperjelas; logika pembacaan dan kontrol tidak diubah. Tidak ada upload/flash atau validasi hardware baru.
 
----
+## Target dan identitas perangkat
 
-## 📋 Daftar Isi
-1. [Spesifikasi Hardware & Pinout Fisik](#-1-spesifikasi-hardware--pinout-fisik)
-2. [Panduan Cepat Memulai (Quickstart)](#-2-panduan-cepat-memulai-quickstart)
-3. [Arsitektur File & Dokumentasi API Header](#-3-arsitektur-file--dokumentasi-api-header)
-4. [Logika Kendali Kipas Adaptif (PWM)](#-4-logika-kendali-kipas-adaptif-pwm)
-5. [Konfigurasi WiFi & ThingSpeak Cloud](#-5-konfigurasi-wifi--thingspeak-cloud)
-6. [Format Telemetri Serial Monitor](#-6-format-telemetri-serial-monitor)
+[platformio.ini](platformio.ini) menggunakan environment dan board `esp32dev`, framework Arduino, serta port COM3. Sebutan ESP32-S3 di komentar/banner kode belum dikonfirmasi pada board fisik.
 
----
+Pemilik telah mengonfirmasi **MQ-7 untuk CO** dan **MQ-135 sebagai indikator/proksi VOC atau gas campuran**. Kode membaca MQ-7 melalui `PIN_MQ7_ANALOG` (GPIO 32) dan MQ-135 melalui `PIN_MQ135_ANALOG` (GPIO 33), sesuai identitas tersebut. MQ-7 berada di intake sebelum filter. Dokumentasikan wiring serta varian board; pin yang didefinisikan kode tercantum di [Hardware](../../Hardware/README.md).
 
-## 🔌 1. Spesifikasi Hardware & Pinout Fisik
+Pemilik menilai pin saat ini sudah benar. Pertahankan pemetaan tersebut; pemeriksaan ini belum menemukan bukti kesalahan pin. Jangan mengganti pin hanya untuk mengikuti sebutan board pada komentar lama. Varian board masih perlu dicatat, tetapi hal itu tidak membatalkan keterangan pemilik tentang pin.
 
-Firmware ini berjalan pada modul **ESP32 Dual-Core (Xtensa LX6 @ 240 MHz)** menggunakan framework **Arduino ESP32 Core v2.x/v3.x**.
+## Struktur dan fungsi
 
-### Tabel Koneksi Pin (Wajib Diikuti)
+| Berkas | Fungsi saat ini |
+|---|---|
+| [src/main.cpp](src/main.cpp) | Pembacaan sensor, inferensi, indeks sesaat, PWM, alarm, serial, IoT |
+| [include/pin_config.h](include/pin_config.h) | Pin, asumsi ADC, dan PWM |
+| [include/model_pm.h](include/model_pm.h) | Model PM dari eksperimen data sintetis |
+| [include/model_co.h](include/model_co.h) | Model CO dari benchmark UCI |
+| [include/ispu_calc.h](include/ispu_calc.h) | Interpolasi indeks; kesesuaian ISPU masih perlu diperbaiki |
+| [legacy/](legacy/README.md) | Arsip implementasi sebelumnya; bukan konfigurasi sensor saat ini |
 
-| Komponen Hardware | Pin ESP32 | Tipe Pin / Mode | Keterangan Fungsi |
-|---|:---:|:---:|---|
-| **Sharp GP2Y1010AU0F (Vo)** | **GPIO 34** | ADC1 Input | Membaca tegangan analog hamburan optik partikulat debu |
-| **Sharp GP2Y1010AU0F (ILED)**| **GPIO 5** | Digital Output | Mengirim pulsa drive inframerah ($0.28\text{ ms}$ aktif LOW) |
-| **MQ-7 (Gas CO)** | **GPIO 32** | ADC1 Input | Membaca resistansi analog sensor gas Karbon Monoksida |
-| **MQ-135 (VOC/Campuran)** | **GPIO 33** | ADC1 Input | Indikator pendamping kualitas udara campuran (*proxy indoor air*) |
-| **DHT22 (AM2302)** | **GPIO 4** | Digital I/O | Membaca suhu lingkungan (°C) dan kelembapan relatif (RH%) |
-| **Kipas DC (PWM Control)** | **GPIO 19** | LEDC PWM Out | Mengatur kecepatan putaran motor kipas intake/exhaust via NPN transistor |
-| **Industrial Buzzer** | **GPIO 18** | Tone / PWM Out | Peringatan audio alarm saat polutan mencapai kategori Berbahaya |
+Model menggunakan 30 pohon dengan kedalaman maksimum 8. Training dilakukan di komputer; fungsi C digunakan untuk inferensi lokal.
 
-> [!IMPORTANT]
-> **Catatan Wiring Sensor Gas:**
-> * Kabel analog sensor **MQ-7 wajib terhubung ke GPIO 32**.
-> * Kabel analog sensor **MQ-135 wajib terhubung ke GPIO 33**.
-> * Jangan menyambungkan pin analog sensor ke pin ADC2 (GPIO 0, 2, 4, 12-15, 25-27) karena ADC2 tidak dapat membaca analog saat modul WiFi ESP32 sedang aktif. Pin 32, 33, dan 34 berada di ADC1 sehingga 100% aman dan stabil bersama WiFi.
+### API model
 
-### Desain Fisik Mekanikal & Orientasi Alat
-* **Spesifikasi Kipas:** High-Speed Industrial Brushless DC (BLDC) Fan 12V 1.65A, kecepatan maksimal ~6.200 – 6.400 RPM, dimensi 12 cm × 12 cm × 3.8 cm (120 mm × 120 mm × 38 mm).
-* **Dimensi Lubang Box (Duct Port):** Lubang intake/exhaust dibuat berbentuk bukaan **kotak 12 cm × 12 cm** presisi mengikuti rangka luar kipas untuk menekan hambatan tekanan balik (*backpressure*) dan meniadakan turbulensi akustik.
-* **Orientasi Operasional: Wajib Posisi Berdiri (Vertikal):**
-  1. *Proteksi Lensa Debu:* Mencegah partikel debu jatuh dan menumpuk pada celah lensa optik sensor Sharp GP2Y1010AU0F.
-  2. *Disipasi Panas Vertikal:* Panas dari elemen pemanas sensor gas MOS (MQ-7 & MQ-135) naik ke atas secara alami (*upward convection*) sehingga tidak memanaskan sensor DHT22 (suhu/RH) dan optik debu.
-  3. *Efisiensi Sirkulasi:* Mendukung pola sirkulasi hisap bawah/samping dan hembus atas (*chimney effect*) di dalam ruangan.
+- `model_pm_predict(const float *features)`: input [estimasi debu dari ADC, suhu, RH].
+- `model_co_predict(const float *features)`: input [ADC sensor gas utama, suhu, RH].
 
----
+Keluaran adalah estimasi eksperimental, belum konsentrasi tervalidasi pada perangkat. Label `pm25_calibrated` dan `co_calibrated` dipertahankan dalam kode lama. Target CO UCI bersatuan mg/m³, sementara kode memberi label ppm; kesalahan satuan ini belum diperbaiki. Lihat [evaluasi ML](../../Fase_1_Evaluasi_ML/README.md).
 
-## 🚀 2. Panduan Cepat Memulai (Quickstart)
+### API indeks
 
-### Prasyarat:
-* Install IDE: [Antigravity IDE](https://antigravity.google) atau [VS Code](https://code.visualstudio.com/).
-* Install Ekstensi: **PlatformIO IDE**.
+- `hitung_ispu_pm25(float)`
+- `hitung_ispu_co(float)`
+- `get_kategori_ispu(int)`
 
-### Langkah Menjalankan:
-1. **Buka Proyek:** Buka folder repositori di editor, lalu pastikan terminal Anda berada di sub-folder `Program/Kode/`.
-2. **Cek Port USB (`platformio.ini`):**
-   Buka file [`platformio.ini`](platformio.ini). Pastikan port COM sesuai dengan nomor port di laptop Anda (misal `COM3` di Windows atau `/dev/ttyUSB0` di Linux):
-   ```ini
-   upload_port = COM3
-   monitor_port = COM3
-   monitor_speed = 115200
-   ```
-3. **Kompilasi & Upload (Flash):**
-   * **Lewat GUI:** Klik icon **Centang (Build)** di status bar bawah, lalu klik icon **Panah Kanan (Upload)**.
-   * **Lewat Terminal PlatformIO:**
-     ```bash
-     pio run --target upload
-     ```
-4. **Membuka Serial Monitor:**
-   * Klik icon **Colokan / Monitor** di status bar bawah, atau jalankan perintah:
-     ```bash
-     pio device monitor
-     ```
+Kode mengambil maksimum dua sub-indeks. Perhitungan dilakukan dari output sesaat, tanpa perataan 24 jam. Tabel CO saat ini memakai batas 4,4; 9,4; 15,4; 30,4; 50,0 dengan label ppm. Ini belum sesuai acuan ISPU yang dipilih proyek. Koreksi satuan, tabel, interpolasi batas, perataan, dan penamaan output merupakan pekerjaan terbuka.
 
----
+## Kendali kipas
 
-## 📚 3. Arsitektur File & Dokumentasi API Header
+PWM dikonfigurasi 25 kHz dengan resolusi 8 bit.
 
-Struktur file di dalam `Program/Kode/`:
-```text
-Program/Kode/
-├── include/
-│   ├── pin_config.h     # Definisi pin hardware & level kecepatan PWM kipas
-│   ├── ispu_calc.h      # Rumus matematis ISPU resmi Permen LHK No. 14 Tahun 2020
-│   ├── model_pm.h       # Model TinyML Random Forest terkompilasi C untuk PM2.5
-│   └── model_co.h       # Model TinyML Random Forest terkompilasi C untuk CO
-├── src/
-│   └── main.cpp         # Logika utama: inisialisasi, inferensi AI, dan kontrol loop
-└── platformio.ini       # Konfigurasi board, dependensi library, & compiler flags
+| Label kategori pada kode | Nilai PWM | Persen yang dilaporkan |
+|---|---:|---:|
+| Baik | 33 | 13% |
+| Sedang | 38 | 15% |
+| Tidak Sehat | 56 | 22% |
+| Sangat Tidak Sehat | 128 | 50% |
+| Berbahaya | 217 | 85% |
+
+Persen merupakan perintah kontrol, bukan pengukuran putaran, daya, atau airflow. Alarm dipanggil pada dua kategori tertinggi. Deadband turun diterapkan di sekitar batas 50, 100, dan 200; batas 300 belum memiliki deadband serupa. Tidak ada syarat durasi stabil yang eksplisit.
+
+MQ-135 dibaca ke `raw_voc_adc` dan dikirim ke field 7 ThingSpeak. Jalur ini memantau respons/proksi VOC atau gas campuran dalam satuan ADC, bukan konsentrasi VOC/TVOC terkalibrasi. MQ-135 tidak menjadi input model CO, sub-indeks ISPU, atau penentu PWM pada kode saat ini. Fitur booster saat ADC >2.500 dalam roadmap lama **belum diimplementasikan**. Ambang tersebut juga belum tervalidasi sebagai batas kesehatan.
+
+## Telemetri
+
+Pembacaan dijadwalkan sekitar satu detik; pengiriman cloud sekitar 20 detik. Operasi jaringan dan fungsi alarm dapat memengaruhi interval aktual.
+
+| Field ThingSpeak | Isi kode saat ini | Interpretasi |
+|---|---|---|
+| 1 | Suhu | Pembacaan DHT atau nilai pengganti jika gagal |
+| 2 | RH | Pembacaan DHT atau nilai pengganti jika gagal |
+| 3 | PM calibrated | Output model; akurasi dan skala belum tervalidasi |
+| 4 | CO calibrated ppm | Output model; ada ketidaksesuaian satuan |
+| 5 | ISPU final | Indeks sesaat implementasi, belum pelaporan resmi |
+| 6 | PWM persen | Perintah kipas |
+| 7 | Raw VOC ADC | Pembacaan MQ-135, bukan konsentrasi VOC terkalibrasi |
+| 8 | Kode kategori | Turunan field 5 |
+
+Status feed berisi kategori dan parameter dominan menurut perhitungan kode. CSV downloader saat ini tidak menyertakan status feed.
+
+Serial mencetak suhu/RH, estimasi PM sebelum dan sesudah ML, raw ADC gas utama, output model gas, indeks, dominan, serta PWM. Serial belum menyertakan raw ADC GP2Y, flag validitas, uptime/reset, dan versi model dalam setiap rekaman.
+
+## Masalah terbuka
+
+1. Identitas MQ-7/MQ-135 telah dikonfirmasi; dokumentasikan wiring keduanya dan cocokkan part number GP2Y serta varian board dengan rakitan.
+2. Simpan raw ADC, flag sensor gagal, uptime, reset, dan versi firmware/model.
+3. DHT gagal saat ini diganti 25°C/50% RH tanpa penanda; jangan anggap nilai pengganti sebagai pengukuran.
+4. Brownout detector dimatikan saat startup. Periksa catu daya dan strategi deteksi gangguan sebelum menyatakan stabilitas perangkat.
+5. Telusuri PM yang menetap rendah dan lonjakan; jangan menghapus kejadian hanya agar grafik halus.
+6. Verifikasi ADC/tegangan, timing GP2Y, kebutuhan heater sensor gas, dan pengaruh aliran kipas.
+7. Benahi indeks dan kendali sesuai ruang lingkup monitoring.
+8. Ukur latensi, penggunaan memori saat runtime, serta keterlambatan akibat jaringan/alarm.
+9. Kode mencoba reconnect dan dapat melanjutkan loop lokal tanpa WiFi; pemulihan nyata perlu diuji. Tidak ada antrean persisten untuk mengirim ulang data selama offline.
+10. Pisahkan konfigurasi kredensial lokal dari dokumentasi/publikasi.
+
+## Build dan upload
+
+Gunakan PlatformIO, periksa target board dan port yang benar, lalu dari folder ini:
+
+```sh
+pio run
+pio device monitor
 ```
 
-### A. API Kalibrasi TinyML: `model_pm.h`
-Header ini berisi pohon keputusan (*Decision Trees*) Random Forest hasil pelatihan dari dataset Mendeley Data yang telah dikonversi menjadi fungsi C murni tanpa dependensi eksternal.
+Perintah upload setelah konfigurasi sesuai perangkat:
 
-* **Fungsi:**
-  ```c
-  float model_pm_predict(const float *features);
-  ```
-* **Parameter Input:** Array `features` berukuran 3 elemen float:
-  * `features[0]`: Konsentrasi debu mentah hasil rumus optik datasheet Sharp ($\mu g/m^3$).
-  * `features[1]`: Suhu lingkungan dari DHT22 (°C).
-  * `features[2]`: Kelembapan relatif dari DHT22 (RH%).
-* **Nilai Kembalian:** Konsentrasi partikulat $PM_{2.5}$ murni yang telah bebas dari bias pembiasan uap air (*hygroscopic growth*) dalam satuan $\mu g/m^3$.
-
----
-
-### B. API Kalibrasi TinyML: `model_co.h`
-Header pohon keputusan Random Forest yang dilatih menggunakan dataset benchmark referensi UCI Machine Learning Repository.
-
-* **Fungsi:**
-  ```c
-  float model_co_predict(const float *features);
-  ```
-* **Parameter Input:** Array `features` berukuran 3 elemen float:
-  * `features[0]`: Nilai ADC mentah dari sensor MQ-7 (skala $0 - 4095$).
-  * `features[1]`: Suhu lingkungan dari DHT22 (°C).
-  * `features[2]`: Kelembapan relatif dari DHT22 (RH%).
-* **Nilai Kembalian:** Konsentrasi gas Karbon Monoksida ($CO$) murni terkompensasi pergeseran termal (*thermal drift*) dalam satuan $\text{ppm}$ ($mg/m^3$).
-
----
-
-### C. API Standarisasi Regulasi: `ispu_calc.h`
-Mengimplementasikan algoritma **Piecewise Linear Interpolation** resmi Republik Indonesia berdasarkan **Permen LHK No. 14 Tahun 2020**.
-
-* **Fungsi Sub-Indeks PM2.5:**
-  ```c
-  int hitung_sub_ispu_pm25(float konsentrasi_ug_m3);
-  ```
-  Menghitung skor sub-indeks $PM_{2.5}$ berdasarkan batas breakpoint ($15.5$, $55.4$, $150.4$, $250.4\ \mu g/m^3$).
-
-* **Fungsi Sub-Indeks CO:**
-  ```c
-  int hitung_sub_ispu_co(float konsentrasi_ppm);
-  ```
-  Menghitung skor sub-indeks $CO$ berdasarkan batas breakpoint ($4.0$, $8.0$, $15.0$, $30.0\text{ ppm}$).
-
-* **Penentuan Polutan Dominan & Kategori:**
-  $$\text{ISPU Final} = \max(\text{Sub-ISPU}_{PM2.5},\ \text{Sub-ISPU}_{CO})$$
-  ```c
-  const char* get_kategori_ispu(int ispu_val);
-  ```
-  Mengembalikan string resmi: `"Baik"`, `"Sedang"`, `"Tidak Sehat"`, `"Sangat Tidak Sehat"`, atau `"Berbahaya"`.
-
----
-
-## 🌪️ 4. Logika Kendali Kipas Adaptif (PWM)
-
-Sistem purifikasi udara menggunakan kipas DC berperforma tinggi (**maksimum 6.400 RPM**) yang dikendalikan dengan sinyal modulasi lebar pulsa (PWM frekuensi $25\text{ kHz}$, resolusi 8-bit $0 - 255$).
-
-Sesuai landasan teoritis pada **Jurnal ke-16 (*Atmosphere*, MDPI)** dan **Jurnal ke-17 (*JIC*, 2024)**:
-* Kipas **tidak pernah dimatikan ke 0%**, karena sensor Sharp GP2Y1010AU0F tidak memiliki kipas mikro internal (bersifat pasif). Aliran udara konstan dibutuhkan untuk menarik partikel debu kamar masuk melewati rongga optik sensor secara kontinu.
-* Pengaturan kecepatan dinamis terbukti memangkas konsumsi daya motor kipas hingga $70\%$ dibanding berjalan pada RPM tinggi terus-menerus.
-
-| Kategori ISPU | Rentang Skor ISPU | Duty Cycle PWM | Estimasi RPM | Mode Aerodinamika & Kebisingan |
-|---|:---:|:---:|:---:|---|
-| **Baik** | **0 – 50** | **13% (PWM 33)** | **~806 RPM** | **Ultra-Silent Standby:** Suara nyaris tak terdengar (< 22 dB), aliran laminer konstan ke sensor. |
-| **Sedang** | **51 – 100** | **15% (PWM 38)** | **~930 RPM** | **Silent Sleep Purify:** Suara hening (< 28 dB), batas maksimal kenyamanan tidur malam hari. |
-| **Tidak Sehat** | **101 – 200** | **22% (PWM 56)** | **~1.364 RPM** | **Active Clean:** Pembersihan aktif, desiran halus (< 38 dB) tanpa suara raungan kasar! |
-| **Sangat Tidak Sehat** | **201 – 300** | **50% (PWM 128)** | **~3.100 RPM** | **Heavy Purge:** Evakuasi polutan berat; buzzer alarm audio aktif berselang. |
-| **Berbahaya** | **> 300** | **85% (PWM 217)** | **~5.270 RPM** | **Max Emergency Purge:** Sirkulasi darurat daya tinggi untuk mengevakuasi polusi ekstrem. |
-
-> [!TIP]
-> **Kontrol Histeresis (Deadband Anti-Hunting):**
-> Firmware menerapkan ambang histeresis 5 poin (misal level baru turun jika ISPU stabil di bawah 95 atau 45). Hal ini mencegah kipas berakselerasi bolak-balik secara mendadak saat konsentrasi polutan berfluktuasi tipis di sekitar batas kategori.
-
----
-
-## 📶 5. Konfigurasi WiFi & ThingSpeak Cloud
-
-Pengaturan koneksi cloud berada di bagian atas file [`src/main.cpp`](src/main.cpp):
-
-```cpp
-// Konfigurasi WiFi Hotspot
-const char* ssid     = "Kinagara c18_7";     // Ganti dengan SSID WiFi Anda
-const char* password = "kucinggarong";       // Ganti dengan kata sandi WiFi
-
-// Kredensial Channel ThingSpeak IoT
-unsigned long myChannelNumber = 3480764;            // Nomor Channel
-const char*   myWriteAPIKey   = "684DE2U5UW9ZJSUK"; // Write API Key
+```sh
+pio run --target upload
 ```
 
-### Tabel Pemetaan 8 Field ThingSpeak
-| Field | Parameter | Satuan | Deskripsi Ilmiah |
-|:---:|---|:---:|---|
-| **Field 1** | Suhu | °C | Pembacaan suhu lingkungan dari sensor DHT22 |
-| **Field 2** | Kelembapan | RH % | Pembacaan kelembapan relatif dari sensor DHT22 |
-| **Field 3** | PM2.5 Calibrated | µg/m³ | Konsentrasi partikulat hasil koreksi AI Random Forest (GP2Y) |
-| **Field 4** | CO Calibrated | ppm | Konsentrasi gas CO hasil koreksi AI Random Forest (MQ-7) |
-| **Field 5** | ISPU Final | 0 – 500 | Indeks Standar Pencemar Udara resmi Permen LHK 14/2020 |
-| **Field 6** | Kipas PWM | % | Sinyal daya motor kipas tertutup (13%, 15%, 22%, 50%, 85%) |
-| **Field 7** | Raw VOC | ADC | Indikator proksi gas campuran sekunder dari sensor MQ-135 |
-| **Field 8** | Kategori ISPU | 1 – 5 | Kode Numerik (1: Baik, 2: Sedang, 3: Tidak Sehat, 4: Sangat Tidak Sehat, 5: Berbahaya) |
-| **Status Feed** | Status Teks Live | String | Pesan real-time: Nama Status Kategori dan Polutan Kritis Dominan |
-
-* **Mode Offline Otomatis:** Jika WiFi tidak terjangkau dalam waktu 10 detik setelah dinyalakan, ESP32 akan otomatis masuk ke **Mode Offline**. Seluruh inferensi AI lokal, perhitungan ISPU, dan kendali kipas tetap berjalan $100\%$ normal tanpa internet.
-* **Auto-Reconnect:** Firmware secara otomatis memulihkan koneksi WiFi setiap 10 detik di latar belakang jika jaringan sempat terputus.
-* **Interval Pengiriman:** Data dikirim ke ThingSpeak setiap **20 detik** (sesuai kuota gratis ThingSpeak $15\text{ detik}$, menghasilkan $\approx 4.320$ baris data berkualitas per hari).
-
----
-
-## 🖥️ 6. Format Telemetri Serial Monitor
-
-Pada baud rate **115200**, firmware mengeluarkan data terstruktur setiap detik dengan format:
-
-```text
-[TELEMETRI] T:24.3 C | RH:50.6 % | PM2.5:[Raw:9.9 -> ML:2.5] ug/m3 | CO:[ADC:1616 -> ML:1.51 ppm] | ISPU:17 (Baik) | Dominan:CO (Karbon Monoksida) | Kipas:13 %
-[TELEMETRI] T:25.4 C | RH:52.8 % | PM2.5:[Raw:57.4 -> ML:50.0] ug/m3 | CO:[ADC:2214 -> ML:3.45 ppm] | ISPU:93 (Sedang) | Dominan:PM2.5 (Partikulat) | Kipas:15 %
-[TELEMETRI] T:25.4 C | RH:52.9 % | PM2.5:[Raw:74.1 -> ML:62.1] ug/m3 | CO:[ADC:2176 -> ML:3.33 ppm] | ISPU:108 (Tidak Sehat) | Dominan:PM2.5 (Partikulat) | Kipas:22 %
-```
-
-### Arti Kolom Telemetri:
-1. `T` & `RH`: Suhu dan kelembapan real-time dari sensor DHT22.
-2. `PM2.5:[Raw -> ML]`: Perbandingan debu mentah (*Raw*) terhadap hasil koreksi AI Random Forest (*ML*).
-3. `CO:[ADC -> ML]`: Nilai pembacaan tegangan ADC sensor MQ-7 ($0 - 4095$) dan hasil estimasi konsentrasi gas terkalibrasi AI (ppm).
-4. `ISPU`: Skor komputasi indeks kualitas udara resmi berdasarkan Permen LHK 14/2020 beserta status kategorinya.
-5. `Dominan`: Parameter pencemar kritis (polutan bernilai sub-indeks tertinggi yang memicu ISPU total).
-6. `Kipas`: Persentase sinyal daya PWM yang saat itu sedang dialirkan ke motor kipas.
-
-> [!NOTE]
-> **Mengapa Nilai VOC (MQ-135) Tidak Muncul di Teks Telemetri Serial?**  
-> Sensor MQ-135 (GPIO 33) dibaca secara aktif setiap siklus sensor (`analogRead(PIN_MQ135_ANALOG)`) dan nilainya **selalu dikirim ke ThingSpeak Cloud di Field 7** (dan terekam di CSV dataset otomatis).  
-> Di baris teks serial monitor, VOC sengaja tidak dimasukkan ke dalam baris telemetri satu baris tersebut agar tampilan serial tetap ringkas, bersih, dan fokus pada dua polutan resmi penentu nilai ISPU (*PM2.5* dan *CO*). Jadi, status pembacaan dan penyimpanan VOC adalah **100% aman, aktif, dan terekam di cloud**.
-
----
-*© 2026 Project Stuzha — Tim Riset Kualitas Udara Cerdas IoT & TinyML.*
+Build berhasil tidak membuktikan wiring benar atau sensor terkalibrasi. Simpan salinan firmware pengujian dan tandai sesi baru setelah perubahan.

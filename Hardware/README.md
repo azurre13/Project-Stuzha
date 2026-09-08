@@ -1,143 +1,82 @@
-# 🛠️ Desain Hardware, Blueprint, Skematik & Galeri Prototipe — Project Stuzha
+# Hardware Stuzha
 
-Dokumentasi visual dan teknis mengenai arsitektur fisik purwarupa **Smart Air Purifier & Real-Time ISPU Monitoring System** (Project Stuzha). Folder ini disiapkan sebagai wadah arsip gambar blueprint, skematik rangkaian kelistrikan, serta foto dokumentasi perangkat fisik untuk kebutuhan artikel jurnal ilmiah.
+Dokumentasi rakitan prototipe monitoring indoor. Acuan kondisi aktual adalah penjelasan pemilik pada 8 September 2026. Spesifikasi yang belum diukur ditandai sebagai pekerjaan terbuka.
 
----
+## Casing dan susunan aliran
 
-## 📂 1. Struktur Folder Hardware
-
-```text
-Hardware/
-├── README.md                              # Dokumentasi teknis, dimensi, & daftar foto
-├── foto_alat/                             # Galeri foto fisik prototipe alat nyata
-│   ├── prototipe_fisik_tampak_samping.png # Foto unit purifier (ESP32, DHT22, Step-Down, GP2Y)
-│   ├── sensor_gp2y1010_modul.png          # Foto modul sensor Sharp GP2Y1010AU0F
-│   └── (tambahkan foto-foto lain di sini)
-├── skematik/                              # Gambar skematik Fritzing / EasyEDA / KiCAD
-│   └── (simpan diagram wiring / skematik di sini)
-└── blueprint/                             # Gambar desain 2D/3D bodi box, dimensi, CAD
-    └── (simpan blueprint bodi box & duct di sini)
-```
-
----
-
-## 📐 2. Blueprint & Dimensi Mekanikal Box
-
-Purwarupa mengusung bentuk **Menara Vertikal (*Vertical Standing Tower*)** yang mengintegrasikan ruang penempatan sensor (*sensing chamber*), modul filtrasi, dan unit pendorong udara aksial.
+Casing menggunakan gabus keras. Intake di bawah dan exhaust di atas. Kipas berukuran 12 × 12 cm. Dimensi luar casing, ketebalan bahan, dan luas bukaan efektif belum dicatat.
 
 ```text
-       ┌─────────────────────────────┐
-       │   EXHAUST FAN (12x12 cm)    │  <-- Hembusan Udara Bersih ke Atas
-       │   12V 1.65A ~6.200 RPM      │
-       ├─────────────────────────────┤
-       │                             │
-       │     FILTER (HEPA / MESH)    │  <-- Media Penyaring Partikulat Debu
-       │                             │
-       ├─────────────────────────────┤
-       │                             │  <-- ESP32, Step-Down, & Kabel
-       │   RONGGA SENSOR (CHAMBER)   │  <-- Udara Panas Sensor MOS Naik Bebas
-       │   DHT22 | MQ-7 | MQ-135     │
-       │                             │
-       │ [GP2Y INTAKE PORT (10 mm)]  │  <-- Hisapan Udara Ruangan Masuk
-       └─────────────────────────────┘
-              ▲               ▲
-          Kaki Box         Kaki Box
+                    EXHAUST ATAS
+                         ↑
+                KIPAS 12 × 12 cm
+                         ↑
+             RUANG KOSONG sekitar 5 cm
+                         ↑
+             FILTER MOBIL YANG DIPOTONG
+                         ↑
+               FILTER KARBON KOTAK
+                         ↑
+       AREA INTAKE / SENSOR SEBELUM FILTER
+       GP2Y: lubang menghadap horizontal
+       MQ-7: tegak di dinding bawah
+                         ↑
+                    INTAKE BAWAH
 ```
 
-### Spesifikasi Bodi Mekanikal:
-* **Dimensi Lubang Kipas (Duct Port):** Bukaan kotak presisi **$12\text{ cm} \times 12\text{ cm}$ ($120\text{ mm} \times 120\text{ mm}$)** dibuat dengan rasio $1:1$ mengikuti dimensi luar frame kipas aksial untuk mencegah penyempitan aliran (*constriction*), meniadakan turbulensi udara pada sudut kotak, dan memaksimalkan laju aliran volumetrik (CFM).
-* **Orientasi Operasional: Wajib Posisi Berdiri Tegak (Vertikal):**
-  1. *Proteksi Optik Sensor Debu (Sharp GP2Y1010AU0F):* Mencegah partikel debu gravitasi kasar mengendap dan menumpuk pada lensa pemancar inframerah dan fototransistor.
-  2. *Manajemen Termal Sensor Gas:* Panas dari koil pemanas sensor MQ-7 dan MQ-135 secara alami naik ke atas (*natural upward chimney convection*) dan langsung terbuang, mencegah panas terperangkap memanaskan sensor suhu/kelembapan DHT22 dan optik debu.
-  3. *Pola Sirkulasi Kamar:* Udara dihisap dari celah samping/bawah, melewati media filter dan sensor, lalu dihembuskan keluar secara aksial ke atas.
-* **Orientasi Pemasangan Sensor GP2Y1010AU0F:**
-  * **Sisi Kaleng Besi (*Metal Shield*):** Diletakkan di **SISI DALAM BOX**. Bertindak sebagai pelindung interferensi elektromagnetik (*EMI Shielding*) terhadap sirkuit penguat fotodioda dari derau listrik modul step-down dan ESP32, serta mengamankan konektor soket kabel pelangi 6-pin di dalam box.
-  * **Sisi Plastik Hitam:** Menghadap ke **SISI LUAR BOX**. Lubang silinder $10\text{ mm}$ bertindak sebagai corong hisap udara kamar langsung (*air intake nozzle*).
+Diagram menunjukkan urutan aliran yang dijelaskan pemilik, bukan gambar berdimensi. Filter bukan HEPA. Jenis, merek, kelas, ketebalan, dan ukuran potongan filter mobil belum diketahui. Ruang 5 cm merupakan celah/ruang aliran sebelum kipas; kondisi tekanan vakum belum diukur.
 
----
+Filter dan kipas mendukung prototipe. Efisiensi penyaringan, CADR, distribusi udara ruangan, kebocoran antarfilter, penghilangan gas, kebisingan, dan konsumsi daya belum divalidasi. Jangan menghitung RPM aktual hanya dengan mengalikan duty cycle terhadap RPM maksimum atau menyamakan CFM dengan CADR.
 
-## ⚡ 3. Skematik Rangkaian & Wiring Pinout
+## Komponen dan identitas
 
-Sistem ditenagai oleh catu daya ganda yang diturunkan melalui modul regulator efisiensi tinggi:
+| Komponen | Keterangan tersedia | Tindak lanjut |
+|---|---|---|
+| Board ESP32 | PlatformIO memakai `esp32dev`; dokumen lama menyebut S3 | Foto marking board/modul dan catat varian sebenarnya |
+| GP2Y | Dokumentasi lama menyebut GP2Y1010AU0F; lubang horizontal di intake menurut pemilik | Cocokkan part number fisik dan wiring |
+| MQ-7 | Dikonfirmasi pemilik untuk CO, tegak di dinding bawah sebelum filter | Dokumentasikan marking, wiring, dan kebutuhan pemanasan |
+| MQ-135 | Dikonfirmasi pemilik sebagai indikator/proksi VOC atau gas campuran | Dokumentasikan posisi aktual dan wiring; output saat ini ADC mentah |
+| DHT22 | Ada pada dokumentasi dan firmware | Catat posisi relatif terhadap AC, sensor gas, dan kipas |
+| Kipas | Ukuran 12 × 12 cm dikonfirmasi pemilik | Foto label dan catat konektor/driver |
+| Spesifikasi kipas lama | Tercatat 12 V, 1,65 A, tebal 38 mm, sekitar 6.200–6.400 RPM | Verifikasi label/datasheet; bukan hasil pengukuran alat |
+| Media filter | Karbon kotak dan filter mobil dipotong, bukan HEPA | Catat ukuran, label, pemasangan dan sealing |
 
-```text
-+12V DC Adapter ──────┬───────────────────────────────> (+) Kipas Industri 12V 1.65A
-                      │                                       │
-                      │                                   [Transistor NPN / Driver]
-                      │                                       ▲ (Gate/Base)
-                      │                                       │
-                      │                           GPIO 19 ────┴── [PWM Signal 25 kHz]
-                      │
-                      ▼
-               [Buck Converter 5V] ──┬─────────> VIN ESP32
-                                     ├─────────> VCC Sensor MQ-7 (Koil Pemanas 5V)
-                                     ├─────────> VCC Sensor MQ-135
-                                     ├─────────> VCC Sensor Sharp GP2Y1010 (Pin 1 & 3)
-                                     └─────────> VCC Sensor DHT22 (3.3V - 5V)
-GND (Common Ground) ──┴──────────────┴─────────> Seluruh GND Sensor, Mikrokontroler, & Kipas
-```
+Belum tersedia instrumen pembanding kualitas udara. Penempatan sebelum filter tidak menjamin pembacaan bebas pengaruh kipas; variasi aliran dan panas komponen perlu diperiksa melalui raw sensor.
 
-### Tabel Koneksi Pin ESP32 (Wajib Sesuai Firmware)
+## Wiring dalam kode saat ini
 
-| Komponen Hardware | Pin ESP32 | Tipe Jalur | Keterangan Fungsi |
-|---|:---:|:---:|---|
-| **Sharp GP2Y1010AU0F (Vo)** | **GPIO 34** | ADC1 Input | Membaca tegangan analog hamburan optik debu |
-| **Sharp GP2Y1010AU0F (ILED)**| **GPIO 5** | Digital Out | Mengirim pulsa drive LED inframerah ($0.28\text{ ms}$ aktif LOW) |
-| **MQ-7 (Gas CO)** | **GPIO 32** | ADC1 Input | Membaca resistansi analog sensor Karbon Monoksida |
-| **MQ-135 (VOC/Campuran)** | **GPIO 33** | ADC1 Input | Indikator proksi gas campuran sekunder |
-| **DHT22 (AM2302)** | **GPIO 4** | Digital I/O | Membaca suhu lingkungan (°C) dan kelembapan (RH%) |
-| **Kipas DC (PWM Control)** | **GPIO 19** | LEDC PWM | Mengatur kecepatan putaran kipas berjenjang (13%, 15%, 22%, 50%, 85%) |
-| **Industrial Buzzer** | **GPIO 18** | Tone / PWM | Peringatan audio alarm saat polutan mencapai kategori Berbahaya |
+Tabel menyalin [pin_config.h](../Program/Kode/include/pin_config.h). Pada 8 September 2026, pemilik menyatakan pin seharusnya sudah benar. Pemetaan ini dipertahankan sebagai konfigurasi kerja dan tidak dicatat sebagai kesalahan yang ditemukan. Verifikasi wiring independen belum dilakukan; varian board yang belum terdokumentasi merupakan hal terpisah.
 
----
+| Nama pada kode | GPIO |
+|---|---:|
+| `PIN_MQ7_ANALOG` | 32 |
+| `PIN_MQ135_ANALOG` | 33 |
+| `PIN_DUST_VO` | 34 |
+| `PIN_DUST_ILED` | 5 |
+| `PIN_DHT22` | 4 |
+| `PIN_FAN_PWM` | 19 |
+| `PIN_BUZZER` | 18 |
 
-## 📸 4. Galeri Foto Prototipe Alat
+Sebelum perubahan wiring/firmware, cocokkan board, rentang input ADC, pembagi tegangan, catu daya, dan jenis driver kipas. Identitas MQ-7 dan MQ-135 telah dikonfirmasi pemilik. Verifikasi kebutuhan pemanasan dan pembacaan menurut datasheet masing-masing sensor. Respons MQ-135 dipakai sebagai proksi VOC/gas campuran; ADC mentah belum menunjukkan konsentrasi VOC dalam ppm atau TVOC dalam µg/m³.
 
-Berikut dokumentasi fisik unit purwarupa Project Stuzha:
+## Foto arsip
 
-### A. Prototipe Fisik Tampak Samping (Chassis & Wiring Luar)
-Menampilkan penempatan sensor DHT22 (atas), modul penurun tegangan (*buck converter* biru), modul mikrokontroler ESP32 di papan ekspansi terminal, serta **lubang intake hisap sensor GP2Y1010AU0F (lingkaran merah di kiri bawah)**:
+### Prototipe tampak samping
 
-![Prototipe Fisik Tampak Samping](foto_alat/prototipe_fisik_tampak_samping.png)
+![Foto prototipe](foto_alat/prototipe_fisik_tampak_samping.png)
 
----
+### Modul sensor debu
 
-### B. Modul Sensor Partikulat Sharp GP2Y1010AU0F
-Menampilkan modul sensor dengan plat seng pelindung (*metal can shield*), lubang terowongan optik $10\text{ mm}$, serta konektor soket 6-pin yang dipasang menghadap ke dalam bodi boks:
+![Foto modul sensor debu](foto_alat/sensor_gp2y1010_modul.png)
 
-![Modul Sensor GP2Y1010AU0F](foto_alat/sensor_gp2y1010_modul.png)
+Foto arsip belum menggantikan konfirmasi setiap label komponen dan konfigurasi terkini.
 
----
+## Dokumentasi yang perlu dilengkapi
 
-### C. Foto Tambahan Tim (Slot Tersedia)
-Silakan simpan file foto tambahan di folder `Hardware/foto_alat/` dan tautkan di bawah ini:
-* **Tampak Depan Bodi Box:** `![Tampak Depan](foto_alat/tampak_depan.png)`
-* **Tampak Dalam (Chamber Filter & Kipas 12x12 cm):** `![Tampak Dalam](foto_alat/chamber_filter_kipas.png)`
-* **Detail Sambungan Bawah / Exhaust Atas:** `![Exhaust Kipas](foto_alat/exhaust_fan_12cm.png)`
+- Foto keseluruhan dan bagian dalam: urutan filter serta ruang 5 cm.
+- Ukuran casing, bukaan, filter, dan posisi sensor relatif terhadap lantai/AC.
+- Foto marking sensor, board, kipas, catu daya, dan driver.
+- Skematik aktual, termasuk pembagi tegangan dan jalur daya.
+- Catatan perubahan rakitan, tanggal, dan versi firmware.
 
----
-
-## 📝 5. Panduan Tim untuk Menambahkan Foto & Skematik Baru
-
-Untuk anggota tim (*Daffa, Garnie, Riq-Z*):
-1. **Menambahkan Foto:**
-   * Ambil foto yang jelas (pencahayaan terang, fokus tajam).
-   * Beri nama file deskriptif tanpa spasi, contoh: `tampak_depan_purifier.jpg` atau `skematik_wiring_fritzing.png`.
-   * Simpan file gambar di dalam folder:
-     - Foto fisik alat $\rightarrow$ `Hardware/foto_alat/`
-     - Gambar skematik / wiring $\rightarrow$ `Hardware/skematik/`
-     - Gambar desain 2D/3D bodi $\rightarrow$ `Hardware/blueprint/`
-2. **Menampilkan di Dokumen:**
-   * Buka file ini ([`Hardware/README.md`](README.md)), tambahkan baris sintaks Markdown:
-     ```markdown
-     ![Deskripsi Foto](foto_alat/nama_foto_anda.png)
-     ```
-3. **Commit & Push ke GitHub:**
-   ```bash
-   git add Hardware/
-   git commit -m "docs(hardware): add photos and schematics"
-   git push origin main
-   ```
-
----
-*© 2026 Project Stuzha — Tim Riset Kualitas Udara Cerdas IoT & TinyML.*
+Diagram CAD/skematik terpisah belum tersedia dalam inventaris berkas yang diperiksa. Blueprint dan skematik pada dokumen lama masih berupa rencana.

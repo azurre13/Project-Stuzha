@@ -1,45 +1,52 @@
-# Fase 1: Evaluasi Machine Learning & Ekspor TinyML
+# Fase 1 — eksperimen ML dan ekspor model
 
-Folder ini berisi seluruh artefak, skrip, data metrik, dan grafik visualisasi ilmiah untuk **Fase 1 (Data Science & ML Calibration)** pada **Project Stuzha**.
+Folder ini menyimpan hasil eksperimen awal, bukan validasi kalibrasi sensor fisik Stuzha. Status diperbarui pada 8 September 2026: model dan artefak tersedia; validitas skala, evaluasi, dan penerapan pada perangkat belum selesai.
 
----
+## Artefak
 
-## 📂 Isi Folder
+- [Laporan metrik dengan batas interpretasi](laporan_evaluasi_metrik.md).
+- [CSV metrik lama](tabel_metrik_evaluasi.csv).
+- [Skrip evaluasi](run_fase1_evaluation.py).
+- Grafik di `grafik/`: scatter PM/CO, residual terhadap RH, dan feature importance.
+- Header model hasil ekspor di `../Program/Kode/include/`.
+
+Label “ground truth”, “calibrated”, sensor MQ-7 pada benchmark UCI, dan satuan pada grafik/CSV lama belum diperbarui. MQ-7 memang terpasang untuk CO dan MQ-135 untuk proksi VOC/gas campuran menurut konfirmasi pemilik, tetapi data UCI berasal dari sensor berbeda. Gunakan artefak tersebut sebagai arsip eksperimen; jangan salin langsung ke naskah sebagai bukti akurasi perangkat. Tidak ada model kalibrasi VOC untuk MQ-135 dalam folder ini.
+
+## Apa yang sebenarnya dievaluasi
+
+### PM
+
+Skrip membentuk target dari kolom PM2.5 Mendeley ×1.000, kemudian membuat input sintetis:
 
 ```text
-Fase_1_Evaluasi_ML/
-├── grafik/                                 # Berkas gambar visualisasi ilmiah (300 DPI)
-│   ├── 1_evaluasi_kalibrasi_pm25.png       # Scatter plot PM2.5 (Sebelum vs Sesudah ML)
-│   ├── 2_efek_koreksi_kelembapan_pm25.png  # Penekanan hygroscopic effect (RH%)
-│   ├── 3_evaluasi_kalibrasi_co.png         # Scatter plot CO (Linear vs Random Forest)
-│   └── 4_feature_importance.png           # Kontribusi fitur (Sensor, Suhu, RH)
-├── laporan_evaluasi_metrik.md              # Laporan lengkap metrik & pembahasan untuk paper
-├── tabel_metrik_evaluasi.csv               # Tabel metrik dalam format CSV
-├── run_fase1_evaluation.py                 # Skrip Python komprehensif eksekusi Fase 1
-└── README.md                               # Dokumentasi modul ini
+factor = 1 + 0.65 × (RH/100)^2
+noise = (T - 25) × 0.45 + noise acak
+pm_raw = clip(target × factor + noise, 0, 600)
 ```
 
----
+Random Forest belajar memetakan input buatan tersebut ke target. R² tinggi menunjukkan hasil pada konstruksi data ini; belum menunjukkan koreksi kelembapan atau akurasi GP2Y fisik. Dasar koefisien simulasi dan kesesuaian fisiknya belum divalidasi. Metadata Mendeley menyebut µg/m³, sehingga perkalian 1.000 harus ditelusuri.
 
-## 📊 Ringkasan Hasil Evaluasi
+### CO
 
-| Parameter | Sensor | $R^2$ Sebelum | $R^2$ Sesudah ML | Penurunan RMSE | Penurunan MAE |
-|---|---|:---:|:---:|:---:|:---:|
-| **PM2.5 (µg/m³)** | Sharp GP2Y1010AU0F + DHT22 | 0.9833 | **0.9997** | **86.9%** | **92.4%** |
-| **CO (ppm)** | MQ-7 (MOS) + DHT22 | 0.7788 | **0.8087** | **7.0%** | **9.8%** |
+Skrip memetakan PT08.S1(CO) UCI ke 800–3.600, memakai suhu/RH, lalu memprediksi CO(GT). Hasil berlaku untuk benchmark ini. Sensor UCI belum dibuktikan setara dengan sensor gas Stuzha. CO(GT) bersatuan mg/m³; label ppm di artefak lama perlu dikoreksi.
 
----
+### Masalah evaluasi
 
-## 🔬 Kesesuaian dengan Referensi Jurnal
-- **Jurnal 3 & 12**: Menggunakan formula dasar datasheet sensor sebagai baseline linear awal.
-- **Jurnal 4 & 6**: Memodelkan dan mengoreksi pembiasan uap air (*hygroscopic growth*) via DHT22.
-- **Jurnal 5 & 15**: Pembuktian bahwa *ensemble Random Forest* mengungguli regresi linear sederhana.
-- **Jurnal 8, 10, & 20**: Menghasilkan C Header mandiri (`model_pm.h` & `model_co.h`) siap inferensi di ESP32-S3.
+- Train/test dibagi acak 80:20, random_state 42. Evaluasi generalisasi waktu perlu split berdasarkan waktu/sesi.
+- Pemetaan rentang CO memakai seluruh data; baseline linear juga di-fit sebelum split. Fit preprocessing dan baseline hanya pada training.
+- R² bukan persentase akurasi. Penurunan RMSE bukan kenaikan akurasi dengan persentase yang sama.
+- Feature importance tidak membuktikan koreksi fisik atau hubungan sebab-akibat.
+- Bandingkan model/fitur pada test set yang sama. Laporkan bias, MAE, RMSE, R² dan ketidakpastian bila rancangan datanya mendukung.
+- Jangan memakai output model sebagai target untuk mengklaim kalibrasi ulang perangkat.
 
----
+## Reproduksi dan efek samping
 
-## 🚀 Cara Menjalankan Ulang
-```bash
+Perintah historis:
+
+```sh
 python Fase_1_Evaluasi_ML/run_fase1_evaluation.py
 ```
-Skrip ini akan melatih model, menghitung metrik, memperbarui gambar di `grafik/`, dan langsung memperbarui file header di `Program/Kode/include/`.
+
+Skrip menimpa grafik, CSV metrik, laporan Markdown, dan header model. Teks generator masih memuat klaim lama dan dapat menimpa koreksi dokumentasi ini. Jangan menjalankan ulang untuk eksperimen berikutnya sebelum generator/evaluasi diperbaiki dan artefak diberi versi. Skrip `ml_training/train_models.py` juga menimpa header.
+
+Tidak ada training ulang atau perubahan model pada pembaruan dokumentasi ini. Lihat [roadmap](../MD/roadmap_dan_langkah_selanjutnya.md).

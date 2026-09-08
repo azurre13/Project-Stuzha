@@ -91,7 +91,7 @@ try:
             "CO": "Target kalibrasi RF_CO (ppm)",
             "Temp": "Feature input ML (koreksi suhu)",
             "Humidity": "Feature input ML (koreksi kelembapan)",
-            "NH3": "Proxy validasi MQ-135 (VOC indicator)"
+            "NH3": "NH3 pada dataset publik; bukan referensi validasi VOC MQ-135 Stuzha"
         }
         for col, desc in relevant.items():
             status = "✅ ADA" if col in header else "❌ TIDAK ADA"
@@ -163,7 +163,7 @@ try:
             "Date": "Tanggal",
             "Time": "Waktu (per jam)",
             "CO(GT)": "⭐ GROUND TRUTH CO (mg/m³) dari reference analyzer",
-            "PT08.S1(CO)": "Raw sensor MOS untuk CO (analog MQ-7)",
+            "PT08.S1(CO)": "Respons sensor MOS UCI untuk benchmark CO; kesetaraan dengan MQ-7 belum divalidasi",
             "NMHC(GT)": "GT Non-Methane Hydrocarbons (µg/m³)",
             "C6H6(GT)": "GT Benzene (µg/m³)",
             "PT08.S2(NMHC)": "Raw sensor NMHC",

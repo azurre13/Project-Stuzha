@@ -1,59 +1,74 @@
-# Dataset Ground Truth untuk ML Calibration
+# Dataset Stuzha
 
-Folder ini berisi dataset publik yang digunakan sebagai **ground truth** untuk melatih model Random Forest Regressor pada Project Stuzha.
+Folder ini memuat rekaman prototipe dan dataset publik untuk eksperimen model. Ketiganya memiliki peran berbeda; dataset publik bukan ground truth bagi perangkat Stuzha secara otomatis.
 
-> ⚠️ **File CSV/ZIP tidak di-push ke Git** (terlalu besar). Download manual dari link berikut.
+## Rekaman kamar
 
----
+Berkas: [Dataset_Project_Stuzha_ThingSpeak_Lengkap.csv](Dataset_Project_Stuzha_ThingSpeak_Lengkap.csv).
 
-## Dataset yang Digunakan
+Ringkasan pemeriksaan 8 September 2026 atas snapshot lokal:
 
-### 1. Mendeley — Indoor Air Pollutants (`data/mendeley/`)
-
-| Aspek | Detail |
+| Aspek | Hasil |
 |---|---|
-| **Judul** | Dataset of Indoor Air Pollutants using Low-Cost Sensors |
-| **Penulis** | Sonawani & Patil (2022) |
-| **DOI** | [10.17632/2r232jpfb2.1](https://doi.org/10.17632/2r232jpfb2.1) |
-| **Download** | https://data.mendeley.com/datasets/2r232jpfb2/1 |
-| **Jumlah Data** | 173.468 record |
-| **Periode** | Nov 2020 – Jul 2022 |
-| **Sensor PM2.5** | **GP2Y1010AU0F** (identik dengan alat kita!) |
-| **Digunakan untuk** | Training model **RF_PM** (kalibrasi partikulat debu) |
+| Kondisi menurut pemilik | Kamar, AC disetel 24–27°C, tanpa alat pembanding |
+| Periode WIB | 6 September 2026, 01.00.11–18.22.33 |
+| Durasi tercatat | 17 jam 22 menit 22 detik |
+| Baris | 3.126 |
+| ID | 1–3.126, berurutan, tanpa duplikat |
+| Kolom kosong / timestamp duplikat | Tidak ditemukan |
+| Interval | Umumnya 20 detik; dua jeda >30 detik sebesar 40 dan 32 detik |
+| Suhu sensor | 22,8–29,1°C; rata-rata 26,16°C |
+| RH | 46,8–72,3%; rata-rata 61,72% |
+| PWM terekam | 13%: 2.725; 15%: 398; 50%: 1; 85%: 2 baris |
+| Perubahan PWM antarrekaman | 26 |
 
-**Kolom:** `NH3, NO2, CO, PM2.5, Temp, Pressure, Humidity, O3, Date`
+Setelan AC berbeda dari pengukuran suhu di titik sensor. Tidak adanya jeda panjang tidak membuktikan uptime tanpa reset. PWM 22% tidak terlihat dalam log; kejadian di antara snapshot 20 detik tidak dapat dikesampingkan.
 
-### 2. UCI — Air Quality (`data/uci/`)
+### Pola yang perlu ditelusuri
 
-| Aspek | Detail |
-|---|---|
-| **Judul** | Air Quality |
-| **Sumber** | UCI Machine Learning Repository |
-| **URL** | https://archive.ics.uci.edu/dataset/360/air+quality |
-| **Jumlah Data** | 9.471 record (per jam) |
-| **Periode** | Mar 2004 – Apr 2005 |
-| **Ground Truth** | CO dari **certified reference analyzer** (Tier 1) |
-| **Digunakan untuk** | Training model **RF_CO** (kalibrasi gas CO) |
+- Output PM persis 0,00031 pada 2.638 baris (84,39%).
+- Rangkaian terpanjang pada nilai tersebut: 878 baris, 13.28.58–18.21.32 WIB.
+- Lonjakan PM pada 10.41.36: 372,61343; pada 13.28.38: 373,28568; pada 18.21.52: 189,25754. Rekaman berikutnya kembali rendah.
+- Ada 25 baris MQ-135 ADC >2.500, dengan PWM 13–15%. Kode saat ini belum memiliki booster yang disebut roadmap lama.
 
-**Kolom utama:** `CO(GT), PT08.S1(CO), T, RH, AH`
+Nilai di atas adalah keluaran implementasi, bukan konsentrasi referensi. Penyebab pola dapat berasal dari lingkungan, pembacaan, atau model dan belum diketahui. Penurunan dalam satu interval tidak membuktikan waktu pembersihan purifier.
 
-> Catatan: Nilai `-200` dalam dataset UCI berarti **missing data**.
+### Arti kolom
 
----
+Timestamp UTC/WIB menunjukkan waktu feed. Entry_ID adalah ID cloud. Suhu/RH berasal dari firmware, termasuk kemungkinan fallback tanpa flag. Kolom PM25_Calibrated_ug_m3 dan CO_Calibrated_ppm memakai label lama; status validasi dan satuan harus dijelaskan ketika dianalisis. Jalur gas utama menggunakan MQ-7 untuk CO. ISPU_Final dan kategori merupakan hasil hitungan firmware. Kipas_PWM_Persen adalah perintah. Raw_VOC_ADC adalah respons analog MQ-135 untuk indikator/proksi VOC atau gas campuran, bukan konsentrasi VOC/TVOC terkalibrasi. MQ-7 dan MQ-135 telah dikonfirmasi pemilik.
 
-## Cara Download
+CSV belum memuat raw ADC GP2Y dan sensor gas utama, flag kegagalan, uptime/reset, versi firmware/model, serta catatan aktivitas/AC. Karena itu, koreksi model berikutnya tidak dapat diterapkan ulang secara andal ke seluruh rekaman ini. Simpan sebagai uji pendahuluan, dengan data asli tetap utuh.
 
-```bash
-# Mendeley (download manual dari browser)
-# Simpan di: data/mendeley/Indoor_Air_Pollution_Data.csv
+## Dataset publik
 
-# UCI (via command line)
-curl -L -o data/uci/air_quality.zip https://archive.ics.uci.edu/static/public/360/air+quality.zip
-cd data/uci && unzip air_quality.zip
-```
+### Mendeley — Indoor Air Pollutants
 
-## Eksplorasi Data
+- Penulis: Shilpa Sonawani dan Kailas Patil; versi 1, 2022.
+- [Sumber dan metadata](https://data.mendeley.com/datasets/2r232jpfb2/1), DOI 10.17632/2r232jpfb2.1.
+- Lokasi lokal: `mendeley/Indoor_Air_Pollution_Data.csv`.
+- Metadata: 173.468 rekaman, November 2020–Juli 2022; GP2Y1010AU0F dan sensor lingkungan BME280.
+- PM pada metadata bersatuan µg/m³. Skrip lokal mengasumsikan mg/m³ dan mengalikan 1.000. Perbedaan ini harus ditelusuri ke sumber sebelum skala dipakai untuk klaim fisik.
+- Data PM berasal dari sensor berbiaya rendah; tidak tersedia pasangan instrumen referensi independen dalam kolom yang dipakai skrip.
+- Fungsi saat ini: sumber target untuk eksperimen PM sintetis, bukan validasi kalibrasi GP2Y Stuzha.
 
-```bash
-python ml_training/explore_datasets.py
-```
+### UCI — Air Quality
+
+- [Sumber dan metadata](https://archive.ics.uci.edu/dataset/360/air+quality), DOI 10.24432/C59K5F.
+- Lokasi lokal: `uci/AirQualityUCI.csv`, XLSX, dan ZIP.
+- Metadata menyebut 9.358 instance. Jumlah baris yang dibaca/valid setelah pembersihan harus dilaporkan dari berkas yang digunakan.
+- Kolom relevan: CO(GT), PT08.S1(CO), T, RH; sentinel -200 menandakan data hilang.
+- CO(GT) adalah konsentrasi rerata per jam dari reference analyzer dalam mg/m³. PT08.S1(CO) adalah respons sensor tin oxide.
+- Pemetaan PT08.S1(CO) ke 800–3.600 tidak membuktikan kesetaraan dengan ADC MQ-7 pada Stuzha.
+- Fungsi: benchmark model pada dataset UCI, bukan bukti akurasi sensor Stuzha.
+
+## Downloader: batas implementasi saat ini
+
+[download_thingspeak_dataset.py](../download_thingspeak_dataset.py) mengunduh feed dan menulis CSV. Implementasi pagination saat ini mengisi parameter start dengan Entry_ID, padahal API mengharuskan tanggal/waktu. Batas per permintaan adalah 8.000 rekaman. [Dokumentasi API MathWorks](https://www.mathworks.com/help/thingspeak/readdata.html).
+
+Klaim lama “download satu minggu lengkap” belum dapat diandalkan. Pada interval nominal 20 detik, satu minggu sekitar 30.240 rekaman. Perbaikan yang diperlukan: rentang waktu bertahap, deduplikasi ID, pemeriksaan cakupan, penanganan respons gagal, dan penulisan yang tidak menimpa arsip baik dengan hasil parsial. Jangan menjalankan ulang downloader pada satu-satunya salinan arsip.
+
+## Format pengambilan berikutnya
+
+Tambahkan raw ADC seluruh sensor analog, suhu/RH beserta flag, output model, perintah PWM, uptime/reset, dan identitas firmware/model. Catat kondisi kamar, posisi alat, perubahan AC, aktivitas, awal/akhir sesi, serta perubahan hardware.
+
+Pisahkan sesi sebelum dan setelah perubahan firmware. Simpan log lokal saat offline; keberhasilan monitoring lokal berbeda dari keberhasilan upload cloud. Data prediksi model sendiri tidak boleh diperlakukan sebagai ground truth kalibrasi baru.

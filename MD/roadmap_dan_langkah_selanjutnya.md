@@ -1,102 +1,72 @@
-# 🧭 Roadmap Kolaborasi & Rencana Langkah Selanjutnya — Project Stuzha
+# Roadmap perbaikan dan evaluasi Stuzha
 
-> **Dokumen Panduan Pengembangan & Eksperimen Tim**  
-> **Kolaborator:** [@azurre13](https://github.com/azurre13) | [@Garnie104](https://github.com/Garnie104) | [@Riq-Z](https://github.com/Riq-Z)  
-> **Tujuan Akhir:** Publikasi Artikel Jurnal Ilmiah Kualitas Udara Indoor (Target Sinta 3 / Sinta 2)
+Diperbarui 8 September 2026. Fokus: prototipe monitoring indoor; filter dan kipas sebagai pendukung. Alat tidak perlu dianggap gagal atau dirakit ulang hanya karena validasi belum lengkap.
 
----
+## Status saat ini
 
-## 📌 1. Latar Belakang & Tujuan Dokumen Ini
+| Bagian | Status |
+|---|---|
+| Rakitan dan pembacaan/IoT | Beroperasi menurut pemilik; snapshot awal tersedia |
+| Uji kamar awal | 3.126 baris selama 17 jam 22 menit 22 detik |
+| Pengujian satu minggu | Berlangsung menurut pemilik; snapshot lokal yang dianalisis masih sesi awal |
+| Model dan ekspor C | Tersedia, masih eksperimental |
+| Kalibrasi fisik dan akurasi absolut | Belum tervalidasi; tidak ada alat pembanding |
+| Sensor gas | MQ-7 untuk CO dan MQ-135 untuk proksi VOC/gas campuran, dikonfirmasi pemilik |
+| Varian board | Masih perlu dicocokkan dengan marking |
+| Pin | Dinilai sudah benar oleh pemilik; pertahankan konfigurasi kerja, belum diverifikasi independen |
+| Dokumentasi | Diselaraskan dengan kondisi dan batas bukti terbaru |
+| Perbaikan kode di bawah | Belum dikerjakan pada pembaruan dokumentasi ini |
 
-Dokumen ini disusun untuk menyelaraskan visi, alur kerja, dan langkah konkret antar anggota tim setelah berhasil menyelesaikan kalibrasi Machine Learning awal dan restrukturisasi kode firmware ESP32-S3.
+## Tahap 1 — amankan keterlacakan data
 
-Seluruh langkah dalam dokumen ini diturunkan langsung dari **21 referensi jurnal ilmiah** dan regulasi resmi **Permen LHK No. 14 Tahun 2020** yang telah kita himpun.
+- [ ] Simpan salinan data serta versi firmware/model yang menghasilkan sesi lama.
+- [x] Konfirmasi sensor gas: MQ-7 untuk CO dan MQ-135 untuk indikator/proksi VOC atau gas campuran.
+- [ ] Catat varian board, part number GP2Y, serta foto/wiring dan posisi MQ-7/MQ-135.
+- [ ] Tambahkan raw ADC semua sensor analog, suhu/RH, status validitas, output model, dan perintah PWM ke log.
+- [ ] Catat uptime, alasan reset, versi firmware/model, dan kejadian jaringan.
+- [ ] Pisahkan nilai fallback DHT dari pengukuran valid.
+- [ ] Sediakan log lokal selama offline; tandai perubahan AC, aktivitas, posisi, dan awal/akhir sesi.
+- [ ] Perbaiki downloader dengan rentang tanggal/waktu, deduplikasi, pemeriksaan cakupan, serta arsip yang tidak tertimpa hasil parsial.
 
----
+Hasil yang diharapkan: setiap rekaman dapat ditelusuri ke input dan versi perangkat. Sesi sebelum/sesudah perubahan tetap dapat dibedakan. Tidak perlu membuang data 18 jam; gunakan sebagai uji pendahuluan.
 
-## ✅ 2. Status Terkini: FASE 1 Telah Rampung (Data Science & TinyML)
+## Tahap 2 — telusuri pembacaan dan benahi implementasi
 
-Semua kebutuhan data science di laptop/PC telah berhasil dieksekusi dan tersimpan rapi di folder [`Fase_1_Evaluasi_ML/`](../Fase_1_Evaluasi_ML/):
+- [ ] Periksa raw ADC, tegangan, catu daya, timing GP2Y, dan pengaruh kecepatan kipas pada PM.
+- [ ] Telusuri 84,39% output PM yang menetap pada 0,00031 serta tiga lonjakan besar. Jangan hapus outlier tanpa alasan terdokumentasi.
+- [ ] Verifikasi kebutuhan pemanasan sensor gas menurut tipe aktual.
+- [ ] Tinjau penonaktifan brownout detector dan penyebab gangguan daya.
+- [ ] Perbaiki satuan, breakpoint, interpolasi, waktu perataan, dan label indeks.
+- [ ] Lengkapi dan uji histeresis, termasuk batas 300. Dokumentasikan aturan waktu stabil bila ditambahkan.
+- [ ] Tentukan kebutuhan booster MQ-135. Jika dipakai, implementasikan dan uji; ADC 2.500 bukan batas kesehatan tervalidasi.
+- [ ] Evaluasi blocking pada jaringan/alarm dan ukur interval loop aktual.
 
-1. **Pelatihan Model Bebas Leakage:**
-   - Model **RF_PM** (GP2Y1010AU0F + DHT22) dan **RF_CO** (MQ-7 + DHT22) telah dilatih menggunakan 167.000+ data valid.
-   - Masalah *target leakage* dan *scale mismatch* telah diselesaikan secara ilmiah mengikuti teori fisika aerosol (*Köhler hygroscopic growth curve*).
-2. **Hasil Kuantitatif Akurasi (Siap Masuk Paper):**
-   - **Partikulat PM2.5:** $R^2$ melonjak ke **0.9997 (Akurasi 99.97%)**, RMSE terpangkas **86.9%** (dari 15.05 ke 1.98 µg/m³), dan rata-rata error (MAE) hanya **0.58 µg/m³**.
-   - **Gas CO:** $R^2$ meningkat ke **0.8087 (Akurasi 80.87%)**, RMSE turun ke **0.61 ppm**.
-3. **Grafik Publikasi Ilmiah (300 DPI):**
-   - 4 grafik standar publikasi telah selesai digenerate di `Fase_1_Evaluasi_ML/grafik/` (Scatter plot 1:1, Kurva koreksi RH, Evaluasi CO, dan Feature Importance).
-4. **Ekspor Model ke Hardware:**
-   - Model TinyML bahasa C murni telah terintegrasi di `Program/Kode/include/model_pm.h` dan `model_co.h`.
+Hasil yang diharapkan: perilaku kode sesuai spesifikasi yang ditulis dan anomali dapat ditelusuri. Filtering noise dipilih setelah diagnosis serta dievaluasi dampaknya pada respons.
 
----
+## Tahap 3 — evaluasi prototipe monitoring
 
-## ⚡ 3. Rencana FASE 2: Uji Eksperimental pada Perangkat Fisik (ESP32-S3)
+- [ ] Uji semua tingkat PWM dan batas logika dengan input software yang diberi label simulasi.
+- [ ] Uji kegagalan sensor, offline/reconnect, serta restart yang terkendali.
+- [ ] Ukur distribusi latensi inferensi, flash, dan heap runtime; periksa kesesuaian Python/C.
+- [ ] Rekam sesi operasional berulang dengan kondisi kamar dan versi perangkat tercatat.
+- [ ] Laporkan missing/gap, reset, error sensor, dan respons aktual; jangan menyamakan ID cloud berurutan dengan uptime sempurna.
+- [ ] Dokumentasikan filter non-HEPA dan aliran aktual, foto komponen, serta skematik.
 
-*Tujuan: Mengambil data performa fisik alat nyata untuk membuktikan kontribusi sistem di jurnal.*
+Durasi satu minggu dapat menjadi uji operasi berkelanjutan. Banyaknya baris berdekatan bukan banyaknya eksperimen independen. Pengujian kamar dengan AC tidak memisahkan pengaruh AC, aktivitas, kipas, dan filter secara otomatis.
 
-### A. Pengujian Benchmark Komputasi TinyML di ESP32-S3
-* **Apa yang diuji:**
-  1. **Latensi Inferensi (ms):** Mengukur waktu eksekusi fungsi `model_pm_predict()` dan `model_co_predict()` dalam satuan mikrodetik/milidetik menggunakan `micros()` di ESP32.
-  2. **Konsumsi Memori (SRAM & Flash):** Mencatat persentase penggunaan memori saat kompilasi PlatformIO.
-* **Landasan Referensi:** **Jurnal 8, 10, & 20** (*TinyML Edge Computing*). Reviewer jurnal sangat menyukai data kuantitatif yang membuktikan bahwa AI berjalan sangat cepat dan hemat daya pada mikrokontroler berbiaya murah.
+## Tahap 4 — rapikan eksperimen ML dan naskah
 
-### B. Pengujian Respons Aktuator Kipas Adaptif PWM
-* **Apa yang diuji:**
-  - Mengamati apakah putaran kipas DC (12V 1.65A 6.200 RPM, lubang kotak 12x12 cm) berubah halus secara *closed-loop* mengikuti kategori ISPU resmi dengan deadband histeresis 5-poin:
-    * **Baik ($I \le 50$):** PWM 13% (~806 RPM, Ultra-Silent Standby < 22 dB)
-    * **Sedang ($I \le 100$):** PWM 15% (~930 RPM, Silent Sleep Purify < 28 dB)
-    * **Tidak Sehat ($I \le 200$):** PWM 22% (~1.364 RPM, Active Clean < 38 dB)
-    * **Sangat Tidak Sehat ($I \le 300$):** PWM 50% (~3.100 RPM, Heavy Purge)
-    * **Berbahaya ($I > 300$):** PWM 85% (~5.270 RPM, Max Emergency Purge) + Alarm Aktif.
-* **Landasan Referensi:** **Jurnal 16 & 17** (*Dynamic Ventilation & Energy Efficiency*). Menjadi bukti bahwa kendali adaptif lebih efisien energi dibanding saklar *on-off* statis pada purwarupa lama (**Jurnal 19**).
+- [ ] Telusuri skala PM Mendeley dan satuan target CO UCI.
+- [ ] Perbaiki split waktu/sesi dan fit preprocessing/baseline hanya pada training.
+- [ ] Beri versi artefak dan perbaiki teks generator laporan sebelum training ulang.
+- [ ] Tandai eksperimen PM sintetis dan benchmark CO secara eksplisit.
+- [ ] Hindari klaim kalibrasi fisik tanpa pasangan data referensi. Jika akses pembanding diperoleh, buat protokol co-location terpisah.
+- [ ] Tulis pendahuluan/metode sesuai fokus monitoring; tentukan kontribusi dari hasil nyata.
+- [ ] Periksa artikel pembanding dan perbedaan dengan karya tim sebelumnya.
+- [ ] Pilih jurnal sesuai scope; sesuaikan template serta tuntutan bukti.
 
-### C. Validasi Logika ISPU & Secondary Safety Guard (MQ-135)
-* **Apa yang diuji:**
-  1. Menguji apakah sistem selalu memilih nilai tertinggi antara sub-indeks PM2.5 dan CO sebagai *Parameter Pencemar Kritis* sesuai **Permen LHK No. 14 Tahun 2020** dan **Jurnal 11**.
-  2. Menguji fitur pengaman gas campuran: saat sensor MQ-135 mendeteksi uap kimia/alkohol pekat (nilai ADC > 2500), kipas otomatis dipaksa naik ke 85% (*booster*) tanpa merusak indeks resmi ISPU (**Jurnal 14**).
+Klaim CADR, efisiensi filtrasi, penghilangan CO, dB, RPM aktual, dan penghematan energi bukan keluaran wajib untuk fokus monitoring ini. Jika dimasukkan, ukur besaran terkait dengan metode yang layak.
 
-### D. Skenario Pengujian Fisik Ruangan:
-1. **Skenario Udara Normal:** Ruangan kamar/laboratorium tertutup tanpa polutan.
-2. **Skenario Polusi Partikulat:** Pengujian menggunakan sumber partikulat terkontrol (asap obat nyamuk / dupa) untuk menguji respons deteksi GP2Y dan penurunan konsentrasi oleh kipas filtrasi.
-3. **Skenario Uji Gangguan Kelembapan:** Pengujian sensor debu saat diberi hembusan uap air/humidifier untuk membuktikan bahwa pembacaan tidak melonjak liar berkat filter koreksi Random Forest (**Jurnal 4 & 6**).
+## Dampak pembaruan dokumentasi
 
----
-
-## 📝 4. Rencana FASE 3: Penyusunan Naskah Jurnal Ilmiah (Paper Drafting)
-
-*Tujuan: Menulis artikel ilmiah siap submit ke jurnal terakreditasi Sinta 3 / Sinta 2.*
-
-### Struktur Naskah & Pembagian Konten:
-1. **Judul & Abstrak:**
-   - Menyoroti kombinasi: *Low-Cost IoT Sensors, Edge AI TinyML Random Forest, ISPU Regulation, Adaptive Filtration Control, ESP32-S3*.
-2. **Bab 1 — Pendahuluan (Introduction):**
-   - Urgensi kesehatan mitigasi racun udara indoor (**Jurnal 21**).
-   - Masalah kelemahan akurasi sensor murah akibat bias cuaca & kelembapan (**Jurnal 4, 5, 6**).
-   - *State of the Art & Research Gap:* Membandingkan sistem kita dengan riset sebelumnya yang masih berbasis *rule-based* kaku atau tanpa kalibrasi AI (**Jurnal 9, 18, 19**).
-3. **Bab 2 — Metodologi (Methodology):**
-   - Arsitektur sistem 3-tahap (Fusi Sensor ML $\rightarrow$ Interpolasi ISPU $\rightarrow$ Parameter Kritis).
-   - Formula matematik ISPU (Permen LHK No. 14 Tahun 2020).
-   - Implementasi TinyML Random Forest (Scikit-Learn ke C-Header array).
-4. **Bab 3 — Hasil dan Pembahasan (Results & Discussion):**
-   - Memasukkan tabel metrik dari `Fase_1_Evaluasi_ML/tabel_metrik_evaluasi.csv`.
-   - Menampilkan 4 grafik visualisasi dari `Fase_1_Evaluasi_ML/grafik/`.
-   - Menampilkan hasil uji latensi (ms), efisiensi RAM ESP32-S3, dan grafik respons perubahan kecepatan kipas dari Fase 2.
-5. **Bab 4 — Kesimpulan (Conclusion):**
-   - Ringkasan pencapaian dan rekomendasi riset lanjutan.
-
----
-
-## 📋 5. Checklist Pembagian Tindakan Tim (Action Items)
-
-- [x] **Fase 1 Selesai:** Dataset dibersihkan, Random Forest dilatih bebas leakage, metrik dihitung, grafik 300 DPI dibuat, dan C header di-export.
-- [ ] **Persiapan Hardware (Fase 2):**
-  - [ ] Hubungkan ESP32-S3 dan sensor ke laptop, lakukan *build* & *upload* firmware via PlatformIO.
-  - [ ] Buka Serial Monitor (115200 baud) untuk memverifikasi keluaran telemetri:
-        `[TELEMETRI] T:.. | RH:.. | PM2.5:[Raw -> ML] | CO:.. | ISPU:.. | Kipas:..`
-  - [ ] Catat latensi eksekusi fungsi ML dan penggunaan memori chip.
-  - [ ] Lakukan uji paparan polutan terkontrol dan amati respon PWM kipas.
-- [ ] **Penyusunan Paper (Fase 3):**
-  - [ ] Buat file draf naskah di `MD/draft_paper_jurnal.md`.
-  - [ ] Susun Pendahuluan dan Metodologi bersama tim.
-  - [ ] Tempelkan grafik dan tabel evaluasi ke naskah.
+Dokumentasi, komentar sensor firmware, dan deskripsi eksplorasi dataset telah dikoreksi. Logika firmware, model, CSV, dan grafik tidak diubah; tidak ada training ulang atau upload perangkat. Generator evaluasi masih dapat menimpa laporan Markdown dengan klaim lama ketika dijalankan. Perubahan logger, downloader, dan model perlu dikerjakan sebagai langkah berikutnya dengan versi baru. Panduan menjaga konteks berada di [AGENTS.md](../AGENTS.md).

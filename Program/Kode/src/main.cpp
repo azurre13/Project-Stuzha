@@ -31,7 +31,7 @@ struct AirQualityData {
     float raw_pm_adc;
     float raw_pm_ug;     // Estimasi awal tegangan GP2Y (µg/m³) sebelum kalibrasi ML
     float raw_co_adc;
-    float raw_voc_adc;
+    float raw_voc_adc; // MQ-135: proksi VOC/gas campuran, ADC mentah (bukan ppm/TVOC)
     float suhu;
     float kelembapan;
 
@@ -182,7 +182,8 @@ void readSensors() {
     float pm_raw_calc = (0.17f * v_dust - 0.1f) * 1000.0f;
     g_data.raw_pm_ug = (pm_raw_calc > 0.0f) ? pm_raw_calc : 0.0f;
 
-    // 3. Baca Sensor Gas (MQ-7 untuk CO dan MQ-135 untuk VOC)
+    // 3. Sensor terpasang: MQ-7 untuk CO; MQ-135 untuk proksi VOC/gas campuran.
+    // MQ-135 tetap dalam ADC mentah; tidak dikonversi menjadi konsentrasi VOC.
     g_data.raw_co_adc  = (float)analogRead(PIN_MQ7_ANALOG);
     g_data.raw_voc_adc = (float)analogRead(PIN_MQ135_ANALOG);
 }
@@ -339,7 +340,7 @@ void sendThingSpeakTelemetry() {
     ThingSpeak.setField(4, g_data.co_calibrated);
     ThingSpeak.setField(5, (float)g_data.ispu_final);
     ThingSpeak.setField(6, (float)g_data.fan_percent);
-    ThingSpeak.setField(7, g_data.raw_voc_adc);
+    ThingSpeak.setField(7, g_data.raw_voc_adc); // Raw_VOC_ADC: respons MQ-135
 
     // Field 8: Kode Numerik Kategori ISPU (1: Baik, 2: Sedang, 3: Tidak Sehat, 4: Sangat Tidak Sehat, 5: Berbahaya)
     int kategori_code = 1;
