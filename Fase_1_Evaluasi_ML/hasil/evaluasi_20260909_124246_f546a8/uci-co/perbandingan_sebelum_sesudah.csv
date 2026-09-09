@@ -1,0 +1,3 @@
+baseline,model,metrik,sebelum,sesudah_ml,penurunan_error_persen
+linear_all_features,rf_all_features,RMSE,0.7094790958337671,0.7258824001319509,-2.312020804348992
+linear_all_features,rf_all_features,MAE,0.543889761685189,0.5602397005891085,-3.0061126455590705

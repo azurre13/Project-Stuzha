@@ -1,29 +1,40 @@
-# Catatan hasil eksperimen ML awal
+# Laporan utama evaluasi ML Stuzha
 
-Diperbarui 8 September 2026. Angka berikut dipertahankan dari artefak evaluasi lama, bukan hasil evaluasi ulang dan bukan bukti kalibrasi fisik Stuzha.
+Mulai dari laporan ini. Tabel dan grafik ringkasan ada di folder yang sama; detail setiap eksperimen ada di hasil/. Berkas sebelum revisi disimpan satu kali di arsip/.
 
-## Metrik arsip
+## Hasil seperti evaluasi awal
 
-| Eksperimen | R² baseline | R² RF | RMSE baseline → RF | MAE baseline → RF |
-|---|---:|---:|---|---|
-| PM dengan input sintetis | 0,9833 | 0,9997 | 15,05 → 1,98 | 7,68 → 0,58 |
-| CO pada UCI | 0,7788 | 0,8087 | 0,66 → 0,61 | 0,48 → 0,44 |
+Pembanding PM adalah input sintetis sebelum dikoreksi RF. Pembanding CO adalah regresi linear satu input; sekarang dilatih hanya pada data training. RF memakai tiga input. Angka berikut dihitung ulang dari seluruh data uji, bukan dari angka yang sudah dibulatkan.
 
-Nilai error mengikuti skala target skrip lama. Untuk PM, validitas perkalian target ×1.000 belum diselesaikan; jangan menetapkan interpretasi konsentrasi fisik dari angka tersebut. Target CO UCI memakai mg/m³, sedangkan artefak lama memberi label ppm secara tidak tepat.
+| Model | RMSE sebelum → RF | Error RMSE berkurang | MAE sebelum → RF | Error MAE berkurang | R² sebelum → RF |
+|---|---:|---:|---:|---:|---:|
+| PM - metode awal | 15.04910 → 1.97555 | 86.87% | 7.68012 → 0.58288 | 92.41% | 0.98327 → 0.99971 |
+| CO - metode awal | 0.65802 → 0.61108 | 7.13% | 0.48437 → 0.43537 | 10.12% | 0.77814 → 0.80866 |
 
-Penurunan RMSE yang dicatat skrip adalah 86,9% untuk PM dan 7,0% untuk CO. Ini merupakan perbandingan error dalam eksperimen tersebut, bukan “lebih akurat” pada perangkat. R² 0,9997 bukan akurasi 99,97%.
+Rumus penurunan error: 100 × (sebelum − sesudah) / sebelum. Ini perbandingan pembanding dengan RF pada dataset uji, bukan model baru melawan model lama atau bukti sensor fisik lebih akurat sekian persen. PM mengikuti skala legacy sumber ×1000; CO memakai mg/m³.
 
-## Batas interpretasi
+![Ringkasan penurunan error](grafik/perbandingan_error.png)
 
-1. Input PM dibuat dari target, faktor RH, dan noise buatan; belum ada pasangan raw GP2Y dan pembacaan instrumen referensi pada Stuzha.
-2. Kolom PM Mendeley berasal dari sensor berbiaya rendah, bukan otomatis ground truth independen.
-3. Respons sensor UCI yang diubah rentangnya belum dibuktikan setara dengan ADC MQ-7 Stuzha. Identitas MQ-7 untuk CO dan MQ-135 untuk proksi VOC/gas campuran telah dikonfirmasi; tidak ada model kalibrasi VOC dalam artefak ini.
-4. Split acak dan fitting baseline CO sebelum split perlu diperbaiki sebelum evaluasi lanjutan.
-5. Grafik residual RH belum membuktikan eliminasi bias kelembapan pada alat fisik; feature importance bukan bukti kausal.
-6. Ketersediaan header C belum membuktikan latensi, akurasi sensor, atau kesesuaian Python/C; masing-masing memerlukan pengujian tersendiri.
+[Tabel lengkap CSV](tabel_metrik_evaluasi.csv)
 
-Lihat [penjelasan metode](evaluasi_ml_stuzha.md) dan [asal dataset](../Program/data/dataset_stuzha.md). Belum tersedia instrumen pembanding. Untuk naskah monitoring, hasil ini hanya dapat digunakan sebagai eksperimen pendukung yang diberi batasan, bukan klaim kontribusi kalibrasi tervalidasi.
+## Buka grafik dan data rinci
 
-## Status artefak
+- [PM: prediksi, residual/kelembapan, bobot fitur, metrik](hasil/reproduksi_awal_20260909_124230_faba1c/pm/laporan_evaluasi_metrik.md)
+- [CO: prediksi, residual/kelembapan, bobot fitur, metrik](hasil/reproduksi_awal_20260909_124230_faba1c/co/laporan_evaluasi_metrik.md)
 
-Grafik dan CSV metrik belum diubah. Judul, label sensor, dan satuan di dalamnya masih mencerminkan interpretasi lama. Generator dalam run_fase1_evaluation.py juga belum diperbaiki; menjalankannya akan menimpa laporan ini dengan teks lama. Simpan versi artefak dan perbaiki generator sebelum menghasilkan laporan baru.
+## Evaluasi tambahan dengan split waktu
+
+Eksperimen ini berbeda dari metode awal sehingga persentasenya tidak boleh dibandingkan langsung dengan tabel di atas. Pembanding di bawah adalah linear tiga fitur melawan RF tiga fitur, keduanya fit training dan diuji pada waktu sesudahnya.
+
+| Eksperimen | Penurunan RMSE | Penurunan MAE |
+|---|---:|---:|
+| PM - split waktu | 99.49% | 99.96% |
+| CO - split waktu | -2.31% | -3.01% |
+
+Nilai negatif berarti RF lebih buruk. Pada CO split waktu, RF tidak mengungguli pembanding linear. Penurunan besar PM terhadap linear juga dipengaruhi buruknya prediksi linear pada distribusi waktu uji; lihat seluruh empat model pada laporan rinci.
+
+[Detail evaluasi split waktu](hasil/evaluasi_20260909_124246_f546a8/laporan_evaluasi_metrik.md)
+
+## Arsip dan model firmware
+
+[CSV awal](arsip/sebelum_revisi/tabel_metrik_evaluasi.csv) dan [laporan arsip](arsip/sebelum_revisi/laporan_evaluasi_metrik.md) dipertahankan. Grafik lama berada di arsip/sebelum_revisi/grafik/. Label lama tidak diubah. Hasil baru di atas tidak mengganti header firmware aktif.

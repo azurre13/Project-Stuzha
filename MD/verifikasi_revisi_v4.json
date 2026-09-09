@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-09",
+  "firmware_version": "4.0.0",
+  "build_passed": true,
+  "manifest": {
+    "firmware_version": "4.0.0",
+    "source_sha256": "5f1eb11d9548c51b3bed24786e41661934a51de5cd55c73972cde5e4434e1bbc",
+    "model_pair_sha256": "d7f32c6097671a37ff90e22c4af5db2e333fbc0192f653125a4c9675bdd7cab7",
+    "files": {
+      "include/experimental_models.h": "ce237cd5da8bcafe6505191c40ccb66a9080bf5b2f0b6871536d862d7d019af7",
+      "include/ispu_calc.h": "90c3f3fa6ecde878e74981e0e5814c1b2efbef6f02e72e46690a57f134a597ee",
+      "include/ispu_control.h": "c12dda9832d34aeec75c314e4e71fef5f00eab0036d2bf123f3301f939a6c97e",
+      "include/model_co.h": "f7ef4fef9164724abd5d204ea39d9ae4dd4531606fa6716ddce753d36aa19048",
+      "include/model_pm.h": "936cce94135cec0abe10d0af83b29bfea3856bd459fc6923ec4c77df27c9de99",
+      "include/monitoring_core.h": "16de91ead6e964c3938e91c06c6b00c492e7a4ed9a449d3a7341e7f8e55f3836",
+      "include/pin_config.h": "dd239493195cabf7b81393058d49af8653c0a6cf5eabca0f67b39c881b61319c",
+      "include/rolling_ispu.h": "978f34f7ada334f3f1f57d4e8904c38d8e88e75777ac5deda1acb43e19f6a979",
+      "include/telemetry_contract.h": "b9b83bdff70e2e46bfa3d8f62bb184a60badcf2b7ec793081f448445aa9b4154",
+      "include/telemetry_v4.h": "e0227734fa13116f5e357929b6ecbea314c1bb599b43517a0913bf6e2b4e48b7",
+      "platformio.ini": "4eae5aabffee034647b3422d8c68acaff7c5d8f180e6ac14e71ae8416ba1ee42",
+      "scripts/build_identity.py": "fa8d0c4601068891fe9ec0cdb2a726f635a64efdda9e5b567185e6ded552e998",
+      "src/main.cpp": "c20bec8620181fed7332314c3082a0ea190e6909dc368d469cf5bd5b8d74f71f"
+    },
+    "sensor_calibration_validated": false,
+    "model_role": "experimental_ml_ispu_control",
+    "telemetry_schema": "STZ4",
+    "pm_physical_unit": "nominal_ug/m3_legacy_scale_assumption_unverified",
+    "co_nominal_target_unit": "mg/m3 (unvalidated MQ7 transfer)",
+    "deployment_choice": "historical_headers_preserved_no_benchmark_replacement"
+  },
+  "firmware_bin_sha256": "6f7e3b85b986ff801a5a121bd5ffd08264156f1781ff25321e7778e5fc63a475",
+  "flash_used_bytes": 1105593,
+  "flash_available_bytes": 1310720,
+  "static_ram_bytes": 80080,
+  "python_tests_passed": 13,
+  "cpp_v4_tests_passed": true,
+  "tests": [
+    "ISPU boundaries, actual RF inference and seven-day rolling window",
+    "One-frame category spike cannot borrow lower-level confirmation",
+    "Acquisition age threshold, 64-bit uptime and future timestamp",
+    "Fault fallback does not lower L5; gradual recovery to L1",
+    "Downloader and session analyzer: 13 Python tests"
+  ],
+  "changes": [
+    "Minimum observed category during upward confirmation",
+    "Local acquisition timeout above 2500 ms while main loop remains responsive",
+    "Stale queued frames rejected for valid control; fault snapshot keeps real timestamp and sequence"
+  ],
+  "preserved": [
+    "Both RF headers and DHT22 model inputs",
+    "PWM duties 33,38,56,128,217 and all pins",
+    "ISPU tables, 5 percent hysteresis, 8 second downward dwell",
+    "20 second ThingSpeak interval and schema STZ4"
+  ],
+  "uploaded": false,
+  "serial_ports_detected": [
+    "COM3"
+  ],
+  "physical_acceptance_passed": false,
+  "cloud_modified": false,
+  "committed_or_pushed": false,
+  "retrained_this_revision": false,
+  "private_release": "Program\\Kode\\release\\v4.0.0_5f1eb11d9548",
+  "previous_verification": "Program\\Kode\\release\\v4.0.0_b8995d57c98d\\verification_before_fan_stability.json",
+  "limitations": [
+    "Host tests and build do not validate physical fan operation",
+    "Acquisition timeout requires a responsive main loop; no tachometer feedback",
+    "Sensor model calibration limitations unchanged"
+  ]
+}

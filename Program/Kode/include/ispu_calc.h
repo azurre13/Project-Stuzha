@@ -1,93 +1,50 @@
-#ifndef ISPU_CALC_H
-#define ISPU_CALC_H
-
-#include <Arduino.h>
-
-// ============================================================
-// STANDAR ISPU INDONESIA (Permen LHK No. 14 Tahun 2020)
-// ============================================================
-// Rumus Interpolasi Linear:
-// I = ((Ia - Ib) / (Xa - Xb)) * (Xx - Xb) + Ib
-//
-// Di mana:
-// I  = ISPU terhitung
-// Ia = ISPU batas atas
-// Ib = ISPU batas bawah
-// Xa = Konsentrasi batas atas (breakpoint)
-// Xb = Konsentrasi batas bawah (breakpoint)
-// Xx = Konsentrasi polutan terukur (terkalibrasi ML)
-// ============================================================
-
-struct Breakpoint {
-    float Xb; // Konsentrasi batas bawah
-    float Xa; // Konsentrasi batas atas
-    int   Ib; // ISPU batas bawah
-    int   Ia; // ISPU batas atas
+#pragma once
+#include <cmath>
+#include <algorithm>
+#include <cstdint>
+namespace stuzha {
+// Permen LHK P.14/2020 Lampiran I: BOTH pollutant tables use ug/m3, 24 h.
+// Calling these functions on an instantaneous estimate produces a diagnostic
+// index, NOT a compliant 24-hour ambient-air measurement.
+constexpr float ISPU_POINTS[] = {0, 50, 100, 200, 300, 500};
+constexpr float PM_POINTS[] = {0, 15.5f, 55.4f, 150.4f, 250.4f, 500};
+constexpr float CO_POINTS_UG[] = {0, 4000, 8000, 15000, 30000, 45000};
+inline float interpolateIspu(float concentration, const float *points) {
+    if (!std::isfinite(concentration) || concentration < 0) return NAN;
+    for (int i=1; i<6; ++i) if (concentration <= points[i])
+        return ISPU_POINTS[i-1] + (concentration-points[i-1]) *
+            (ISPU_POINTS[i]-ISPU_POINTS[i-1])/(points[i]-points[i-1]);
+    return 500; // Caller MUST preserve above-range diagnostic separately.
+}
+inline int categoryCode(float index) {
+    if (!std::isfinite(index) || index < 0) return 0;
+    int rounded = int(std::lround(index));
+    return rounded<=50 ? 1 : rounded<=100 ? 2 : rounded<=200 ? 3 : rounded<=300 ? 4 : 5;
+}
+inline const char *categoryName(int category) {
+    static const char *names[] = {"Tidak tersedia", "Baik", "Sedang", "Tidak Sehat", "Sangat Tidak Sehat", "Berbahaya"};
+    return category>=0 && category<=5 ? names[category] : names[0];
+}
+// Ideal-gas conversion at declared fixed reference conditions: 25 C, 1 atm.
+// Do not silently change reporting units with the room's DHT temperature.
+constexpr float CO_MG_PER_PPM = 28.01f * 101325.0f / (8.314462618f * 298.15f) / 1000.0f;
+inline float coMgToPpm(float mg) { return mg / CO_MG_PER_PPM; }
+inline float coPpmToMg(float ppm) { return ppm * CO_MG_PER_PPM; }
+struct IspuResult {
+    float pm = NAN, co = NAN, maximum = NAN;
+    int category = 0, critical = 0; // 1 PM, 2 CO, 3 tied, 0 unavailable
+    bool above_range = false;
 };
-
-// Breakpoint PM2.5 (24 Jam) — Satuan: µg/m³
-// Kategori:
-// 0 - 50   : 0.0 - 15.5 µg/m³ (Baik)
-// 51 - 100 : 15.6 - 55.4 µg/m³ (Sedang)
-// 101 - 200: 55.5 - 150.4 µg/m³ (Tidak Sehat)
-// 201 - 300: 150.5 - 250.4 µg/m³ (Sangat Tidak Sehat)
-// > 300    : >= 250.5 µg/m³ (Berbahaya)
-static const Breakpoint BP_PM25[] = {
-    {0.0f,   15.5f,   0,   50},
-    {15.6f,  55.4f,  51,  100},
-    {55.5f, 150.4f, 101,  200},
-    {150.5f, 250.4f, 201, 300},
-    {250.5f, 500.0f, 301, 500}
-};
-
-// Breakpoint CO (8 Jam) — Satuan: ppm (atau mg/m³ konversi standar)
-// Kategori:
-// 0 - 50   : 0.0 - 4.4 ppm
-// 51 - 100 : 4.5 - 9.4 ppm
-// 101 - 200: 9.5 - 15.4 ppm
-// 201 - 300: 15.5 - 30.4 ppm
-// > 300    : >= 30.5 ppm
-static const Breakpoint BP_CO[] = {
-    {0.0f,   4.4f,   0,   50},
-    {4.5f,   9.4f,  51,  100},
-    {9.5f,  15.4f, 101,  200},
-    {15.5f, 30.4f, 201, 300},
-    {30.5f, 50.0f, 301, 500}
-};
-
-inline int hitung_sub_ispu(float konsentrasi, const Breakpoint *bp, int n_bp) {
-    if (konsentrasi <= 0.0f) return 0;
-
-    for (int i = 0; i < n_bp; i++) {
-        if (konsentrasi <= bp[i].Xa || i == n_bp - 1) {
-            float Xb = bp[i].Xb;
-            float Xa = bp[i].Xa;
-            float Ib = (float)bp[i].Ib;
-            float Ia = (float)bp[i].Ia;
-
-            float ispu = ((Ia - Ib) / (Xa - Xb)) * (konsentrasi - Xb) + Ib;
-            if (ispu < 0.0f) ispu = 0.0f;
-            if (ispu > 500.0f) ispu = 500.0f;
-            return (int)round(ispu);
-        }
+inline IspuResult estimateIspu(float pm_ug, float co_mg) {
+    IspuResult r;
+    r.pm = interpolateIspu(pm_ug, PM_POINTS);
+    r.co = interpolateIspu(co_mg*1000.0f, CO_POINTS_UG);
+    // A final two-pollutant index requires both channels. Never call missing CO zero.
+    if (std::isfinite(r.pm) && std::isfinite(r.co)) {
+        r.maximum = std::max(r.pm,r.co); r.category = categoryCode(r.maximum);
+        r.critical = r.pm==r.co ? 3 : r.pm>r.co ? 1 : 2;
+        r.above_range = pm_ug>PM_POINTS[5] || co_mg*1000.0f>CO_POINTS_UG[5];
     }
-    return 500;
+    return r;
 }
-
-inline int hitung_ispu_pm25(float pm25_ug) {
-    return hitung_sub_ispu(pm25_ug, BP_PM25, sizeof(BP_PM25)/sizeof(BP_PM25[0]));
 }
-
-inline int hitung_ispu_co(float co_ppm) {
-    return hitung_sub_ispu(co_ppm, BP_CO, sizeof(BP_CO)/sizeof(BP_CO[0]));
-}
-
-inline const char* get_kategori_ispu(int ispu) {
-    if (ispu <= 50)  return "Baik";
-    if (ispu <= 100) return "Sedang";
-    if (ispu <= 200) return "Tidak Sehat";
-    if (ispu <= 300) return "Sangat Tidak Sehat";
-    return "Berbahaya";
-}
-
-#endif // ISPU_CALC_H

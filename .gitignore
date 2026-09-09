@@ -56,3 +56,12 @@ Program/data/backup/*_backup_*.csv
 .pioenvs/
 .piolibdeps/
 compile_commands.json
+Program/Kode/include/secrets.h
+Program/Kode/include/build_info.h
+Program/data/downloads/
+Program/data/sessions/
+ml_training/runs/
+Program/Kode/release/
+*.exe
+*.joblib
+

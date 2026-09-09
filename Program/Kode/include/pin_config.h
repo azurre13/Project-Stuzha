@@ -2,7 +2,7 @@
 #define PIN_CONFIG_H
 
 // ============================================================
-// DEFINISI PIN HARDWARE (ESP32-S3) — PROJECT STUZHA
+// DEFINISI PIN HARDWARE (ESP32 esp32dev) — PROJECT STUZHA
 // ============================================================
 
 // Pin Sensor (Sesuai Kabel Fisik Terpasang di ESP32)
@@ -25,11 +25,11 @@
 #define FAN_PWM_RES             8
 #define FAN_PWM_CHANNEL         0
 
-// Level Kecepatan Kipas Khusus Kipas Industri 6200 RPM 12V 1.65A (PWM 8-bit: 0 - 255)
-#define FAN_SPEED_STANDBY      33   // 13% (~806 RPM - Kategori Baik: Ultra-Silent Standby)
-#define FAN_SPEED_LOW          38   // 15% (~930 RPM - Kategori Sedang: Silent Sleep Purify, Max Batas Nyaman)
-#define FAN_SPEED_MEDIUM       56   // 22% (~1364 RPM - Kategori Tidak Sehat: Active Clean, Adem & Tidak Bising!)
-#define FAN_SPEED_HIGH        128   // 50% (~3100 RPM - Kategori Sangat Tidak Sehat: Heavy Purge)
-#define FAN_SPEED_MAX         217   // 85% (~5270 RPM - Kategori Berbahaya: Max Emergency Purge)
+// Duty-cycle commands only; RPM, airflow and acoustics are not measured.
+#define FAN_SPEED_STANDBY      33
+#define FAN_SPEED_LOW          38
+#define FAN_SPEED_MEDIUM       56
+#define FAN_SPEED_HIGH        128
+#define FAN_SPEED_MAX         217
 
 #endif // PIN_CONFIG_H

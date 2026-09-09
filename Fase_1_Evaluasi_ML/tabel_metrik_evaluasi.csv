@@ -1,3 +1,5 @@
-Parameter,Sensor,R2_Sebelum,R2_Sesudah_ML,RMSE_Sebelum,RMSE_Sesudah_ML,Penurunan_RMSE_%,MAE_Sebelum,MAE_Sesudah_ML,Penurunan_MAE_%
-Partikulat PM2.5 (µg/m³),Sharp GP2Y1010AU0F + DHT22,0.9833,0.9997,15.05,1.98,86.9%,7.68,0.58,92.4%
-Karbon Monoksida CO (ppm),MQ-7 (MOS) + DHT22,0.7788,0.8087,0.66,0.61,7.0%,0.48,0.44,9.8%
+eksperimen,pembanding,model_rf,rmse_sebelum,rmse_sesudah_ml,penurunan_rmse_persen,mae_sebelum,mae_sesudah_ml,penurunan_mae_persen,r2_sebelum,r2_sesudah_ml,sumber
+PM - metode awal,input_sintetis,random_forest,15.049103577744416,1.975552292763684,86.87262478753048,7.680121950432587,0.5828798147473357,92.41053959156854,0.9832745084271772,0.9997117729823268,hasil\reproduksi_awal_20260909_124230_faba1c\pm\tabel_metrik_evaluasi.csv
+CO - metode awal,linear_training_only,random_forest,0.6580204725587843,0.6110794835209623,7.133666959522826,0.484371074530963,0.4353699094525863,10.116451550255476,0.7781388347403153,0.8086634742083221,hasil\reproduksi_awal_20260909_124230_faba1c\co\tabel_metrik_evaluasi.csv
+PM - split waktu,linear_all_features,rf_all_features,0.0421707271429802,0.0002136857706504,99.49328412117272,0.0337143769397122,1.1905067675613217e-05,99.96468845413663,-545.9672402382865,0.9859560154353462,hasil\evaluasi_20260909_124246_f546a8\pm-simulation\tabel_metrik_evaluasi.csv
+CO - split waktu,linear_all_features,rf_all_features,0.7094790958337671,0.7258824001319509,-2.312020804348992,0.543889761685189,0.5602397005891085,-3.0061126455590705,0.7023240460977191,0.6884002652291406,hasil\evaluasi_20260909_124246_f546a8\uci-co\tabel_metrik_evaluasi.csv

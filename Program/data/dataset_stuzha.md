@@ -1,111 +1,54 @@
-# Dataset Stuzha
+# Data penelitian Stuzha
 
-Folder ini memuat rekaman prototipe dan dataset publik untuk eksperimen model. Ketiganya memiliki peran berbeda; dataset publik bukan ground truth bagi perangkat Stuzha secara otomatis.
+Revisi 8 September 2026. Dataset perangkat, dataset publik, dan simulasi memiliki peran berbeda. CSV asli tidak diubah oleh revisi ini.
 
-## Rekaman kamar
+## Sesi historis
 
-Berkas: [Dataset_Project_Stuzha_ThingSpeak_Lengkap.csv](Dataset_Project_Stuzha_ThingSpeak_Lengkap.csv).
+[CSV lokal terakhir](Dataset_Project_Stuzha_ThingSpeak_Lengkap.csv) diperiksa dengan analyze_session.py:
 
-Ringkasan pemeriksaan 8 September 2026 atas snapshot lokal:
+- 1.389 baris, 8 September 2026 13:14:07–21:17:50 WIB; durasi 8 jam 3 menit 43 detik.
+- Interval median 20 detik, minimum 19 detik, maksimum 1.279 detik.
+- Gap ID 1195–1196: 19:52:10–20:13:29 WIB. Pemilik menyatakan router mati.
+- SHA256: 3fe753182a059ee0f6e4c76912dba3009be4e81b07bfb0cd7199fc9cfee8b7ee.
+- Data ini memakai label lama, bukan format v3; tidak memiliki raw GP/MQ7 dan identitas boot.
 
-| Aspek | Hasil |
-|---|---|
-| Kondisi menurut pemilik | Kamar, AC disetel 24–27°C, tanpa alat pembanding |
-| Periode WIB | 6 September 2026, 01.00.11–18.22.33 |
-| Durasi tercatat | 17 jam 22 menit 22 detik |
-| Baris | 3.126 |
-| ID | 1–3.126, berurutan, tanpa duplikat |
-| Kolom kosong / timestamp duplikat | Tidak ditemukan |
-| Interval | Umumnya 20 detik; dua jeda >30 detik sebesar 40 dan 32 detik |
-| Suhu sensor | 22,8–29,1°C; rata-rata 26,16°C |
-| RH | 46,8–72,3%; rata-rata 61,72% |
-| PWM terekam | 13%: 2.725; 15%: 398; 50%: 1; 85%: 2 baris |
-| Perubahan PWM antarrekaman | 26 |
+[Arsip sesi 18 jam](backup/Dataset_Project_Stuzha_ThingSpeak_Sesi1_18Jam_Sept5-6.csv) menyimpan sesi sebelumnya. Statistik terdahulu 3.126 baris/17 jam 22 menit 22 detik dan PM menetap 0,00031 pada 84,39% baris adalah catatan sesi tersebut, bukan ringkasan CSV terakhir. Tidak boleh menafsirkan nilai model yang rendah sebagai udara bebas partikel.
 
-Setelan AC berbeda dari pengukuran suhu di titik sensor. Tidak adanya jeda panjang tidak membuktikan uptime tanpa reset. PWM 22% tidak terlihat dalam log; kejadian di antara snapshot 20 detik tidak dapat dikesampingkan.
+Kolom historis PM25_Calibrated_ug_m3, CO_Calibrated_ppm dan ISPU_Final merupakan nama lama; tidak membuktikan kalibrasi/satuan benar. Field MQ135 merupakan ADC/proksi gas campuran. Pertahankan data historis untuk uji pendahuluan.
 
-### Pola yang perlu ditelusuri
+## Sesi v3.0, v3.1 dan v4
 
-- Output PM persis 0,00031 pada 2.638 baris (84,39%).
-- Rangkaian terpanjang pada nilai tersebut: 878 baris, 13.28.58–18.21.32 WIB.
-- Lonjakan PM pada 10.41.36: 372,61343; pada 13.28.38: 373,28568; pada 18.21.52: 189,25754. Rekaman berikutnya kembali rendah.
-- Ada 25 baris MQ-135 ADC >2.500, dengan PWM 13–15%. Kode saat ini belum memiliki booster yang disebut roadmap lama.
+Pemetaan field dan status ada pada [firmware](../Kode/firmware_stuzha.md). CSV downloader baru menggunakan Timestamp_UTC, Timestamp_WIB (offset eksplisit), Entry_ID, Schema, field1..field8 dan Status_Raw. Tidak mengubah angka menjadi konsentrasi atau kategori.
 
-Nilai di atas adalah keluaran implementasi, bukan konsentrasi referensi. Penyebab pola dapat berasal dari lingkungan, pembacaan, atau model dan belum diketahui. Penurunan dalam satu interval tidak membuktikan waktu pembersihan purifier.
+Schema stuzha_v4 ditentukan dari STZ4|: field3 PM nominal, field4 CO nominal ppm, field5 indeks instan, field8 kode kategori. Raw GP/MQ7 berada pada status a; d berisi mean24/indeks24/coverage. Nama dan satuan nominal tidak memvalidasi konsentrasi fisik. Schema stuzha_v3 ditentukan dari STZ3|, stuzha_v31 dari STZ31|. Selain itu diberi legacy_or_unknown. Pada v3.1 field 3/4 adalah keluaran model eksperimental, field 5/7/8 raw GP/MQ135/MQ7, dan sequence/flags di status. Pada v3.0 field 3/4 masih raw dan field 5/8 sequence/flags. ID cloud bisa diulang setelah channel dibersihkan; jangan membersihkan channel di tengah studi. Data beda sesi/channel harus diberi identitas terpisah. Satu folder unduhan dapat memuat beberapa versi; analisis harus memisahkannya.
 
-### Arti kolom
+## Download tanpa menimpa arsip
 
-Timestamp UTC/WIB menunjukkan waktu feed. Entry_ID adalah ID cloud. Suhu/RH berasal dari firmware, termasuk kemungkinan fallback tanpa flag. Kolom PM25_Calibrated_ug_m3 dan CO_Calibrated_ppm memakai label lama; status validasi dan satuan harus dijelaskan ketika dianalisis. Jalur gas utama menggunakan MQ-7 untuk CO. ISPU_Final dan kategori merupakan hasil hitungan firmware. Kipas_PWM_Persen adalah perintah. Raw_VOC_ADC adalah respons analog MQ-135 untuk indikator/proksi VOC atau gas campuran, bukan konsentrasi VOC/TVOC terkalibrasi. MQ-7 dan MQ-135 telah dikonfirmasi pemilik.
+Dari root proyek, menggunakan Python 3.10+:
 
-CSV belum memuat raw ADC GP2Y dan sensor gas utama, flag kegagalan, uptime/reset, versi firmware/model, serta catatan aktivitas/AC. Karena itu, koreksi model berikutnya tidak dapat diterapkan ulang secara andal ke seluruh rekaman ini. Simpan sebagai uji pendahuluan, dengan data asli tetap utuh.
+```sh
+python Program/download_thingspeak_dataset.py --start 2026-09-08 --end 2026-09-15
+```
+
+Tanggal tersebut hanya contoh; sesuaikan awal/akhir eksperimen. Tanpa timezone berarti WIB. --end berupa tanggal mencakup sampai 23:59:59 WIB; untuk tepat 168 jam gunakan tanggal/jam eksplisit. Tanpa --start, awal query memakai tanggal pembuatan channel. Default output adalah snapshot baru bertimestamp di Program/data/downloads/.
+
+Pilihan --channel, --start, --end, --window-hours, --output, --api-key tersedia melalui --help. Read key bisa diberikan melalui THINGSPEAK_READ_API_KEY agar tidak ditulis pada command history. File output eksplisit yang sudah ada dibackup sebelum atomic replace; --no-backup hanya bila benar-benar menghendaki penggantian tanpa backup.
+
+Downloader meminta status=true, memakai UTC, window tumpang tindih dan deduplikasi ID. Window penuh pada batas 8.000 dipecah dan kedua bagiannya diunduh ulang. Kegagalan request dicoba terbatas lalu menggagalkan seluruh unduhan; tidak disamarkan sebagai window kosong. Metadata/timestamp tidak valid juga menggagalkan operasi. Tidak ada klaim bahwa semua sampel perangkat telah terkirim hanya karena semua window cloud berhasil dibaca.
+
+## Analisis untuk Bab 3
+
+```sh
+python Program/analyze_session.py Program/data/downloads/NAMA_FILE.csv --require-v4 --output HASIL_BARU.json
+```
+
+Output JSON baru tidak menimpa file yang ada. Laporan menghitung durasi observasi, interval/gap, ID duplikat, format rusak, build/boot, flags, tingkat kipas, monotonisitas sampel/uptime/slot, cakupan slot cloud yang teramati, heap dan latensi inferensi yang tersampel. Sumber tidak diubah. --require-v3 menerima keluarga format v3 yang dapat dibaca; --require-v31 menuntut hanya v3.1; --require-v4 dipakai untuk sesi baru dan menuntut hanya v4. Analyzer memisahkan schema/build/boot dan menolak kombinasi versi/status yang belum didukung. Kolom Schema CSV hanya petunjuk; status asli menentukan decoder.
+
+Cakupan slot per boot = jumlah slot unik diterima / (slot terakhir - slot pertama + 1). Ini bukan packet-loss jaringan dan tidak mencakup waktu sebelum/di luar observasi. Awal/akhir tujuh hari tetap dicatat dalam logbook. Data yang tak pernah sampai ke cloud tidak dapat direkonstruksi. Reset ketika seluruh periode offline bisa tidak terlihat.
 
 ## Dataset publik
 
-### Mendeley — Indoor Air Pollutants
+- Mendeley, Sonawani & Patil (2022): [metadata](https://data.mendeley.com/datasets/2r232jpfb2/1), berkas mendeley/Indoor_Air_Pollution_Data.csv. Metadata PM menyebut ug/m3, skrip lama mengasumsikan mg/m3. Konflik belum terselesaikan; pipeline simulasi baru mempertahankan angka asli tanpa x1000, dengan unit fisik unresolved. Sensor serupa tidak membuatnya ground truth perangkat Stuzha.
+- UCI Air Quality: [metadata](https://archive.ics.uci.edu/dataset/360/air+quality), berkas uci/AirQualityUCI.csv. CO(GT) reference analyzer mg/m3; PT08.S1 bukan MQ7 ADC. Sentinel -200 missing. Pipeline baru tidak memetakan PT08 ke ADC ESP32.
 
-- Penulis: Shilpa Sonawani dan Kailas Patil; versi 1, 2022.
-- [Sumber dan metadata](https://data.mendeley.com/datasets/2r232jpfb2/1), DOI 10.17632/2r232jpfb2.1.
-- Lokasi lokal: `mendeley/Indoor_Air_Pollution_Data.csv`.
-- Metadata: 173.468 rekaman, November 2020–Juli 2022; GP2Y1010AU0F dan sensor lingkungan BME280.
-- PM pada metadata bersatuan µg/m³. Skrip lokal mengasumsikan mg/m³ dan mengalikan 1.000. Perbedaan ini harus ditelusuri ke sumber sebelum skala dipakai untuk klaim fisik.
-- Data PM berasal dari sensor berbiaya rendah; tidak tersedia pasangan instrumen referensi independen dalam kolom yang dipakai skrip.
-- Fungsi saat ini: sumber target untuk eksperimen PM sintetis, bukan validasi kalibrasi GP2Y Stuzha.
-
-### UCI — Air Quality
-
-- [Sumber dan metadata](https://archive.ics.uci.edu/dataset/360/air+quality), DOI 10.24432/C59K5F.
-- Lokasi lokal: `uci/AirQualityUCI.csv`, XLSX, dan ZIP.
-- Metadata menyebut 9.358 instance. Jumlah baris yang dibaca/valid setelah pembersihan harus dilaporkan dari berkas yang digunakan.
-- Kolom relevan: CO(GT), PT08.S1(CO), T, RH; sentinel -200 menandakan data hilang.
-- CO(GT) adalah konsentrasi rerata per jam dari reference analyzer dalam mg/m³. PT08.S1(CO) adalah respons sensor tin oxide.
-- Pemetaan PT08.S1(CO) ke 800–3.600 tidak membuktikan kesetaraan dengan ADC MQ-7 pada Stuzha.
-- Fungsi: benchmark model pada dataset UCI, bukan bukti akurasi sensor Stuzha.
-
-## Skrip Pengunduh Telemetri (Downloader)
-
-Skrip: [download_thingspeak_dataset.py](../download_thingspeak_dataset.py)
-
-Skrip ini mengunduh rekaman telemetri dari ThingSpeak (Channel `3480764`), mengonversinya ke Waktu Indonesia Barat (WIB), dan menyimpannya dalam format CSV standar ilmiah.
-
-### Status Implementasi (Diperbarui 8 September 2026)
-- **Time-Windowing Pagination**: Batasan limit MathWorks 8.000 baris telah diatasi menggunakan metode *sliding window* berbasis waktu UTC (`start` dan `end`). Skrip mampu menarik data jangka panjang (>30.000 baris untuk periode 7 hari ke atas) tanpa terpotong.
-- **Proteksi Data Historis (Auto-Backup)**: Skrip otomatis membuat salinan cadangan bertanggal di folder `Program/data/backup/` sebelum memperbarui file utama, sehingga data sesi sebelumnya tidak akan hilang tertimpa.
-- **Atomic File Write**: Data ditulis ke berkas sementara `.tmp` terlebih dahulu, memastikan file CSV tidak akan rusak/korup jika koneksi terputus di tengah jalan.
-- **Deduplikasi**: Pengecekan `entry_id` memastikan data tidak memiliki rekaman ganda di batas jendela waktu.
-
-### Cara Penggunaan
-
-1. **Unduh Otomatis Seluruh Rekaman (Default)**:
-   ```bash
-   python Program/download_thingspeak_dataset.py
-   ```
-   *Mengecek status channel, menarik seluruh data yang ada, dan menyimpannya ke `Program/data/Dataset_Project_Stuzha_ThingSpeak_Lengkap.csv`.*
-
-2. **Unduh dengan Filter Tanggal Tertentu**:
-   ```bash
-   # Contoh: hanya dari tanggal 8 September 2026 ke atas
-   python Program/download_thingspeak_dataset.py --start 2026-09-08
-
-   # Contoh: rentang tanggal spesifik (WIB)
-   python Program/download_thingspeak_dataset.py --start 2026-09-08 --end 2026-09-10
-   ```
-
-3. **Simpan ke File Berbeda (Tanpa Mengubah File Utama)**:
-   ```bash
-   python Program/download_thingspeak_dataset.py --output "Program/data/Dataset_Uji_Sesi2.csv"
-   ```
-
-4. **Daftar Opsi CLI**:
-   - `--channel`: ID Channel ThingSpeak (default: `3480764`).
-   - `--api-key`: Read API Key (kosongkan jika channel public).
-   - `--start`: Waktu awal dalam format `YYYY-MM-DD` atau ISO.
-   - `--end`: Waktu akhir dalam format `YYYY-MM-DD` atau ISO.
-   - `--window-hours`: Ukuran jendela waktu per batch (default: `24` jam).
-   - `--output`: Lokasi file keluaran CSV.
-   - `--no-backup`: Lewati pembuatan file backup cadangan.
-
-## Format pengambilan berikutnya
-
-Tambahkan raw ADC seluruh sensor analog, suhu/RH beserta flag, output model, perintah PWM, uptime/reset, dan identitas firmware/model. Catat kondisi kamar, posisi alat, perubahan AC, aktivitas, awal/akhir sesi, serta perubahan hardware.
-
-Pisahkan sesi sebelum dan setelah perubahan firmware. Simpan log lokal saat offline; keberhasilan monitoring lokal berbeda dari keberhasilan upload cloud. Data prediksi model sendiri tidak boleh diperlakukan sebagai ground truth kalibrasi baru.
+Lihat [training](../../ml_training/training_ml_stuzha.md) dan [evaluasi](../../Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md). Jangan menggunakan model sendiri sebagai ground truth kalibrasi baru.

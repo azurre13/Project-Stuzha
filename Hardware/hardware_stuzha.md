@@ -1,6 +1,6 @@
 # Hardware Stuzha
 
-Dokumentasi rakitan prototipe monitoring indoor. Acuan kondisi aktual adalah penjelasan pemilik pada 8 September 2026. Spesifikasi yang belum diukur ditandai sebagai pekerjaan terbuka.
+Dokumentasi rakitan prototipe monitoring indoor. Fakta pemilik dikonfirmasi 8 September 2026; dokumentasi diperbarui 9 September 2026. Spesifikasi yang belum diukur tetap ditandai sebagai pekerjaan lapangan.
 
 ## Casing dan susunan aliran
 
@@ -80,3 +80,22 @@ Foto arsip belum menggantikan konfirmasi setiap label komponen dan konfigurasi t
 - Catatan perubahan rakitan, tanggal, dan versi firmware.
 
 Diagram CAD/skematik terpisah belum tersedia dalam inventaris berkas yang diperiksa. Blueprint dan skematik pada dokumen lama masih berupa rencana.
+
+## Daya dan pengoperasian sensor: klarifikasi terbaru
+
+Pemilik menyatakan adaptor 12 V terhubung ke kipas dan expansion ESP32; expansion menyediakan jalur 5 V untuk ESP32/modul. Selama studi hanya ESP32 dan Wi-Fi menyala. Diagram berikut adalah alur yang diceritakan pemilik, bukan skematik elektronik yang telah diperiksa:
+
+```text
+Adaptor 12 V -> kipas
+            -> input expansion ESP32 -> jalur 5 V ke board/modul
+```
+
+Tipe regulator expansion, kapasitas arus, tegangan aktual, ground bersama dan pembagi tegangan ADC belum diukur dalam revisi software ini. Pemetaan pin tetap sesuai konfirmasi. Jalur suplai sensor 5 V tidak berarti input analog ESP32 boleh diberi 5 V langsung; attenuasi ADC memperluas rentang ukur, bukan proteksi tegangan. Periksa rangkaian/pembagi tegangan aktual sebelum menilai data saturasi. Jangan memindah pin berdasarkan dugaan.
+
+- **GP2Y1010AU0F:** firmware v3 menargetkan pulsa 10 ms, sampling sekitar 280 us, lebar 320 us; menyimpan deviasi timing dan rail ADC. Acuan [datasheet](https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2y1010au_e.pdf) serta [application note](https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2y1010au_appl_e.pdf). Orientasi konektor, cahaya luar, rangkaian LED dan komponen RC perlu dicocokkan dengan foto/rangkaian. Tidak ada perubahan wiring oleh AI.
+- **MQ-7:** suplai 5 V yang disebut pemilik belum membuktikan siklus heater. [Manual MQ-7 Winsen v1.3](https://cdn.sparkfun.com/datasheets/Sensors/Biometric/MQ-7%20Ver1.3%20-%20Manual.pdf) menetapkan fase tinggi 5 V/60 s dan rendah 1,5 V/90 s. Model/modul aktual perlu dicocokkan. Firmware v3 tidak mengendalikan heater melalui GPIO baru; mencatat ADC dan flag heater-unverified. Pada v4 keluaran RF ditampilkan sebagai estimasi model CO eksperimental dengan target nominal mg/m3 dan konversi tampilan ppm pada25C/1atm; ini tidak memvalidasi heater atau konsentrasi CO ruangan.
+- **MQ-135:** [manual Winsen v1.6](https://www.winsen-sensor.com/d/files/manual/mq135.pdf) menjelaskan respons terhadap beberapa gas, termasuk amonia dan uap kelompok benzena. Suplai heater 5 V tidak membuat sensor selektif TVOC. Pembacaan tetap respons gas campuran/proksi VOC dalam ADC.
+- Manual MQ yang dirujuk memberi kondisi pemanasan awal lebih dari 48 jam. Catat riwayat sensor menyala/padam dan kondisi penyimpanan. Jangan menyebut baseline model pada arsip v3.1 sebagai pengganti pemanasan sensor gas atau kalibrasi gas.
+- **DHT22:** tetap sensor suhu/RH; setpoint AC 24–27 C bukan nilai referensi suhu di posisi DHT.
+
+Firmware v3 menjaga brownout detector aktif, menandai ADC rail, dan memisahkan kanal buzzer/kipas. Perubahan ini membantu diagnosis; belum membuktikan catu daya atau pulsa fisik telah lolos pengukuran. Tindak lanjut lapangan tercantum pada [protokol](../MD/protokol_pengambilan_data_7_hari.md).

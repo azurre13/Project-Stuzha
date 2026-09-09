@@ -1,76 +1,51 @@
 # Project Stuzha
 
-Prototipe monitoring kualitas udara indoor berbasis ESP32, dengan pencatatan IoT, eksperimen inferensi Random Forest lokal, serta kipas dan filter sebagai fitur pendukung.
+Prototipe low-cost berbasis ESP32: **GP2Y/MQ7 + suhu/RH → dua RF TinyML → estimasi polutan → sub-indeks → maksimum/kategori → kipas**, dengan MQ135 sebagai proksi gas campuran pendukung. Versi aktif repositori **4.0.0, 9 September 2026**.
 
-## Fokus dan status penelitian
+## Status dan batas
 
-Fokus utama penelitian adalah pembacaan sensor, keterlacakan data, kestabilan operasi, komunikasi IoT, dan respons sistem monitoring. Perangkat fisik sudah beroperasi. Pengumpulan data jangka panjang dan pemeriksaan perangkat sedang berlangsung.
+Build v4 berhasil dan firmware telah di-upload serta diverifikasi berjalan pada ESP32 (9 September 2026). Identitas firmware dicatat di [verifikasi v4](MD/verifikasi_revisi_v4.json). Pengujian sensor, inferensi TinyML, kendali kipas responsif, dan telemetri IoT (ThingSpeak Channel 3480764) telah aktif secara fisik. Kode memulihkan fungsi awal penelitian; keberhasilan kompilasi dan upload tidak menggantikan kalibrasi laboratorium resmi.
 
-Model ML dan keluaran indeks masih eksperimental. Belum tersedia alat pembanding untuk memvalidasi akurasi konsentrasi PM maupun gas pada Stuzha. Dataset publik dan hasil simulasi belum membuktikan kalibrasi alat fisik. Target SINTA 3 atau SINTA 2 merupakan arah publikasi, bukan status kelayakan atau jaminan penerimaan.
+Kedua header RF historis dipertahankan dengan fitur yang sesuai eksperimen lamanya. PM memakai asumsi unit ug/m3 nominal legacy yang belum terverifikasi; CO target asal mg/m3, dikonversi ke ppm untuk tampilan, dengan transfer MQ7 belum tervalidasi. Flags tetap menyatakan keterbatasan ini. Tidak ada retraining yang diklaim meningkatkan akurasi tanpa label rujukan. [Keputusan metode v4](MD/metode_ispu_v4.md) menjelaskan apa yang selesai dan apa yang tidak dapat diselesaikan dari kode saja.
 
-## Membaca konteks proyek
+## Pengambilan dan alur data
 
-Untuk AI yang melanjutkan proyek, mulai dari [AGENTS.md](AGENTS.md), lalu planning/roadmap dan README bagian terkait. Dokumen ini adalah pintu masuk ringkasan; rincian tiap topik dimiliki oleh README pada tabel navigasi. Klarifikasi terbaru pemilik perlu dicatat pada dokumen terkait, bukan hanya di percakapan.
+Field STZ4: T, RH, PM model nominal, CO model nominal ppm, indeks estimasi instan, PWM%, MQ135 ADC, kode kategori estimasi. Raw GP/MQ7, flags, sequence, versi/boot, latensi dan estimasi indeks24jam tersimpan pada status. Detail [firmware](Program/Kode/firmware_stuzha.md).
 
-Bedakan **keterangan pemilik**, **implementasi kode**, **hasil pengujian**, dan **rencana**. Tanda selesai pada roadmap harus menjelaskan apa yang selesai. Kode yang ada di repositori belum otomatis teridentifikasi sebagai versi pembuat seluruh rekaman CSV atau versi yang terpasang saat ini.
+Indeks instan memakai interpolasi tabel regulasi untuk respons cepat, dengan label estimasi instan. Ring RAM terpisah menghitung rerata24jam dan indeks dari kedua rerata setelah durasi/kelengkapan cukup. Tidak ada baseline relatif per boot. Semua hasil konsentrasi/indeks tetap bergantung pada asumsi model; tidak disebut ISPU resmi.
+
+Kipas naik setelah konfirmasi sekitar1detik, turun8detik per tingkat dengan histeresis5%. Sinyal jenuh/fault tidak otomatis membunyikan alarm polusi. Buzzer berhenti ketika kategori saat ini turun meskipun kipas masih melambat.
+
+ESP32 dan Wi-Fi saja cukup untuk operasi. Cloud sekitar20detik; tanpa jaringan tidak ada replay sampel, tetapi ring24jam tetap berjalan di RAM selama alat menyala. Baca [protokol tujuh hari](MD/protokol_pengambilan_data_7_hari.md). Pisahkan data STZ3,STZ31,STZ4 dan legacy; jangan menghapus arsip.
 
 ## Rakitan aktual
 
-Berdasarkan penjelasan pemilik pada 8 September 2026:
+Menurut pemilik: casing gabus keras, intake bawah/samping, karbon kotak dan filter mobil dipotong (bukan HEPA), ruang sekitar 5 cm sebelum kipas 12 × 12 cm, exhaust atas. GP2Y berlubang horizontal di intake; MQ-7 tegak sebelum filter. Adaptor 12 V menyuplai kipas dan expansion board yang menyediakan jalur 5 V. Pengaturan heater MQ-7 belum terbukti; lihat [hardware](Hardware/hardware_stuzha.md).
 
-- Casing dari gabus keras; dimensi luar dan detail bentuk perlu didokumentasikan dari rakitan.
-- Intake di bawah, exhaust di atas.
-- Aliran: intake → filter karbon kotak → filter mobil yang dipotong → ruang kosong sekitar 5 cm → kipas 12 × 12 cm → exhaust.
-- Filter bukan HEPA. Ruang sebelum kipas merupakan ruang aliran; istilah “vacuum” tidak menyatakan kondisi vakum terukur.
-- Lubang sensor GP2Y menghadap horizontal di area intake.
-- Sensor gas yang dikonfirmasi pemilik adalah **MQ-7 untuk CO** dan **MQ-135 sebagai indikator/proksi VOC atau gas campuran**. MQ-7 dipasang tegak pada dinding bawah di intake, sebelum filter.
-- Konfigurasi kode memakai target `esp32dev`. Varian board fisik perlu dicocokkan dengan marking sebelum memakai sebutan ESP32-S3 dalam naskah.
-- Pemilik menyatakan pin saat ini seharusnya sudah benar. Pemetaan dipertahankan sebagai konfigurasi kerja; belum ada bukti kesalahan pin dari pemeriksaan ini. Ini bukan hasil pengukuran wiring independen, dan terpisah dari pencatatan varian board.
+Pin dikonfirmasi pemilik dan dipertahankan: GP2Y Vo 34/LED 5, MQ-7 32, MQ-135 33, DHT22 4, fan 19, buzzer 18. Target build `esp32dev`; jangan menulis ESP32-S3 tanpa bukti.
 
-Detail ada di [Hardware](Hardware/hardware_stuzha.md). Efisiensi filtrasi, CADR, penghilangan CO, kebisingan, RPM aktual, dan penghematan energi belum diukur pada perangkat ini.
+## Bukti dan batas penelitian
 
-## Bukti yang tersedia
+CSV lokal yang diperiksa pada 8 September memuat **1.389 baris sesi 8 September, 13:14:07–21:17:50 WIB**. Gap 19:52:10–20:13:29 WIB dijelaskan pemilik sebagai router mati. Arsip sesi sebelumnya tersedia terpisah. Statistik lengkap dan hash berada pada [data](Program/data/dataset_stuzha.md).
 
-Snapshot CSV lokal yang diperiksa pada 8 September 2026 memuat uji kamar tanggal 6 September 2026: 3.126 baris dari 01.00.11 sampai 18.22.33 WIB, selama 17 jam 22 menit 22 detik. Pemilik menyebut setelan AC 24–27°C. Ini merupakan uji pendahuluan operasional, bukan validasi akurasi sensor atau bukti efektivitas purifier. Jika CSV diperbarui, hitung ulang sebelum mengutip statistik ini sebagai kondisi file terbaru.
+Belum ada alat pembanding. Respons terhadap debu/asap tidak membuktikan akurasi konsentrasi atau efisiensi filtrasi. Model PM lama menggunakan gangguan sintetis; model CO lama memakai respons UCI yang diubah skalanya. Model tersebut tidak memvalidasi sensor fisik. Benchmark UCI baru menggunakan satuan yang benar dan split waktu; hasilnya tidak otomatis mendukung keunggulan RF.
 
-Sebanyak 84,39% keluaran model PM bernilai persis 0,00031 dan terdapat tiga lonjakan di atas 100 pada label skala CSV. Penyebab belum diketahui karena raw PM dan raw sensor gas utama belum tersimpan di CSV. Nilai rendah tidak membuktikan udara bebas partikel. Lihat [catatan dataset](Program/data/dataset_stuzha.md).
+## Navigasi konteks
 
-## Alur implementasi saat ini
-
-```text
-Sensor analog + suhu/RH
-  → konversi/input model eksperimental
-  → estimasi PM dan gas
-  → indeks sesaat dari tabel firmware
-  → perintah PWM, alarm, serial, dan ThingSpeak
-```
-
-Indeks saat ini belum dapat disebut pelaporan ISPU resmi: satuan, breakpoint CO, dan waktu perataan perlu diperbaiki. Nama variabel `calibrated` dalam kode/CSV adalah label implementasi lama, bukan bukti validasi.
-
-## Navigasi
-
-| Lokasi | Isi |
+| Dokumen | Pemilik informasi |
 |---|---|
-| [Planning](MD/konteks%20_planing_jurnal_AQI.md) | Ruang lingkup, kontribusi, batas klaim |
-| [Roadmap](MD/roadmap_dan_langkah_selanjutnya.md) | Urutan perbaikan dan pengujian |
-| [Hardware](Hardware/hardware_stuzha.md) | Rakitan aktual dan dokumentasi fisik |
-| [Firmware](Program/Kode/firmware_stuzha.md) | Pin pada kode, API, telemetri, masalah terbuka |
-| [Data](Program/data/dataset_stuzha.md) | Rekaman kamar, dataset publik, downloader |
-| [Evaluasi ML](Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md) | Simulasi, benchmark, artefak lama |
-| [Training](ml_training/training_ml_stuzha.md) | Dua pipeline model, keluaran dan efek samping eksekusi |
-| [Referensi](referensi/referensi%20garnie/daftar_referensi.md) | Sumber dan batas penggunaannya |
+| [AGENTS](AGENTS.md) | Aturan kerja AI dan pembedaan bukti |
+| [Planning](MD/konteks%20_planing_jurnal_AQI.md) | Pertanyaan penelitian dan kontribusi |
+| [Roadmap](MD/roadmap_dan_langkah_selanjutnya.md) | Status software dan pekerjaan lapangan |
+| [Protokol 7 hari](MD/protokol_pengambilan_data_7_hari.md) | Persiapan, logbook, analisis Bab 3 |
+| [Hardware](Hardware/hardware_stuzha.md) | Rakitan, daya, pin dan ketidakpastian fisik |
+| [Firmware](Program/Kode/firmware_stuzha.md) | Algoritma dan kontrak telemetri |
+| [Data](Program/data/dataset_stuzha.md) | Sesi, format, downloader dan analisis |
+| [Training](ml_training/training_ml_stuzha.md) | Pipeline yang tidak menimpa firmware |
+| [Evaluasi ML](Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md) | Eksperimen publik dan batas interpretasi |
+| [Referensi](referensi/referensi%20garnie/daftar_referensi.md) | Sumber primer dan koleksi kandidat |
 
-Skrip training berada di `ml_training/`. Pengunduh berada di `Program/download_thingspeak_dataset.py`, dengan launcher `Download_Dataset_ThingSpeak.bat`.
-
-## Prioritas
-
-1. Dokumentasikan wiring MQ-7/MQ-135 yang telah dikonfirmasi dan cocokkan varian board dengan perangkat fisik.
-2. Lengkapi logger raw sensor, validitas, uptime/reset, dan versi firmware/model.
-3. Perbaiki downloader berdasarkan rentang waktu agar arsip satu minggu utuh.
-4. Telusuri PM menetap/lonjakan, lalu periksa kendali dan indeks.
-5. Jalankan pengujian operasional terstruktur dan tulis hasil sesuai bukti.
-
-Pada rangkaian pembaruan 8 September 2026, README/planning/roadmap/laporan diperbaiki, komentar sensor firmware diperjelas, dan dua deskripsi eksplorasi dataset dikoreksi. Logika firmware, model, dataset, dan grafik tidak diubah. Tidak ada training ulang atau upload perangkat. Masalah fungsi kode pada roadmap tetap terbuka.
+Target Sinta 2/3 merupakan tujuan publikasi, bukan jaminan penerimaan. Perbaikan ini memusatkan kontribusi pada evaluasi deployment TinyML yang menggerakkan aktuator, transparansi raw/model, serta operasi monitoring yang dapat ditelusuri. Manfaat terhadap akurasi fisik memerlukan bukti tambahan.
 
 ## Kolaborator
 

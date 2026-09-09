@@ -1,10 +1,10 @@
-# Arsip firmware lama
+# Arsip firmware sebelum v3
 
-Folder ini menyimpan implementasi historis untuk penelusuran perubahan. Firmware aktif berada di [src/main.cpp](../src/main.cpp), dengan konfigurasi [platformio.ini](../platformio.ini).
+Firmware aktif berada di [main.cpp](../src/main.cpp). Folder ini tidak termasuk sumber build PlatformIO.
 
-Konfigurasi Stuzha saat ini, dikonfirmasi pemilik pada 8 September 2026:
+- kode_program_lama.cpp: implementasi historis dengan MQ2/eCO2; bukan identitas sensor yang terpasang sekarang.
+- ispu_calc_v2.h: tabel/perhitungan sesaat v2, termasuk satuan CO yang tidak konsisten. Dipertahankan sebagai arsip; tidak dipakai atau dinyatakan sesuai pelaporan ISPU.
 
-- MQ-7 untuk jalur CO.
-- MQ-135 untuk indikator/proksi VOC atau gas campuran; output aktif berupa ADC mentah.
+Sensor aktif yang dikonfirmasi pemilik adalah MQ7 dan MQ135. Keduanya dicatat sebagai respons analog pada v3. Header RF historis tetap berada di include; pada v4 sub-indeks dari keluaran model nominal mengendalikan PWM dan ditampilkan bersama raw. Ini tidak memvalidasi konsentrasi atau kategori kesehatan. Riwayat kode v2 sebelum revisi tersedia di Git, bukan bukti versi fisik yang terpasang.
 
-Penyebutan MQ-2 dan estimasi eCO2 pada kode arsip merupakan bagian implementasi lama, bukan identitas sensor atau besaran terkalibrasi pada perangkat saat ini. Kode arsip dipertahankan sebagai riwayat; jangan menjadikannya acuan wiring, label dataset, atau firmware pengujian terbaru.
+Perhitungan aktif yang diperbaiki berada di ../include/ispu_calc.h. File ispu_calc_v2.h di folder ini tetap arsip tabel CO lama yang berbeda dari regulasi; jangan menggunakannya kembali.

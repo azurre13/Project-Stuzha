@@ -1,0 +1,36 @@
+{
+  "firmware_version": "3.0.0",
+  "source_sha256": "6281fce3f66c016d88b5853a3b0eb92c11cdc94b494fdfcb7f2760f7a9638840",
+  "model_pair_sha256": "d7f32c6097671a37ff90e22c4af5db2e333fbc0192f653125a4c9675bdd7cab7",
+  "firmware_sha256": "9a3db724dd6a5de7d3c661ee5462637d5396a353d6c755365cb6ee1fc5a9227f",
+  "build_target": "esp32dev",
+  "platform": "espressif32@6.12.0",
+  "arduino_framework": "2.0.17",
+  "flash_used_bytes": 1072969,
+  "flash_application_limit_bytes": 1310720,
+  "static_ram_used_bytes": 45332,
+  "python_tests_passed": 10,
+  "native_control_tests": "all boundaries, spike rejection, dwell, fault, frozen baseline, uint64 clock",
+  "live_downloader_check": {
+    "date": "2026-09-09",
+    "historical_window_utc": [
+      "2026-09-08T06:14:00Z",
+      "2026-09-08T06:16:00Z"
+    ],
+    "rows": 6,
+    "status_preserved": true,
+    "cloud_modified": false
+  },
+  "device_upload_performed": false,
+  "physical_acceptance_performed": false,
+  "seven_day_collection_completed": false,
+  "serial_device_detected": false,
+  "original_current_csv_sha256": "3fe753182a059ee0f6e4c76912dba3009be4e81b07bfb0cd7199fc9cfee8b7ee",
+  "local_release": "Program/Kode/release/v3.0.0_6281fce3f66c",
+  "documentation_check": {
+    "project_markdown_files": 14,
+    "local_links_checked": 63,
+    "missing_local_links": 0
+  },
+  "scope": "Repository revision and reproducible software verification. Device upload and field acceptance remain user commissioning steps."
+}

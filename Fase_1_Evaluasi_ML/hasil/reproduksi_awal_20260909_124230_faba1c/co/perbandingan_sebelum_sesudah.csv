@@ -1,0 +1,3 @@
+baseline,model,metrik,sebelum,sesudah_ml,penurunan_error_persen
+linear_training_only,random_forest,RMSE,0.6580204725587843,0.6110794835209623,7.133666959522826
+linear_training_only,random_forest,MAE,0.484371074530963,0.4353699094525863,10.116451550255475

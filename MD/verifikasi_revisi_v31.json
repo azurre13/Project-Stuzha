@@ -1,0 +1,61 @@
+{
+  "date": "2026-09-09",
+  "firmware_version": "3.1.0",
+  "build_passed": true,
+  "manifest": {
+    "firmware_version": "3.1.0",
+    "source_sha256": "461171669a425d6a90cec68ccc007f355e1185aa901fe0187078e0b7773817cf",
+    "model_pair_sha256": "d7f32c6097671a37ff90e22c4af5db2e333fbc0192f653125a4c9675bdd7cab7",
+    "files": {
+      "include/experimental_models.h": "ce237cd5da8bcafe6505191c40ccb66a9080bf5b2f0b6871536d862d7d019af7",
+      "include/model_co.h": "f7ef4fef9164724abd5d204ea39d9ae4dd4531606fa6716ddce753d36aa19048",
+      "include/model_pm.h": "936cce94135cec0abe10d0af83b29bfea3856bd459fc6923ec4c77df27c9de99",
+      "include/monitoring_core.h": "16de91ead6e964c3938e91c06c6b00c492e7a4ed9a449d3a7341e7f8e55f3836",
+      "include/pin_config.h": "dd239493195cabf7b81393058d49af8653c0a6cf5eabca0f67b39c881b61319c",
+      "include/telemetry_contract.h": "b9b83bdff70e2e46bfa3d8f62bb184a60badcf2b7ec793081f448445aa9b4154",
+      "platformio.ini": "4eae5aabffee034647b3422d8c68acaff7c5d8f180e6ac14e71ae8416ba1ee42",
+      "scripts/build_identity.py": "736ca49b6bcf162f186ee05cc6727f42f8147304ed6f81d7f4a21714eb8bf7d4",
+      "src/main.cpp": "90a5cf23035cc7b52b428c1b4818539321a1a56d629bebe3ff7bb091aa8ca815"
+    },
+    "sensor_calibration_validated": false,
+    "model_role": "experimental_primary_relative_control",
+    "telemetry_schema": "STZ31",
+    "pm_physical_unit": "unresolved_legacy_scale",
+    "co_nominal_target_unit": "mg/m3 (unvalidated MQ7 transfer)",
+    "deployment_choice": "historical_headers_preserved_no_benchmark_replacement"
+  },
+  "firmware_bin_sha256": "65d23d62b4ff27c7f450e1474be4fc2b40cf46d90dc6da3e022a0533bba94f20",
+  "flash_used_bytes": 1069137,
+  "flash_available_bytes": 1310720,
+  "static_ram_bytes": 45364,
+  "python_tests_passed": 12,
+  "cpp_checks": [
+    "v3.0 historical control regression",
+    "v3.1 actual header integration, independent PM/CO response, thresholds, dwell, faults, rollover, cloud contract"
+  ],
+  "status_eight_day_fixture_bytes": 179,
+  "preserved_sha256": {
+    "Program/data/Dataset_Project_Stuzha_ThingSpeak_Lengkap.csv": "3fe753182a059ee0f6e4c76912dba3009be4e81b07bfb0cd7199fc9cfee8b7ee",
+    "Program/Kode/include/model_pm.h": "936cce94135cec0abe10d0af83b29bfea3856bd459fc6923ec4c77df27c9de99",
+    "Program/Kode/include/model_co.h": "f7ef4fef9164724abd5d204ea39d9ae4dd4531606fa6716ddce753d36aa19048"
+  },
+  "serial_ports_detected": [],
+  "uploaded": false,
+  "physical_acceptance_passed": false,
+  "cloud_modified": false,
+  "committed_or_pushed": false,
+  "retrained_this_revision": false,
+  "private_release": "Program\\Kode\\release\\v3.1.0_461171669a42",
+  "limitations": [
+    "Unvalidated source-to-device model transfer",
+    "PM legacy physical units unresolved; CO nominal target mg/m3 is not validated room concentration",
+    "Host integration tests are not sensor calibration or physical actuator tests",
+    "No persistent offline queue; no seven-day observations in this verification",
+    "New benchmark metrics do not validate retained deployment headers"
+  ],
+  "documentation_checks": {
+    "markdown_files": 15,
+    "local_links": 80,
+    "missing": []
+  }
+}

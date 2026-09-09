@@ -1,0 +1,73 @@
+{
+  "scope": "reproduction of original random-split/synthetic/mapped-input experiment; not physical calibration",
+  "legacy_git_revision": "1901046179ecd633df668516d2415deb7b5d850d",
+  "legacy_script_sha256": "4d27ab2edb222678ed88b2a72a6cdfd02599081530d3fb9c186e6e8ae9f08091",
+  "audit_script_sha256": "2dde6ca63bdbc331eeb87e4579b1ab0a6089a0a00b38bbfc910e57ca70359bb5",
+  "versions": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "sklearn": "1.8.0"
+  },
+  "models": {
+    "pm": {
+      "assumptions": {
+        "target": "source numeric PM times 1000; physical unit conflict unresolved",
+        "input": "synthetic humidity/temperature/noise perturbation of target, not recorded GP raw"
+      },
+      "dataset_sha256": "74c13380836f5069093524044bc9c70a196464f147a1032e69603dd27ad9e8e3",
+      "features": [
+        "raw_pm_ug",
+        "temp",
+        "humidity"
+      ],
+      "train_count": 133972,
+      "test_count": 33494,
+      "header_source_matches_ignoring_line_endings": true,
+      "active_header_sha256": "936cce94135cec0abe10d0af83b29bfea3856bd459fc6923ec4c77df27c9de99",
+      "mae_source_domain": 0.5828798147473357,
+      "rmse_source_domain": 1.9755522927636842,
+      "r2_source_domain": 0.9997117729823267,
+      "actual_header_probes": 1015,
+      "header_probe_max_abs_error": 4.6151890387591266e-05,
+      "header_probe_mean_abs_error": 2.3395979966880228e-06,
+      "candidate_export_check": {
+        "status": "passed",
+        "probes": 2402,
+        "max_abs_error": 1.1368683772161603e-13,
+        "scope": "new benchmark export on host CPU; not legacy headers or ESP32 timing"
+      },
+      "physical_calibration_validated": false
+    },
+    "co": {
+      "assumptions": {
+        "target": "CO(GT) mg/m3, not ppm",
+        "input": "PT08.S1 min/max mapped to ADC scale; not a validated MQ7 relationship",
+        "pt08_min_all_data": 647.0,
+        "pt08_max_all_data": 2040.0
+      },
+      "dataset_sha256": "13277ae5d8581e80b7be09d47c7d3d06fe9b8e957078f2cf6e859f955e62f996",
+      "features": [
+        "raw_co_adc",
+        "temp",
+        "humidity"
+      ],
+      "train_count": 5875,
+      "test_count": 1469,
+      "header_source_matches_ignoring_line_endings": false,
+      "active_header_sha256": "f7ef4fef9164724abd5d204ea39d9ae4dd4531606fa6716ddce753d36aa19048",
+      "mae_source_domain": 0.4353699094525863,
+      "rmse_source_domain": 0.6110794835209623,
+      "r2_source_domain": 0.8086634742083221,
+      "actual_header_probes": 1469,
+      "header_probe_max_abs_error": 0.20172353852848168,
+      "header_probe_mean_abs_error": 0.0015484486255134674,
+      "candidate_export_check": {
+        "status": "passed",
+        "probes": 2417,
+        "max_abs_error": 1.7763568394002505e-15,
+        "scope": "new benchmark export on host CPU; not legacy headers or ESP32 timing"
+      },
+      "physical_calibration_validated": false
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "Project Stuzha (Utama)",
+			"path": "."
+		},
+		{
+			"name": "Firmware ESP32 (PlatformIO)",
+			"path": "Program/Kode"
+		}
+	],
+	"settings": {}
+}

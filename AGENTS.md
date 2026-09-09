@@ -1,36 +1,36 @@
 # Panduan AI untuk Project Stuzha
 
-## Mulai membaca
+## Urutan membaca
 
-1. Baca [README utama](README.md) untuk tujuan, keputusan pemilik, dan status terkini.
-2. Baca [planning](MD/konteks%20_planing_jurnal_AQI.md) dan [roadmap](MD/roadmap_dan_langkah_selanjutnya.md) untuk ruang lingkup serta pekerjaan terbuka.
-3. Baca dokumentasi pada bagian yang dikerjakan: [hardware](Hardware/hardware_stuzha.md), [firmware](Program/Kode/firmware_stuzha.md), [data](Program/data/dataset_stuzha.md), [training](ml_training/training_ml_stuzha.md), atau [evaluasi ML](Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md).
-4. Cocokkan klaim implementasi dengan kode aktif. Untuk klaim numerik, periksa data dan metode yang menghasilkan angka tersebut.
+Baca [README](README.md), [planning](MD/konteks%20_planing_jurnal_AQI.md), [roadmap](MD/roadmap_dan_langkah_selanjutnya.md), dan [protokol 7 hari](MD/protokol_pengambilan_data_7_hari.md), lalu dokumentasi topik sebelum kode/data. Dokumen bukan bukti perangkat telah di-upload. Periksa versi aktif, output build, dan status feed.
 
-## Keputusan proyek yang harus dipertahankan
+## Keputusan pemilik
 
-- Tujuan utama adalah prototipe **monitoring kualitas udara indoor**. Kipas dan filtrasi merupakan pendukung. Jangan mengubah fokus menjadi penelitian kinerja purifier tanpa arahan pemilik.
-- Sensor gas terpasang adalah **MQ-7 untuk CO** dan **MQ-135 untuk indikator/proksi VOC atau gas campuran**. Identitas ini sudah dikonfirmasi; jangan mengulang dugaan MQ-2 dari riwayat lama.
-- MQ-135 saat ini menghasilkan ADC mentah di field 7, bukan konsentrasi VOC/TVOC terkalibrasi dan bukan bagian sub-indeks ISPU.
-- Rakitan aktual: gabus keras, intake bawah, karbon kotak, filter mobil dipotong, ruang sekitar 5 cm, kipas 12 × 12 cm, exhaust atas. Filter bukan HEPA.
-- Pin saat ini dinilai sudah benar oleh pemilik. Pertahankan pemetaan pin; jangan menganggapnya salah atau memindahkannya hanya karena komentar menyebut S3. Periksa kembali jika ada bukti teknis relevan dengan tugas. Varian board yang belum terdokumentasi adalah persoalan terpisah.
-- Belum tersedia alat pembanding. Jangan menyimpulkan akurasi konsentrasi dari output model, grafik yang halus, atau lama operasi.
+- Fokus prototipe monitoring indoor; filter dan kipas pendukung. CADR, HEPA, kebisingan dan efisiensi energi bukan target wajib.
+- Sensor terpasang MQ-7 dan MQ-135; jangan mengembalikan dugaan MQ-2 dari naskah/legacy.
+- Pin dikonfirmasi dan dipertahankan; konfigurasi ada pada [hardware](Hardware/hardware_stuzha.md).
+- Casing gabus keras, karbon kotak + potongan filter mobil non-HEPA, celah sekitar 5 cm, fan 12 × 12 cm, intake bawah/samping, exhaust atas.
+- Belum ada instrumen pembanding. Jangan menyimpulkan akurasi sensor dari R², grafik halus, respons asap, atau banyaknya data.
+- Selama tujuh hari hanya ESP32 dan Wi-Fi menyala. PC logger bukan prasyarat. Suplai 12 V ke fan/expansion; expansion menyediakan 5 V. Siklus heater MQ-7 belum terbukti.
 
-## Cara menangani sumber yang berbeda
+## Kontrak revisi 4 — arahan pemilik mengembalikan tujuan awal
 
-- Instruksi dan klarifikasi terbaru pemilik mengarahkan tujuan serta fakta rakitan. Catat tanggal dan sumber pembaruan, tanpa mengubah dugaan menjadi hasil pengukuran.
-- Kode aktif menunjukkan implementasi dalam repositori; belum membuktikan versi yang terpasang pada perangkat atau perilaku hardware yang telah diuji.
-- CSV menunjukkan rekaman pada periode dan versi yang dapat ditelusuri. Statistik di README adalah snapshot bertanggal, bukan ringkasan otomatis file yang kelak diperbarui.
-- README bagian menjadi acuan penjelasan topik. Jika kode bertentangan dengan README, jelaskan perbedaan dan perbarui status; jangan diam-diam menganggap salah satunya telah tervalidasi.
-- Komentar/banner kode, grafik lama, hasil generator, dan folder legacy bukan bukti kebenaran ilmiah. Ada klaim lama yang belum diperbaiki dalam generator.
-- Literatur memberi metode dan konteks. Hasil studi lain tidak menjadi hasil Stuzha.
+Tujuan tetap low-cost sensor → TinyML → estimasi PM/CO → sub-indeks menurut tabel Permen LHK14/2020 → maksimum → kategori/kendali. Jangan mengganti tujuan dengan raw-only atau skor baseline relatif. Field STZ4: 1T,2RH,3PM nominal,4CO nominal ppm,5indeks estimasi instan,6PWM%,7MQ135ADC,8kode kategori. Status a menyimpan GP/MQ7 ADC; f flags, s sequence, d mean24/indeks24/coverage. Pisahkan arsip STZ3/STZ31 yang kontraknya berbeda.
 
-## Aturan perubahan dan pelaporan
+Kode v4 memakai tabel PM dan CO dalam ug/m3 dengan basis regulasi24jam; index instan untuk kendali diberi label eksplisit terpisah dari estimasi24jam. Tidak ada baseline kendali setiap boot. Dwell turun8detik, histeresis5%, alarm tidak mengikuti fan yang masih melambat. Saturasi bukan bukti PM tertentu atau pasti kerusakan hardware.
 
-- Pertahankan perubahan lokal pemilik dan data asli. Bedakan perubahan dokumentasi, komentar, logika, training, build, dan upload.
-- Jangan menjalankan skrip training/evaluasi hanya untuk membaca konteks: skrip dapat menimpa header, metrik, grafik, dan laporan. Jika tugas memerlukan eksekusi, gunakan keluaran terpisah/versi atau salinan kerja agar arsip terjaga.
-- Jangan menjalankan downloader pada satu-satunya arsip CSV; implementasi pagination masih bermasalah. Perbaiki/isolasi keluaran sesuai tugas terlebih dahulu.
-- Jangan mengubah data pengujian, membuang lonjakan, atau memakai prediksi sendiri sebagai ground truth tanpa dasar metode yang dijelaskan.
-- Saat memperbaiki fungsi, perbarui README pemilik topik serta status roadmap yang terdampak. Hindari menyalin rincian yang sama ke banyak dokumen baru.
-- Nyatakan verifikasi yang benar-benar dilakukan. Build berhasil bukan validasi sensor, perubahan komentar bukan perbaikan logika, dan perubahan repositori bukan bukti firmware telah di-upload.
-- Kerjakan bagian yang sudah jelas tanpa meminta ulang fakta yang telah dikonfirmasi. Pertanyaan hanya untuk informasi yang memengaruhi tindakan dan belum tersedia.
+Model lama tetap identik. PM memakai asumsi skala ug/m3 nominal legacy yang belum terverifikasi, bukan unit fisik yang sudah diselesaikan. CO target mg/m3 bukan ppm, pemetaan PT08-ke-MQ7 belum tervalidasi; konversi tampilan ppm pada25C/1atm. Jangan mengarang R0/gain/kalibrasi, mengklaim akurasi meningkat, atau menganggap label estimasi menyelesaikan mismatch model. Rujuk [metode v4](MD/metode_ispu_v4.md). Pemilik tidak memiliki instrumen pembanding; membeli/meminjam bukan prasyarat revisi kode.
+
+Tidak ada klaim ISPU resmi, konsentrasi tervalidasi, penghilangan CO atau rekaman offline tanpa kehilangan. Gap router mati adalah keterangan pemilik. Pisahkan edit/build dari upload dan uji fisik.
+
+## Aturan bekerja
+
+- Jaga perubahan lokal pemilik dan semua data asli. Jangan hapus lonjakan atau isi missing dengan angka normal tanpa penanda.
+- Perbaikan kode diizinkan oleh pemilik pada 8 September 2026. Bedakan edit, build, training, upload dan uji perangkat.
+- Kredensial berada di secrets.h yang diabaikan Git. Jangan tampilkan nilainya. Binari firmware mengandung konfigurasi lokal dan tidak untuk dipublikasikan.
+- Training/evaluasi kini memakai satu pipeline dan menghasilkan folder run baru. Tidak boleh mengganti header aktif secara otomatis. Header legacy deployment dipertahankan untuk keterlacakan; model benchmark baru bukan model MQ-7 pengganti.
+- Jangan overwrite dataset lama dengan keluaran downloader baru. Default menghasilkan snapshot baru. Tidak ada feed bukan izin mengosongkan arsip.
+- Tes software yang relevan wajib lulus sebelum menyatakan perbaikan selesai; uji fisik tidak dapat digantikan build.
+- Update dokumentasi pemilik topik saat kontrak berubah. Jangan menyalin klaim status lama ke semua Markdown.
+- Artefak/grafik lama memiliki label yang belum valid. Perlakukan sebagai arsip, bukan sumber kebenaran metode.
+- Kutip sumber primer yang benar-benar dibaca. Koleksi 21 artikel merupakan kandidat, bukan seluruhnya telah diverifikasi.
