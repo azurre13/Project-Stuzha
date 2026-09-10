@@ -1,0 +1,3 @@
+baseline,model,metrik,sebelum,sesudah_ml,penurunan_error_persen
+input_sintetis,random_forest,RMSE,15.049103577744416,1.9755522927636842,86.87262478753048
+input_sintetis,random_forest,MAE,7.680121950432587,0.5828798147473357,92.41053959156854

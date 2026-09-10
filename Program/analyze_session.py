@@ -7,6 +7,7 @@ import argparse
 from collections import Counter, defaultdict
 import csv
 from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
 import hashlib
 import json
 import math
@@ -51,6 +52,17 @@ def finite(value):
     return n
 
 
+def integer_field(value):
+    """ThingSpeak numeric fields may serialize integers as '2.000000'."""
+    try:
+        number = Decimal(str(value))
+    except InvalidOperation:
+        raise ValueError("Expected an integer numeric field") from None
+    if not number.is_finite() or number != number.to_integral_value():
+        raise ValueError("Expected an integer numeric field")
+    return int(number)
+
+
 def analyze(path):
     path = Path(path)
     with path.open(encoding="utf-8-sig", newline="") as stream:
@@ -78,8 +90,8 @@ def analyze(path):
             schemas[schema] += 1
             v4 = schema == "stuzha_v4"
             v31 = schema == "stuzha_v31"
-            flag = int(status["f"] if v31 or v4 else row["field8"])
-            seq = int(status["s"] if v31 or v4 else row["field5"])
+            flag = integer_field(status["f"] if v31 or v4 else row["field8"])
+            seq = integer_field(status["s"] if v31 or v4 else row["field5"])
             if flag < 0 or seq < 1:
                 raise ValueError("Negative flags or invalid sequence")
             if (v31 or v4) and not flag & 128:
@@ -89,7 +101,7 @@ def analyze(path):
                 raw_adc = [finite(x) for x in status["a"].split(",")]
                 if len(raw_adc)!=2 or any(x<0 or x>4095 for x in raw_adc):
                     raise ValueError("Invalid raw ADC status")
-                category = int(row["field8"])
+                category = integer_field(row["field8"])
                 if not 0 <= category <= 5:
                     raise ValueError("Invalid index category")
                 if flag & 128:
@@ -198,7 +210,7 @@ def main():
             stream.write(result + "\n")
     print(result)
     if report["malformed"] or (args.require_v4 and (not report["boots"] or set(report["schema_counts"]) != {"stuzha_v4"})) or (args.require_v31 and (not report["boots"] or set(report["schema_counts"]) != {"stuzha_v31"})) or (args.require_v3 and not report["boots"]) or (args.preflight and not report["preflight"]["passed"]):
-        parser.exit(1, "Audit memerlukan perhatian: format bermasalah atau belum ada data firmware v3.\n")
+        parser.exit(1, "Audit memerlukan perhatian: periksa format, versi, dan hasil preflight pada laporan.\n")
 
 
 def preflight(report):

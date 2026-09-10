@@ -4,6 +4,8 @@ Prototipe low-cost berbasis ESP32: **GP2Y/MQ7 + suhu/RH → dua RF TinyML → es
 
 ## Status dan batas
 
+**Arahan terbaru 10 September 2026:** penyelesaian ML, evaluasi dan keputusan firmware final diserahkan ke Antigravity melalui [rencana kerja dan checklist finalisasi](MD/README_handoff_antigravity.md). Pengambilan data utama 168 jam menunggu finalisasi dan uji perangkat singkat. Klaim upload di bawah adalah riwayat v4; identitas kandidat lokal dan firmware teramati harus dibedakan menurut [verifikasi tersimpan](MD/verifikasi_revisi_v4.json).
+
 Build v4 berhasil dan firmware telah di-upload serta diverifikasi berjalan pada ESP32 (9 September 2026). Identitas firmware dicatat di [verifikasi v4](MD/verifikasi_revisi_v4.json). Pengujian sensor, inferensi TinyML, kendali kipas responsif, dan telemetri IoT (ThingSpeak Channel 3480764) telah aktif secara fisik. Kode memulihkan fungsi awal penelitian; keberhasilan kompilasi dan upload tidak menggantikan kalibrasi laboratorium resmi.
 
 Kedua header RF historis dipertahankan dengan fitur yang sesuai eksperimen lamanya. PM memakai asumsi unit ug/m3 nominal legacy yang belum terverifikasi; CO target asal mg/m3, dikonversi ke ppm untuk tampilan, dengan transfer MQ7 belum tervalidasi. Flags tetap menyatakan keterbatasan ini. Tidak ada retraining yang diklaim meningkatkan akurasi tanpa label rujukan. [Keputusan metode v4](MD/metode_ispu_v4.md) menjelaskan apa yang selesai dan apa yang tidak dapat diselesaikan dari kode saja.

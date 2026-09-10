@@ -1,0 +1,8 @@
+skala,satuan,evaluasi,model,rmse,mae,r2,penurunan_rmse_persen,catatan
+skala_sumber_numerik,unit numerik sumber (konflik belum terselesaikan),split_waktu_murni,raw_input_tanpa_ml,0.003145922578080034,0.002265070736222335,-2.043933759191595,0.0,Baseline masukan dengan gangguan buatan formula simulasi
+skala_sumber_numerik,unit numerik sumber (konflik belum terselesaikan),split_waktu_murni,regresi_linear_3fitur,0.006626713479704639,0.005758262012037504,-12.506272984226161,-110.64451890449706,"Fit 80% masa lalu, diuji 20% masa depan; tidak mampu menangani suku kuadratik RH"
+skala_sumber_numerik,unit numerik sumber (konflik belum terselesaikan),split_waktu_murni,rf_chrono_3fitur,0.0002136857706504462,1.1905067675613217e-05,0.9859560154353462,93.20753243772263,"Fit 80% masa lalu, diuji 20% masa depan; bebas data leakage"
+skala_x1000,ug/m3 (asumsi pengali 1000),split_waktu_murni,raw_input_tanpa_ml,3.145922578080034,2.2650707362223352,-2.043933759191596,0.0,Baseline masukan dengan gangguan buatan formula simulasi
+skala_x1000,ug/m3 (asumsi pengali 1000),split_waktu_murni,regresi_linear_3fitur,6.626713479714529,5.758262012046658,-12.50627298426648,-110.64451890481143,"Fit 80% masa lalu, diuji 20% masa depan; tidak mampu menangani suku kuadratik RH"
+skala_x1000,ug/m3 (asumsi pengali 1000),split_waktu_murni,rf_chrono_3fitur,0.21310474818007302,0.011859138960352693,0.9860322842203887,93.2260015022324,"Fit 80% masa lalu, diuji 20% masa depan; bebas data leakage"
+skala_x1000,ug/m3 (asumsi pengali 1000),keterlacakan_header_aktif,rf_aktif_legacy_model_pm_h,0.207265774636504,0.009301825846904857,0.9867872163322351,93.41176812979963,PERINGATAN: Mengandung 79.69% data leakage terhadap data uji kronologis karena dilatih dengan split acak

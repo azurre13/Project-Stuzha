@@ -23,6 +23,18 @@ Untuk mereproduksi training awal beserta CSV dan PNG, gunakan perintah yang sama
 
 ## Metode dan batas
 
+### Klarifikasi sumber GP2Y dan pilihan perbaikan — 10 September 2026
+
+Dataset PM **merupakan pengukuran nyata peneliti, bukan dataset buatan**. [Sonawani & Patil, Mendeley v1 (2022)](https://data.mendeley.com/datasets/2r232jpfb2/1) menyebut 173.468 rekaman November 2020–Juli 2022, sensor GP2Y1010AU0F, suhu/RH BME280, serta satuan PM2.5 ug/m3. Istilah simulasi di proyek ini merujuk pada gangguan input yang ditambahkan oleh skrip kita, bukan pada asal kolom PM peneliti. CSV lokal yang diperiksa tidak menyediakan pasangan kolom ADC GP2Y dan PM instrumen pembanding. Dataset tetap berguna dan tidak dibuang.
+
+Perbaikan PM yang memiliki dasar sekarang: gunakan satuan metadata tanpa pengalian 1000 yang tidak didukung; pisahkan evaluasi penghilangan gangguan buatan dari klaim kalibrasi fisik; cocokkan definisi input training dengan konversi sensor saat deployment. Benchmark baru sudah mempertahankan angka sumber, tetapi itu belum menyelesaikan pasangan input fisik/target referensi. Jangan sekadar membagi output model lama dengan 1000 atau menyalin header benchmark ke firmware: keduanya tidak otomatis memperbaiki kontrak input. DHT22 tetap menjadi sumber suhu/RH pada perangkat.
+
+Untuk MQ-7, ditemukan sumber yang lebih relevan daripada pemetaan PT08 UCI: [Rathnayake et al. (2024), Machine Learning-based Calibration Approach for Low-cost Air Pollution Sensors MQ-7 and MQ-131](https://neptjournal.com/upload-images/%2834%29D-1457.pdf), DOI 10.46488/NEPT.2024.v23i01.034. Metodenya menggunakan pembacaan MQ-7 bersamaan dengan instrumen NBRO sekitar tiga bulan, kemudian regresi/jaringan saraf dengan pembacaan sensor dan suhu. Pada penelusuran ini belum ditemukan tautan unduhan CSV pasangan tersebut. Paper adalah rujukan metode, belum dataset siap training atau koefisien pengganti Stuzha.
+
+Pilihan tanpa membeli alat: (1) memperoleh data pasangan sensor/referensi dari penelitian publik dengan rangkaian, satuan, dan pemanasan yang terdokumentasi, lalu melatih kandidat terpisah dan memeriksa kecocokan input; atau (2) membangun estimator berbasis kurva datasheet sebagai pembanding nominal, dengan parameter rangkaian yang benar, tanpa mengarang R0 atau menganggap udara kamar bernilai nol. Pilihan kedua tidak memberi label kebenaran baru kepada ML. Kalibrasi transfer tetap perlu dibedakan dari akurasi yang sudah dibuktikan pada unit Stuzha. Tidak ada perubahan model aktif, firmware, atau upload dalam penelusuran ini.
+
+Paper penulis dataset [Sonawani & Patil, DOI 10.1108/IJPCC-07-2022-0271](https://doi.org/10.1108/IJPCC-07-2022-0271) juga ditemukan. Abstrak menyebut kalibrasi ML dan transfer learning untuk prediksi jam berikutnya; metode lengkap di balik akses berbayar belum diperiksa. Jangan mengutip peningkatan prediksi paper itu sebagai persentase kalibrasi GP2Y Stuzha.
+
 **UCI:** urutkan timestamp, tangani -200 sebagai missing, split kronologis sekitar 80/20 pada batas timestamp. Target CO(GT) mg/m3. Fitur PT08.S1 asli, T dan RH. Tidak dipetakan ke skala ADC MQ7. Empat model dibandingkan pada holdout yang sama: linear/RF masing-masing satu fitur dan tiga fitur. Semua fitting memakai training; parameter RF tetap 30 pohon/depth 8/seed 42. Tidak mencari ulang split untuk memenangkan RF.
 
 **PM simulation:** angka kolom PM2.5 asli dipertahankan tanpa x1000. Metadata menyebut ug/m3 sementara skrip lama menganggap mg/m3; unit fisik belum terselesaikan. Gangguan buatan: y*(1+0.65*(RH/100)^2)+(T-25)*0.00045+noise normal sd 0.0025, dibatasi bawah nol, semuanya dalam skala angka dataset. Koefisien ini asumsi eksperimen, bukan hasil fitting sensor fisik. Split waktu dan model pembanding sama prinsipnya dengan UCI.

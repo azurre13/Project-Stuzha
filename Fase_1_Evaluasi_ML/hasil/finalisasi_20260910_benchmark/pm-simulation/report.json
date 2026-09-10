@@ -1,0 +1,136 @@
+{
+  "experiment": "pm-simulation",
+  "input_sha256": "74c13380836f5069093524044bc9c70a196464f147a1032e69603dd27ad9e8e3",
+  "pipeline_sha256": "d8467bb11075aa42c40711676972095359823f5355fc41e3ef03485941c8b269",
+  "source": "Program\\data\\mendeley\\Indoor_Air_Pollution_Data.csv",
+  "features": [
+    "synthetic_response",
+    "Temp",
+    "Humidity"
+  ],
+  "target_unit": "ug/m3 as declared by Mendeley; real GP2Y target, synthetic input; local transfer unverified",
+  "sensor_calibration_validated": false,
+  "split": "chronological 80/20 at timestamp; fixed hyperparameters",
+  "boundary": "2021-12-04 21:25:34.023378",
+  "train_count": 133972,
+  "test_count": 33493,
+  "train_end": "2021-12-04 21:23:01.645466",
+  "test_start": "2021-12-04 21:25:34.023378",
+  "params": {
+    "n_estimators": 30,
+    "max_depth": 8,
+    "random_state": 42,
+    "n_jobs": 1
+  },
+  "metrics": [
+    {
+      "model": "linear_response_only",
+      "mae": 0.0016396893166308203,
+      "rmse": 0.0019840237850377225,
+      "bias": 2.530725431411273e-05,
+      "r2": -0.21068980469880438
+    },
+    {
+      "model": "linear_all_features",
+      "mae": 0.033714376939712284,
+      "rmse": 0.04217072714298024,
+      "bias": 0.009048186531492012,
+      "r2": -545.9672402382865
+    },
+    {
+      "model": "rf_response_only",
+      "mae": 1.5725725219592674e-05,
+      "rmse": 0.0002351441665025702,
+      "bias": 1.5725725219592674e-05,
+      "r2": 0.9829937893221029
+    },
+    {
+      "model": "rf_all_features",
+      "mae": 1.1905067675613217e-05,
+      "rmse": 0.00021368577065044623,
+      "bias": 1.1905067675613217e-05,
+      "r2": 0.9859560154353462
+    }
+  ],
+  "export_check": {
+    "status": "passed",
+    "probes": 2447,
+    "max_abs_error": 1.1102230246251565e-16,
+    "scope": "new benchmark export on host CPU; not legacy headers or ESP32 timing"
+  },
+  "source_measurements_real": true,
+  "input_synthetic": true,
+  "target_scale_from_source": 1.0,
+  "deployment_approved": false,
+  "deployment_blockers": [
+    "No paired GP2Y input / reference PM2.5 target in this experiment",
+    "Synthetic disturbance is not a measured calibration law"
+  ],
+  "training_summary": {
+    "rows": 133972,
+    "target_min": 0.0,
+    "target_max": 0.47,
+    "target_median": 0.0,
+    "target_zero_fraction": 0.709387036097095,
+    "target_unique_values": 47,
+    "features": {
+      "synthetic_response": {
+        "min": 0.0,
+        "max": 0.5587738156318665
+      },
+      "Temp": {
+        "min": 23.280000686645508,
+        "max": 35.459999084472656
+      },
+      "Humidity": {
+        "min": 20.0,
+        "max": 88.80000305175781
+      }
+    }
+  },
+  "test_summary": {
+    "rows": 33493,
+    "target_min": 0.0,
+    "target_max": 0.33,
+    "target_median": 0.0,
+    "target_zero_fraction": 0.9999701430149583,
+    "target_unique_values": 2,
+    "features": {
+      "synthetic_response": {
+        "min": 0.0,
+        "max": 0.3786309063434601
+      },
+      "Temp": {
+        "min": 23.360000610351562,
+        "max": 35.47999954223633
+      },
+      "Humidity": {
+        "min": 20.0,
+        "max": 94.36000061035156
+      }
+    }
+  },
+  "persistence_check": "passed: sklearn estimator saved and reloaded with identical predictions",
+  "versions": {
+    "python": "3.11.0",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "sklearn": "1.8.0"
+  },
+  "additional_baselines": [
+    {
+      "model": "training_mean",
+      "mae": 0.07341752533029286,
+      "rmse": 0.07342434745537248,
+      "bias": 0.07340220344549606,
+      "r2": -1657.1328661795753
+    },
+    {
+      "model": "synthetic_input_without_ML",
+      "mae": 0.0022650707371458987,
+      "rmse": 0.0031459225851050206,
+      "bias": 0.0022650707371458987,
+      "r2": -2.0439337727860774
+    }
+  ]
+}

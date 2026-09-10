@@ -1,0 +1,75 @@
+{
+  "experiment": "uci-co",
+  "features": [
+    "PT08.S1(CO)",
+    "T",
+    "RH"
+  ],
+  "target_unit": "mg/m3 (UCI reference analyzer); NOT MQ-7 calibration",
+  "input_sha256": "13277ae5d8581e80b7be09d47c7d3d06fe9b8e957078f2cf6e859f955e62f996",
+  "source_measurements_real": true,
+  "input_synthetic": false,
+  "target_scale_from_source": 1.0,
+  "training_summary": {
+    "rows": 5875,
+    "target_min": 0.1,
+    "target_max": 11.9,
+    "target_median": 1.9,
+    "target_zero_fraction": 0.0,
+    "target_unique_values": 93,
+    "features": {
+      "PT08.S1(CO)": {
+        "min": 647.0,
+        "max": 2040.0
+      },
+      "T": {
+        "min": 1.2000000476837158,
+        "max": 44.599998474121094
+      },
+      "RH": {
+        "min": 9.199999809265137,
+        "max": 88.69999694824219
+      }
+    }
+  },
+  "test_summary": {
+    "rows": 1469,
+    "target_min": 0.1,
+    "target_max": 7.5,
+    "target_median": 1.6,
+    "target_zero_fraction": 0.0,
+    "target_unique_values": 70,
+    "features": {
+      "PT08.S1(CO)": {
+        "min": 715.0,
+        "max": 1846.0
+      },
+      "T": {
+        "min": -1.899999976158142,
+        "max": 30.0
+      },
+      "RH": {
+        "min": 9.899999618530273,
+        "max": 86.5999984741211
+      }
+    }
+  },
+  "deployment_approved": false,
+  "deployment_blockers": [
+    "PT08.S1 features are not MQ-7 ADC or resistance ratio"
+  ],
+  "params": {
+    "n_estimators": 30,
+    "max_depth": 8,
+    "random_state": 42,
+    "n_jobs": 1
+  },
+  "versions": {
+    "python": "3.11.0",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "sklearn": "1.8.0"
+  },
+  "model_sha256": "9febad858f4c5862b69a0b6b2df22847a07cdc0c91194ee3af65684cf6232e63",
+  "header_sha256": "f906a9ef6c83eec3b5e661d129aeef291c9a68d8a2600d8f480828d545d216db"
+}

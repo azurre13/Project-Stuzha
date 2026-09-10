@@ -1,10 +1,10 @@
 {
-  "date": "2026-09-09",
+  "date": "2026-09-10",
   "firmware_version": "4.0.0",
   "build_passed": true,
   "manifest": {
     "firmware_version": "4.0.0",
-    "source_sha256": "5f1eb11d9548c51b3bed24786e41661934a51de5cd55c73972cde5e4434e1bbc",
+    "source_sha256": "a945ea070fcc10552bd65d8f67f4363e9d79e3ea81e2f239fe8b9d5675328dbc",
     "model_pair_sha256": "d7f32c6097671a37ff90e22c4af5db2e333fbc0192f653125a4c9675bdd7cab7",
     "files": {
       "include/experimental_models.h": "ce237cd5da8bcafe6505191c40ccb66a9080bf5b2f0b6871536d862d7d019af7",
@@ -17,9 +17,9 @@
       "include/rolling_ispu.h": "978f34f7ada334f3f1f57d4e8904c38d8e88e75777ac5deda1acb43e19f6a979",
       "include/telemetry_contract.h": "b9b83bdff70e2e46bfa3d8f62bb184a60badcf2b7ec793081f448445aa9b4154",
       "include/telemetry_v4.h": "e0227734fa13116f5e357929b6ecbea314c1bb599b43517a0913bf6e2b4e48b7",
-      "platformio.ini": "4eae5aabffee034647b3422d8c68acaff7c5d8f180e6ac14e71ae8416ba1ee42",
+      "platformio.ini": "430349caf2d82234e473330384d4191e0851754ffd3b85b97362cb3cd8eb12e0",
       "scripts/build_identity.py": "fa8d0c4601068891fe9ec0cdb2a726f635a64efdda9e5b567185e6ded552e998",
-      "src/main.cpp": "c20bec8620181fed7332314c3082a0ea190e6909dc368d469cf5bd5b8d74f71f"
+      "src/main.cpp": "0d3cc38630102d25204a68f636e1945a093de8d9920cd386eaa323359fc37adc"
     },
     "sensor_calibration_validated": false,
     "model_role": "experimental_ml_ispu_control",
@@ -28,43 +28,30 @@
     "co_nominal_target_unit": "mg/m3 (unvalidated MQ7 transfer)",
     "deployment_choice": "historical_headers_preserved_no_benchmark_replacement"
   },
-  "firmware_bin_sha256": "6f7e3b85b986ff801a5a121bd5ffd08264156f1781ff25321e7778e5fc63a475",
-  "flash_used_bytes": 1105593,
+  "firmware_bin_sha256": "d7c0e8c63ae5d3b6d9d56993c9fe46c6b9166d9a034256a4759f1e30dfe45dd8",
+  "flash_used_bytes": 1105801,
   "flash_available_bytes": 1310720,
-  "static_ram_bytes": 80080,
-  "python_tests_passed": 13,
+  "static_ram_bytes": 80112,
+  "python_tests_passed": 14,
   "cpp_v4_tests_passed": true,
-  "tests": [
-    "ISPU boundaries, actual RF inference and seven-day rolling window",
-    "One-frame category spike cannot borrow lower-level confirmation",
-    "Acquisition age threshold, 64-bit uptime and future timestamp",
-    "Fault fallback does not lower L5; gradual recovery to L1",
-    "Downloader and session analyzer: 13 Python tests"
-  ],
-  "changes": [
-    "Minimum observed category during upward confirmation",
-    "Local acquisition timeout above 2500 ms while main loop remains responsive",
-    "Stale queued frames rejected for valid control; fault snapshot keeps real timestamp and sequence"
-  ],
-  "preserved": [
-    "Both RF headers and DHT22 model inputs",
-    "PWM duties 33,38,56,128,217 and all pins",
-    "ISPU tables, 5 percent hysteresis, 8 second downward dwell",
-    "20 second ThingSpeak interval and schema STZ4"
-  ],
   "uploaded": false,
-  "serial_ports_detected": [
-    "COM3"
-  ],
+  "serial_ports_detected": [],
   "physical_acceptance_passed": false,
-  "cloud_modified": false,
-  "committed_or_pushed": false,
-  "retrained_this_revision": false,
-  "private_release": "Program\\Kode\\release\\v4.0.0_5f1eb11d9548",
-  "previous_verification": "Program\\Kode\\release\\v4.0.0_b8995d57c98d\\verification_before_fan_stability.json",
+  "private_release": "Program\\Kode\\release\\v4.0.0_a945ea070fcc",
+  "previous_verification": "Program\\Kode\\release\\v4.0.0_5f1eb11d9548\\verification_before_20260910.json",
+  "observed_cloud_build": "42429e9eca53",
+  "observed_cloud_boot": "81c3113b",
+  "observed_cloud_report": "Program/data/downloads/audit_20260910_002359_corrected.json",
+  "observed_cloud_rows": 94,
+  "changes": [
+    "Restored LEDC15 initialization before noTone; preserve user readable terminal output",
+    "Boot banner exposes build/model/boot identity",
+    "Analysis accepts exact integer decimal representations such as category 2.000000"
+  ],
   "limitations": [
-    "Host tests and build do not validate physical fan operation",
-    "Acquisition timeout requires a responsive main loop; no tachometer feedback",
-    "Sensor model calibration limitations unchanged"
+    "Current local candidate not uploaded; no USB port available",
+    "Observed cloud run contains a 60-second gap and two failed sends",
+    "PWM commands observed, not physical RPM or full one-second transitions",
+    "ML physical calibration limitations unchanged"
   ]
 }

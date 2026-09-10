@@ -163,7 +163,12 @@ void setup() {
     ledcSetup(FAN_PWM_CHANNEL, FAN_PWM_FREQ, FAN_PWM_RES);
     ledcAttachPin(PIN_FAN_PWM, FAN_PWM_CHANNEL);
     ledcWrite(FAN_PWM_CHANNEL, FAN_SPEED_STANDBY);
-    setToneChannel(15); // Default tone channel is 0, which would reconfigure the fan timer.
+    // noTone() writes zero duty even before the first alarm; initialize its
+    // separate channel so silent operation does not produce LEDC errors.
+    ledcSetup(15, 1000, 10);
+    ledcAttachPin(PIN_BUZZER, 15);
+    ledcWrite(15, 0);
+    setToneChannel(15); // Separate timer from fan channel 0.
     adc1_config_width(ADC_WIDTH_BIT_12);
     adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_12);
     adc1_config_channel_atten(ADC1_CHANNEL_4, ADC_ATTEN_DB_12);
@@ -176,6 +181,7 @@ void setup() {
     Serial.println(F("\n=================================================="));
     Serial.println(F(" Project Stuzha — Edge AI ISPU Indoor Air Quality"));
     Serial.printf(" ESP32 TinyML Random Forest Firmware v%s\n", STUZHA_VERSION);
+    Serial.printf(" Build:%s | Model:%s | Boot:%s\n", STUZHA_BUILD, STUZHA_MODELS, boot_id);
     Serial.println(F("=================================================="));
     WiFi.mode(WIFI_STA);
     WiFi.setAutoReconnect(true);

@@ -5,7 +5,7 @@ import sys
 import tempfile
 import unittest
 sys.path.insert(0, str(Path(__file__).parents[1] / "Program"))
-from analyze_session import analyze, status_values, preflight
+from analyze_session import analyze, status_values, preflight, integer_field
 from download_thingspeak_dataset import HEADERS
 
 
@@ -18,11 +18,17 @@ def row(eid, second, slot, seq):
 
 
 class AnalysisTests(unittest.TestCase):
+    def test_integer_cloud_fields_preserve_exactness(self):
+        self.assertEqual(integer_field("2.000000"), 2)
+        self.assertEqual(integer_field("256.000000"), 256)
+        for bad in ("2.1", "2.0000000000000001", "nan", "inf", ""):
+            with self.assertRaises(ValueError): integer_field(bad)
+
     def test_v4_acceptance_and_invalid_category(self):
         values=[]
         for i in range(46):
             v=row(i+1,i*20,i+1,(i+1)*20)
-            v.update(field3="31.4",field4="1.398",field5="70",field8="2")
+            v.update(field3="31.4",field4="1.398",field5="70",field8="2.000000")
             v["Status_Raw"]=f"STZ4|v=4.0.0|h=abc|m=def|b=123|u={(i+1)*20000}|r=1|l=2|f=39168|s={(i+1)*20}|n=100|j=0|i=40|e={i+1},0,0|q={i+1}|k=150000|a=1000,1400|d=nan,nan,nan,1|c=1"
             values.append(v)
         with tempfile.TemporaryDirectory() as directory:

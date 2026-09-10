@@ -1,0 +1,128 @@
+{
+  "experiment": "uci-co",
+  "input_sha256": "13277ae5d8581e80b7be09d47c7d3d06fe9b8e957078f2cf6e859f955e62f996",
+  "pipeline_sha256": "d8467bb11075aa42c40711676972095359823f5355fc41e3ef03485941c8b269",
+  "source": "Program\\data\\uci\\AirQualityUCI.csv",
+  "features": [
+    "PT08.S1(CO)",
+    "T",
+    "RH"
+  ],
+  "target_unit": "mg/m3 (UCI reference analyzer); NOT MQ-7 calibration",
+  "sensor_calibration_validated": false,
+  "split": "chronological 80/20 at timestamp; fixed hyperparameters",
+  "boundary": "2005-01-28 12:00:00",
+  "train_count": 5875,
+  "test_count": 1469,
+  "train_end": "2005-01-28 11:00:00",
+  "test_start": "2005-01-28 12:00:00",
+  "params": {
+    "n_estimators": 30,
+    "max_depth": 8,
+    "random_state": 42,
+    "n_jobs": 1
+  },
+  "metrics": [
+    {
+      "model": "linear_response_only",
+      "mae": 0.5499110111498849,
+      "rmse": 0.720503738292752,
+      "bias": 0.1792037410099868,
+      "r2": 0.6930009559389781
+    },
+    {
+      "model": "linear_all_features",
+      "mae": 0.543889761685189,
+      "rmse": 0.7094790958337671,
+      "bias": 0.31832287189829017,
+      "r2": 0.7023240460977191
+    },
+    {
+      "model": "rf_response_only",
+      "mae": 0.5483466668633473,
+      "rmse": 0.7329398287228822,
+      "bias": 0.15702650448519512,
+      "r2": 0.682311721760047
+    },
+    {
+      "model": "rf_all_features",
+      "mae": 0.5602397005891085,
+      "rmse": 0.7258824001319509,
+      "bias": 0.27092064125052584,
+      "r2": 0.6884002652291406
+    }
+  ],
+  "export_check": {
+    "status": "passed",
+    "probes": 2246,
+    "max_abs_error": 1.7763568394002505e-15,
+    "scope": "new benchmark export on host CPU; not legacy headers or ESP32 timing"
+  },
+  "source_measurements_real": true,
+  "input_synthetic": false,
+  "target_scale_from_source": 1.0,
+  "deployment_approved": false,
+  "deployment_blockers": [
+    "PT08.S1 features are not MQ-7 ADC or resistance ratio"
+  ],
+  "training_summary": {
+    "rows": 5875,
+    "target_min": 0.1,
+    "target_max": 11.9,
+    "target_median": 1.9,
+    "target_zero_fraction": 0.0,
+    "target_unique_values": 93,
+    "features": {
+      "PT08.S1(CO)": {
+        "min": 647.0,
+        "max": 2040.0
+      },
+      "T": {
+        "min": 1.2000000476837158,
+        "max": 44.599998474121094
+      },
+      "RH": {
+        "min": 9.199999809265137,
+        "max": 88.69999694824219
+      }
+    }
+  },
+  "test_summary": {
+    "rows": 1469,
+    "target_min": 0.1,
+    "target_max": 7.5,
+    "target_median": 1.6,
+    "target_zero_fraction": 0.0,
+    "target_unique_values": 70,
+    "features": {
+      "PT08.S1(CO)": {
+        "min": 715.0,
+        "max": 1846.0
+      },
+      "T": {
+        "min": -1.899999976158142,
+        "max": 30.0
+      },
+      "RH": {
+        "min": 9.899999618530273,
+        "max": 86.5999984741211
+      }
+    }
+  },
+  "persistence_check": "passed: sklearn estimator saved and reloaded with identical predictions",
+  "versions": {
+    "python": "3.11.0",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "sklearn": "1.8.0"
+  },
+  "additional_baselines": [
+    {
+      "model": "training_mean",
+      "mae": 1.067664498935446,
+      "rmse": 1.3196994482270397,
+      "bias": 0.2250297350926235,
+      "r2": -0.029946382267505678
+    }
+  ]
+}

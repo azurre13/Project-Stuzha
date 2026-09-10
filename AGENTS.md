@@ -25,6 +25,12 @@ Tidak ada klaim ISPU resmi, konsentrasi tervalidasi, penghilangan CO atau rekama
 
 ## Aturan bekerja
 
+### Preferensi komunikasi pemilik — 10 September 2026
+
+- Setiap kritik atau temuan kekurangan harus disertai solusi konkret, langkah yang akan dikerjakan AI, dan hasil yang akan diserahkan. Jangan berhenti pada daftar masalah atau mengulang keterbatasan.
+- Gunakan bahasa sederhana dengan pola yang diminta pemilik: "Solusinya bisa begini ... Biar aku selesaikan dengan begini ... Setuju untuk aku bereskan?" Pertanyaan persetujuan dipakai untuk usulan baru yang membutuhkan keputusan; pekerjaan yang sudah diizinkan langsung dituntaskan tanpa meminta izin berulang.
+- AI mengambil tanggung jawab pencarian referensi/data, perbaikan kode, training, dan evaluasi yang dapat dikerjakan dengan akses tersedia. Jangan melempar pekerjaan tersebut kembali kepada pemilik. Jika ada hambatan nyata, jelaskan singkat dan berikan alternatif yang bisa dikerjakan AI; jangan menjanjikan hasil yang belum terbukti.
+
 - Jaga perubahan lokal pemilik dan semua data asli. Jangan hapus lonjakan atau isi missing dengan angka normal tanpa penanda.
 - Perbaikan kode diizinkan oleh pemilik pada 8 September 2026. Bedakan edit, build, training, upload dan uji perangkat.
 - Kredensial berada di secrets.h yang diabaikan Git. Jangan tampilkan nilainya. Binari firmware mengandung konfigurasi lokal dan tidak untuk dipublikasikan.

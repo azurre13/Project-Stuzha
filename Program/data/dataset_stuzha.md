@@ -52,3 +52,16 @@ Cakupan slot per boot = jumlah slot unik diterima / (slot terakhir - slot pertam
 - UCI Air Quality: [metadata](https://archive.ics.uci.edu/dataset/360/air+quality), berkas uci/AirQualityUCI.csv. CO(GT) reference analyzer mg/m3; PT08.S1 bukan MQ7 ADC. Sentinel -200 missing. Pipeline baru tidak memetakan PT08 ke ADC ESP32.
 
 Lihat [training](../../ml_training/training_ml_stuzha.md) dan [evaluasi](../../Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md). Jangan menggunakan model sendiri sebagai ground truth kalibrasi baru.
+
+
+## Pemeriksaan uji indoor 10 September 2026
+
+[Snapshot asli](downloads/thingspeak_3480764_20260909_172359_267378.csv) berisi94rekaman yang tersedia pada saat unduhan: 9 September23:52:08 sampai10September00:23:55WIB (31menit47detik). Ini rentang cloud yang tersedia, bukan klaim durasi seluruh aktivitas pengujian pemilik. Boot terakhir dalam snapshot berumur39menit27detik. Semua rekaman memiliki build42429e9eca53 dan boot81c3113b; tidak ada reset teramati di antaranya.
+
+[Audit yang benar](downloads/audit_20260910_002359_corrected.json):94baris valid, tidak ada IDduplikat, interval median20detik. Dua slot tidak diterima (cakupan slot teramati97,92%); terdapat jeda60detik pada00:21:54–00:22:54WIB. Counter kegagalan pengiriman bertambah2, tetapi sebab jaringan/dayanya tidak ditentukan. Preflight ketat keseluruhan interval tidak lolos karena jeda tersebut; bukan karena data rusak. Laporan audit awal tanpa suffix corrected salah menolak field8='2.000000'; pembaca telah diperbaiki dan14tes Python lulus. CSV asli tidak diubah.
+
+ML median2832,5us (2,83ms), p953533us, maksimum4584us pada snapshot yang diterima. Heap minimum199024byte dan akhir199508byte. Tidak ada flag DHTinvalid, modelinvalid, stale atau ADCrail. Flag timingGP ada pada semua snapshot dengan proporsi maksimal2% sampel per blok, di bawah batas10% firmware; sumber deviasi belum dilokalisasi. Bukan bukti pulsa fisik tepat seluruhnya.
+
+Suhu24,8–26,3°C; RH53,3–64,0%; PM model nominal10,26–20,00; CO model nominal2,64–3,07ppm; indeks39,72–55,64. Kategori Baik6rekaman dan Sedang88rekaman. Perintah kipas14,90% pada seluruh snapshot. Rekaman20detik tidak membuktikan seluruh dwell/transisi1detik; jangan menyimpulkan respons mekanik atau kalibrasi dari grafik ini.
+
+[Grafik uji indoor](downloads/grafik_uji_20260910_002359.png). Perubahan tampilan serial pengguna mempertahankan kontrak cloud. Inisialisasi kanal buzzer15 yang hilang dikembalikan pada kandidat lokal berikutnya; kandidat itu belum di-upload karena port USB tidak tersedia saat pemeriksaan.
