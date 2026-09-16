@@ -1,0 +1,13 @@
+{
+  "model_name": "Stuzha PM Multi-Scale Chronological Benchmark",
+  "intended_use": "Membuktikan pembalikan formula gangguan sintetis uap air; BUKAN kalibrasi partikulat fisik lapangan",
+  "training_data": "80% awal data deret waktu Mendeley (133.972 baris)",
+  "testing_data": "20% akhir data deret waktu Mendeley (33.493 baris)",
+  "candidate_model_files": [
+    "candidate_model_pm_raw.joblib",
+    "candidate_model_pm_x1000.joblib"
+  ],
+  "data_leakage_in_legacy_model": "79.685% (26689/33493 baris)",
+  "unit_status": "Konflik satuan sumber vs regulasi belum terselesaikan; pengali x1000 berasal dari asumsi commit 67f2639",
+  "deployment_recommendation": "Pertahankan header aktif untuk demonstrasi runtime tanpa mengklaim kalibrasi fisik"
+}

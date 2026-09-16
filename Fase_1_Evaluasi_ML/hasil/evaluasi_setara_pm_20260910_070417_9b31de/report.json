@@ -1,0 +1,227 @@
+{
+  "experiment": "pm-setara",
+  "input_sha256": "74c13380836f5069093524044bc9c70a196464f147a1032e69603dd27ad9e8e3",
+  "pipeline_sha256": "f1791bf6defcc5e1026846a22e59528d78ebb7050aaba4ddb4270122567fd5b0",
+  "source": "Program\\data\\mendeley\\Indoor_Air_Pollution_Data.csv",
+  "features": [
+    "synthetic_response",
+    "Temp",
+    "Humidity"
+  ],
+  "total_historical_valid_sensor_rows": 167466,
+  "total_chronological_valid_rows": 167465,
+  "row_difference_explanation": "1 baris (indeks 2310) memiliki format Date '0.13' sehingga diabaikan saat pengurutan waktu kronologis",
+  "candidate_models": {
+    "candidate_model_pm_raw": {
+      "file": "candidate_model_pm_raw.joblib",
+      "sha256": "9fdcf9b05dbc7bc9704a1304b8aa18e824ebce083effb568bd38779e86b8efcf",
+      "scale": "sumber_numerik"
+    },
+    "candidate_model_pm_x1000": {
+      "file": "candidate_model_pm_x1000.joblib",
+      "sha256": "b8127744efedd6e26dacd7511f271cb088050f5d5f30d8eab4a8a74055145250",
+      "scale": "x1000"
+    }
+  },
+  "leakage_audit": {
+    "legacy_train_rows": 133972,
+    "chrono_test_rows": 33493,
+    "leakage_count": 26689,
+    "leakage_percentage": 79.685307377661,
+    "formula": "len(set(legacy_train_indices) & set(chrono_test_indices)) / len(chrono_test_indices) * 100"
+  },
+  "cpp_header_verification": {
+    "execution_status": "success",
+    "parity_status": "passed_aggregate_with_exceptions",
+    "kriteria_agregat": "Rata-rata selisih absolut <= 1e-4 dan >= 99.9% sampel dalam batas 1e-4",
+    "agregat_lolos": true,
+    "pointwise_lolos": false,
+    "header_tested": "Program/Kode/include/model_pm.h",
+    "tolerance": 0.0001,
+    "mean_abs_difference_vs_joblib": 2.6261399217412002e-05,
+    "max_abs_difference_vs_joblib": 0.32421253422988805,
+    "percent_within_tolerance": 99.98805720598334,
+    "outlier_count_above_tolerance": 4,
+    "pelanggaran_toleransi_pointwise": [
+      {
+        "test_index": 8090,
+        "source_row": 148060,
+        "feature": "Temp",
+        "feature_value_float32": 33.4000015,
+        "tree_index": 17,
+        "node_index": 47,
+        "threshold_cpp_literal": "33.400000f",
+        "threshold_py_double": 33.39999961853027,
+        "branch_cpp": "LEFT (<= 33.400000f)",
+        "branch_py": "RIGHT (> 33.3999996)",
+        "leaf_cpp": 11.196969696969697,
+        "leaf_py": 1.4705882352941178,
+        "delta_leaf": 9.72638146167558,
+        "delta_prediction_total_30_trees": 0.324212715389186,
+        "kategori": "perbedaan_presisi_ambang_batas_terbukti"
+      },
+      {
+        "test_index": 9432,
+        "source_row": 149402,
+        "feature": "Temp",
+        "feature_value_float32": 31.5300007,
+        "tree_index": 29,
+        "node_index": 27,
+        "threshold_cpp_literal": "31.530001f",
+        "threshold_py_double": 31.52999973297119,
+        "branch_cpp": "LEFT (<= 31.530001f)",
+        "branch_py": "RIGHT (> 31.5299997)",
+        "leaf_cpp": 1.2,
+        "leaf_py": 4.5,
+        "delta_leaf": -3.3,
+        "delta_prediction_total_30_trees": -0.11,
+        "kategori": "perbedaan_presisi_ambang_batas_terbukti"
+      },
+      {
+        "test_index": 13708,
+        "source_row": 153678,
+        "feature": "Temp",
+        "feature_value_float32": 31.5400009,
+        "tree_index": 4,
+        "node_index": 39,
+        "threshold_cpp_literal": "31.540000f",
+        "threshold_py_double": 31.539999961853027,
+        "branch_cpp": "LEFT (<= 31.540000f)",
+        "branch_py": "RIGHT (> 31.5399999)",
+        "leaf_cpp": 5.0,
+        "leaf_py": 10.88888888888889,
+        "delta_leaf": -5.88888888888889,
+        "delta_prediction_total_30_trees": -0.196296296296296,
+        "kategori": "perbedaan_presisi_ambang_batas_terbukti"
+      },
+      {
+        "test_index": 29821,
+        "source_row": 169792,
+        "feature": "Temp",
+        "feature_value_float32": 26.3600006,
+        "tree_index": 26,
+        "node_index": 14,
+        "threshold_cpp_literal": "26.360001f",
+        "threshold_py_double": 26.359999656677246,
+        "branch_cpp": "LEFT (<= 26.360001f)",
+        "branch_py": "RIGHT (> 26.3599996)",
+        "leaf_cpp": 9.946808510638298,
+        "leaf_py": 2.5,
+        "delta_leaf": 7.446808510638298,
+        "delta_prediction_total_30_trees": 0.24822695035461,
+        "kategori": "perbedaan_presisi_ambang_batas_terbukti"
+      }
+    ],
+    "outlier_explanation": "Sebanyak 99,988% sampel memenuhi toleransi, empat sampel melampauinya (toleransi 1e-4). Perbedaan presisi biner pada representasi ambang batas pohon float32 (header C++) vs double (Python scikit-learn) menyebabkan 1 dari 30 pohon berbelok ke cabang anak yang berbeda pada keempat baris tersebut. Seluruh 4 baris telah diverifikasi otomatis melalui skrip penelusuran jalur pohon Fase_1_Evaluasi_ML/trace_pm_legacy_parity.py per baris/pohon/node/threshold (terbukti secara komputasi)."
+  },
+  "benchmark_export_check": {
+    "status": "passed",
+    "probes": 2447,
+    "max_abs_error": 1.1102230246251565e-16,
+    "scope": "new benchmark export on host CPU; not legacy headers or ESP32 timing"
+  },
+  "metrics": [
+    {
+      "skala": "skala_sumber_numerik",
+      "satuan": "unit sumber (konflik belum terselesaikan)",
+      "model": "raw_input_tanpa_ml",
+      "evaluasi": "split_waktu_murni",
+      "mae": 0.0022650707978755236,
+      "rmse": 0.0031459225177043115,
+      "bias": 0.0022650707978755236,
+      "r2": -2.043933629989624,
+      "penurunan_rmse_persen": 0.0,
+      "catatan": "Baseline input dengan gangguan formula simulasi"
+    },
+    {
+      "skala": "skala_sumber_numerik",
+      "satuan": "unit sumber (konflik belum terselesaikan)",
+      "model": "regresi_linear_3fitur",
+      "evaluasi": "split_waktu_murni",
+      "mae": 0.005758261773735285,
+      "rmse": 0.006626713298201295,
+      "bias": -0.004841836169362068,
+      "r2": -12.506272315979004,
+      "penurunan_rmse_persen": -110.64451717765245,
+      "catatan": "Fit 80% masa lalu, diuji 20% masa depan (float64); tidak mampu menangani suku kuadratik RH"
+    },
+    {
+      "skala": "skala_sumber_numerik",
+      "satuan": "unit sumber (konflik belum terselesaikan)",
+      "model": "rf_chrono_3fitur",
+      "evaluasi": "split_waktu_murni",
+      "mae": 1.187836733391505e-05,
+      "rmse": 0.00021339232894900036,
+      "bias": 1.187836733391505e-05,
+      "r2": 0.9859945615679502,
+      "penurunan_rmse_persen": 93.21685999104898,
+      "catatan": "Fit 80% masa lalu, diuji 20% masa depan; bebas data leakage"
+    },
+    {
+      "skala": "skala_x1000",
+      "satuan": "ug/m3 (asumsi pengali 1000 commit 67f2639)",
+      "model": "raw_input_x1000_tanpa_ml",
+      "evaluasi": "split_waktu_murni",
+      "mae": 2.2650704383850098,
+      "rmse": 3.1459226953475095,
+      "bias": 2.2650704383850098,
+      "r2": -2.0439341068267822,
+      "penurunan_rmse_persen": 0.0,
+      "catatan": "Baseline input skala x1000 dengan gangguan formula simulasi"
+    },
+    {
+      "skala": "skala_x1000",
+      "satuan": "ug/m3 (asumsi pengali 1000 commit 67f2639)",
+      "model": "regresi_linear_x1000_3fitur",
+      "evaluasi": "split_waktu_murni",
+      "mae": 5.7582621574401855,
+      "rmse": 6.626713657071827,
+      "bias": -4.841836452484131,
+      "r2": -12.506274223327637,
+      "penurunan_rmse_persen": -110.64451669051,
+      "catatan": "Fit 80% masa lalu, diuji 20% masa depan skala x1000 (float64)"
+    },
+    {
+      "skala": "skala_x1000",
+      "satuan": "ug/m3 (asumsi pengali 1000 commit 67f2639)",
+      "model": "rf_chrono_x1000_3fitur",
+      "evaluasi": "split_waktu_murni",
+      "mae": 0.011859138960352693,
+      "rmse": 0.21310474818007302,
+      "bias": 0.011859138960352693,
+      "r2": 0.9860322842203887,
+      "penurunan_rmse_persen": 93.22600175474011,
+      "catatan": "Fit 80% masa lalu, diuji 20% masa depan skala x1000; bebas data leakage"
+    },
+    {
+      "skala": "skala_x1000",
+      "satuan": "ug/m3 (asumsi pengali 1000 commit 67f2639)",
+      "model": "rf_rekonstruksi_python_joblib",
+      "evaluasi": "keterlacakan_model_historis",
+      "mae": 0.009301825846904857,
+      "rmse": 0.207265774636504,
+      "bias": 0.009301825846904857,
+      "r2": 0.9867872163322351,
+      "penurunan_rmse_persen": 93.41160623739965,
+      "catatan": "Model rekonstruksi Python; mengandung data leakage 79.685% (26689/33493 baris) akibat random split lama"
+    },
+    {
+      "skala": "skala_x1000",
+      "satuan": "ug/m3 (asumsi pengali 1000 commit 67f2639)",
+      "model": "rf_header_cpp_aktif_model_pm_h",
+      "evaluasi": "keterlacakan_header_cpp_asli",
+      "mae": 0.009309750981628895,
+      "rmse": 0.2075728583538156,
+      "bias": 0.009309750981628895,
+      "r2": 0.9867480397224426,
+      "penurunan_rmse_persen": 93.40184491307451,
+      "catatan": "Uji binary C++ (eksekusi: success, paritas: passed); mean selisih 2.63e-05, maks 0.324 (99.99% data <= 1e-4); tercemar 79.685% leakage"
+    }
+  ],
+  "versions": {
+    "python": "3.11.0",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "sklearn": "1.8.0"
+  }
+}

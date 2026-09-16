@@ -10,7 +10,7 @@ from pipeline import run
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--experiment", choices=["all", "uci-co", "pm-simulation", "legacy-recovery"], default="all")
+    parser.add_argument("--experiment", choices=["all", "uci-co", "pm-simulation", "pm-setara", "legacy-recovery"], default="all")
     parser.add_argument("--output", help="New output directory; existing directories are never overwritten")
     args = parser.parse_args()
     if args.experiment == "legacy-recovery":
@@ -22,7 +22,7 @@ def main():
     if base == firmware or firmware in base.parents:
         parser.error("Output evaluasi harus di luar firmware")
     base.mkdir(parents=True, exist_ok=False)
-    experiments = ["pm-simulation", "uci-co"] if args.experiment == "all" else [args.experiment]
+    experiments = ["pm-setara", "uci-co"] if args.experiment == "all" else [args.experiment]
     for experiment in experiments:
         run(experiment, base / experiment)
     (base / "laporan_evaluasi_metrik.md").write_text("# Hasil evaluasi Fase 1\n\n" + "\n".join(

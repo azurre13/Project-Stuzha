@@ -1,6 +1,6 @@
 # Firmware Stuzha v4.0.0 — TinyML, indeks dan kendali
 
-Versi 9 September 2026. Target esp32dev, espressif32 6.12.0 / Arduino-ESP32 2.0.17. Build lokal berhasil. Firmware build42429e9eca53 telah teramati pada cloud; kandidat lokal terbaru belum di-upload. Uji penerimaan fisik lengkap belum dilakukan. [Metode dan keputusan v4](../../MD/metode_ispu_v4.md) merupakan acuan metode aktif. V3.0/v3.1 menjadi arsip.
+Versi 10 September 2026. Target esp32dev, espressif32 6.12.0 / Arduino-ESP32 2.0.17. Firmware aktif build `a945ea070fcc` telah di-upload ke ESP32 dan terkonfirmasi aktif pada cloud ThingSpeak. [Metode dan keputusan v4](../../MD/metode_ispu_v4.md) merupakan acuan metode aktif. V3.0/v3.1 menjadi arsip.
 
 ## Alur aktif
 
@@ -69,8 +69,9 @@ Dari Program/Kode: pio run; pio device list; pio run --target upload --upload-po
 
 Build setelah pemeriksaan stabilitas: `5f1eb11d9548`. Tes C++ dan13tes Python lulus, build ESP32 berhasil (flash1105593byte, RAM statis80080byte). [Verifikasi terkini](../../MD/verifikasi_revisi_v4.json) menyimpan hash dan lokasi binari privat. Port COM3 terdeteksi, tetapi upload/uji fisik belum dilakukan pada revisi ini.
 
-## Pemeriksaan 10 September 2026
+## Pemeriksaan dan Upload 10 September 2026
 
-Tampilan serial ringkas pemilik dipertahankan. Kanal buzzer15 kini diinisialisasi (1000Hz/10bit, pin18, duty0) sebelum setToneChannel/noTone. Ini mengatasi error LEDC is not initialized yang teramati sebelumnya; tidak mengubah kanal/persentase kipas atau model. Header terminal kembali memuat identitas build/model/boot. Kandidat `a945ea070fcc` berhasil dibangun tetapi belum di-upload, karena port USB tidak tersedia.
+Tampilan serial ringkas pemilik dipertahankan. Kanal buzzer 15 kini diinisialisasi (1000 Hz / 10 bit, pin 18, duty 0) sebelum setToneChannel/noTone. Ini mengatasi error LEDC is not initialized yang teramati sebelumnya; tidak mengubah kanal/persentase kipas atau model. Header terminal kembali memuat identitas build/model/boot.
 
-Build42429e9eca53 teramati melalui94snapshot cloud. [Hasil uji indoor](../data/dataset_stuzha.md) menyimpan waktu, gap dan metrik nyata. Firmware berjalan berbeda dari kandidat lokal terbaru; cocokkan hash, jangan hanya nomor4.0.0.
+**Status Upload:**
+Kandidat `a945ea070fcc` telah berhasil di-upload ke board ESP32 melalui port `COM3` pada 10 September 2026 pukul 20:00 WIB. Telemetri live telah terkonfirmasi aktif pada Serial Monitor dan cloud ThingSpeak (Channel 3480764, mulai Entry 3609 dengan boot ID `c43d4d72` dan build `h=a945ea070fcc`). Pengujian kontinu 7 hari resmi berjalan menggunakan build aktif ini.

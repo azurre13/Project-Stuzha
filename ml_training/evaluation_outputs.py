@@ -10,7 +10,8 @@ def save_comparison(directory, metrics):
     """Compare RF against an explicit baseline on the same test observations."""
     indexed = {m['model']: m for m in metrics}
     base_name = 'linear_all_features' if 'linear_all_features' in indexed else metrics[0]['model']
-    rf_name = 'rf_all_features' if 'rf_all_features' in indexed else 'random_forest'
+    rf_candidates = [m['model'] for m in metrics if 'rf' in m['model'].lower() or 'forest' in m['model'].lower()]
+    rf_name = 'rf_all_features' if 'rf_all_features' in indexed else ('random_forest' if 'random_forest' in indexed else (rf_candidates[0] if rf_candidates else metrics[-1]['model']))
     baseline, rf = indexed[base_name], indexed[rf_name]
     rows = []
     for key in ('rmse', 'mae'):
@@ -49,7 +50,8 @@ def save_evaluation(directory, predictions, metrics, importances, features, titl
         fig.savefig(graphics / filename, dpi=300)
         plt.close(fig)
 
-    fig, axes = plt.subplots(1 if len(names) <= 2 else 2, 2, figsize=(12, 5 if len(names) <= 2 else 9), squeeze=False)
+    nrows = max(1, (len(names) + 1) // 2)
+    fig, axes = plt.subplots(nrows, 2, figsize=(12, 4.5 * nrows), squeeze=False)
     for ax, metric in zip(axes.flat, metrics):
         name = metric["model"]
         ax.scatter(sample.target, sample[name], s=7, alpha=.35, rasterized=True)

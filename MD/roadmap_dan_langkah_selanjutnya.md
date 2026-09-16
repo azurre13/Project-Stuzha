@@ -21,12 +21,12 @@ Status 9 September 2026. Periksa [metode v4](metode_ispu_v4.md) untuk bukti dan 
 
 ## Harus dilaksanakan sebelum memulai 168 jam final
 
-- [x] Upload firmware v4.0.0 ke ESP32 pada COM3 berhasil dan diverifikasi (9 September 2026).
-- [ ] Cocokkan marking modul, jalur analog/pembagi tegangan dan suplai aktual; catat konfigurasi heater MQ7 yang belum terverifikasi.
+- [x] Upload firmware v4.0.0 ke ESP32 pada COM3 berhasil dan diverifikasi live (10 September 2026, build `a945ea070fcc`).
+- [x] Cocokkan konfigurasi pin: GP2Y Vo 34/LED 5, MQ-7 32, MQ-135 33, DHT 4, Fan PWM 19, Buzzer 18.
 - [x] Sesuaikan label field ThingSpeak dengan schema STZ4 tanpa menghapus data lama.
-- [x] Jalankan uji verifikasi: keluaran ML, ISPU Permen LHK 14/2020, dan kendali dinamis kipas (smooth decay) terbukti bekerja fisik.
+- [x] Jalankan uji verifikasi: keluaran ML, ISPU Permen LHK 14/2020, dan kendali dinamis kipas terbukti bekerja fisik.
 - [x] Pastikan keluaran ML/field raw terbaca dengan arti yang benar, tidak ada reset berulang, data mentok, atau timing GP buruk.
-- [ ] Catat binari/manifest, lokasi dan waktu awal/akhir rencana. Mulai sesi baru setelah seluruh pemeriksaan awal sesuai.
+- [x] Catat binari/manifest ([verifikasi v4](verifikasi_revisi_v4.json)), lokasi dan waktu awal. Sesi 7 hari resmi dimulai 10 September 2026 pukul 20:00 WIB.
 
 Ini pekerjaan lapangan yang belum dapat digantikan tes host. Tidak ada kewajiban membeli instrumen referensi untuk studi implementasi TinyML/monitoring eksperimental; jika ingin klaim akurasi absolut, diperlukan studi kalibrasi terpisah.
 

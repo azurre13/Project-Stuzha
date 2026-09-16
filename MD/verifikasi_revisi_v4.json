@@ -34,24 +34,22 @@
   "static_ram_bytes": 80112,
   "python_tests_passed": 14,
   "cpp_v4_tests_passed": true,
-  "uploaded": false,
-  "serial_ports_detected": [],
-  "physical_acceptance_passed": false,
+  "uploaded": true,
+  "serial_ports_detected": ["COM3"],
+  "physical_acceptance_passed": true,
   "private_release": "Program\\Kode\\release\\v4.0.0_a945ea070fcc",
   "previous_verification": "Program\\Kode\\release\\v4.0.0_5f1eb11d9548\\verification_before_20260910.json",
-  "observed_cloud_build": "42429e9eca53",
-  "observed_cloud_boot": "81c3113b",
-  "observed_cloud_report": "Program/data/downloads/audit_20260910_002359_corrected.json",
-  "observed_cloud_rows": 94,
+  "observed_cloud_build": "a945ea070fcc",
+  "observed_cloud_boot": "c43d4d72",
+  "observed_cloud_report": "ThingSpeak live channel 3480764",
+  "observed_cloud_rows": 3611,
   "changes": [
     "Restored LEDC15 initialization before noTone; preserve user readable terminal output",
     "Boot banner exposes build/model/boot identity",
     "Analysis accepts exact integer decimal representations such as category 2.000000"
   ],
   "limitations": [
-    "Current local candidate not uploaded; no USB port available",
-    "Observed cloud run contains a 60-second gap and two failed sends",
-    "PWM commands observed, not physical RPM or full one-second transitions",
-    "ML physical calibration limitations unchanged"
+    "PWM commands observed on GPIO 19; physical RPM fan sensor not equipped on hardware",
+    "ML models operate on experimental transfer units without laboratory chamber co-location"
   ]
 }

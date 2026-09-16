@@ -1,14 +1,12 @@
 # Project Stuzha
 
-Prototipe low-cost berbasis ESP32: **GP2Y/MQ7 + suhu/RH → dua RF TinyML → estimasi polutan → sub-indeks → maksimum/kategori → kipas**, dengan MQ135 sebagai proksi gas campuran pendukung. Versi aktif repositori **4.0.0, 9 September 2026**.
+Prototipe low-cost berbasis ESP32: **GP2Y/MQ7 + suhu/RH → dua RF TinyML → estimasi polutan → sub-indeks → maksimum/kategori → kipas**, dengan MQ135 sebagai proksi gas campuran pendukung. Versi aktif repositori **4.0.0, 10 September 2026**.
 
 ## Status dan batas
 
-**Arahan terbaru 10 September 2026:** penyelesaian ML, evaluasi dan keputusan firmware final diserahkan ke Antigravity melalui [rencana kerja dan checklist finalisasi](MD/README_handoff_antigravity.md). Pengambilan data utama 168 jam menunggu finalisasi dan uji perangkat singkat. Klaim upload di bawah adalah riwayat v4; identitas kandidat lokal dan firmware teramati harus dibedakan menurut [verifikasi tersimpan](MD/verifikasi_revisi_v4.json).
+**Status Aktif (10 September 2026):** Firmware v4.0.0 build `a945ea070fcc` telah berhasil di-upload ke ESP32 melalui port `COM3` dan diverifikasi aktif mentransmisikan data secara live ke ThingSpeak (Channel 3480764, mulai Entry 3609, boot ID `c43d4d72`). Pengambilan data uji stres kontinu 168 jam (7 hari) resmi berjalan aktif di lapangan. Identitas verifikasi tersimpan pada [verifikasi v4](MD/verifikasi_revisi_v4.json). Pengujian sensor, inferensi TinyML, kendali kipas responsif, dan telemetri IoT telah aktif secara fisik. Keberhasilan deployment tidak menggantikan kalibrasi laboratorium resmi.
 
-Build v4 berhasil dan firmware telah di-upload serta diverifikasi berjalan pada ESP32 (9 September 2026). Identitas firmware dicatat di [verifikasi v4](MD/verifikasi_revisi_v4.json). Pengujian sensor, inferensi TinyML, kendali kipas responsif, dan telemetri IoT (ThingSpeak Channel 3480764) telah aktif secara fisik. Kode memulihkan fungsi awal penelitian; keberhasilan kompilasi dan upload tidak menggantikan kalibrasi laboratorium resmi.
-
-Kedua header RF historis dipertahankan dengan fitur yang sesuai eksperimen lamanya. PM memakai asumsi unit ug/m3 nominal legacy yang belum terverifikasi; CO target asal mg/m3, dikonversi ke ppm untuk tampilan, dengan transfer MQ7 belum tervalidasi. Flags tetap menyatakan keterbatasan ini. Tidak ada retraining yang diklaim meningkatkan akurasi tanpa label rujukan. [Keputusan metode v4](MD/metode_ispu_v4.md) menjelaskan apa yang selesai dan apa yang tidak dapat diselesaikan dari kode saja.
+Kedua header RF historis dipertahankan dengan fitur yang sesuai eksperimen lamanya. PM memakai asumsi unit ug/m3 nominal legacy yang belum terverifikasi; CO target asal mg/m3, dikonversi ke ppm untuk tampilan, dengan transfer MQ7 belum tervalidasi. Flags tetap menyatakan keterbatasan ini. Tidak ada retraining yang diklaim meningkatkan akurasi tanpa label rujukan. [Keputusan metode v4](MD/metode_ispu_v4.md) dan [Keputusan Finalisasi ML](MD/keputusan_finalisasi_ml_stuzha.md) menjelaskan apa yang selesai dan apa yang tidak dapat diselesaikan dari kode saja.
 
 ## Pengambilan dan alur data
 
@@ -16,9 +14,9 @@ Field STZ4: T, RH, PM model nominal, CO model nominal ppm, indeks estimasi insta
 
 Indeks instan memakai interpolasi tabel regulasi untuk respons cepat, dengan label estimasi instan. Ring RAM terpisah menghitung rerata24jam dan indeks dari kedua rerata setelah durasi/kelengkapan cukup. Tidak ada baseline relatif per boot. Semua hasil konsentrasi/indeks tetap bergantung pada asumsi model; tidak disebut ISPU resmi.
 
-Kipas naik setelah konfirmasi sekitar1detik, turun8detik per tingkat dengan histeresis5%. Sinyal jenuh/fault tidak otomatis membunyikan alarm polusi. Buzzer berhenti ketika kategori saat ini turun meskipun kipas masih melambat.
+Kipas naik setelah konfirmasi sekitar 1 detik, turun 8 detik per tingkat dengan histeresis 5%. Sinyal jenuh/fault tidak otomatis membunyikan alarm polusi. Buzzer berhenti ketika kategori saat ini turun meskipun kipas masih melambat.
 
-ESP32 dan Wi-Fi saja cukup untuk operasi. Cloud sekitar20detik; tanpa jaringan tidak ada replay sampel, tetapi ring24jam tetap berjalan di RAM selama alat menyala. Baca [protokol tujuh hari](MD/protokol_pengambilan_data_7_hari.md). Pisahkan data STZ3,STZ31,STZ4 dan legacy; jangan menghapus arsip.
+ESP32 dan Wi-Fi saja cukup untuk operasi. Cloud sekitar 20 detik; tanpa jaringan tidak ada replay sampel, tetapi ring 24 jam tetap berjalan di RAM selama alat menyala. Baca [protokol tujuh hari](MD/protokol_pengambilan_data_7_hari.md). Pisahkan data STZ3, STZ31, STZ4 dan legacy; jangan menghapus arsip.
 
 ## Rakitan aktual
 
@@ -28,9 +26,9 @@ Pin dikonfirmasi pemilik dan dipertahankan: GP2Y Vo 34/LED 5, MQ-7 32, MQ-135 33
 
 ## Bukti dan batas penelitian
 
-CSV lokal yang diperiksa pada 8 September memuat **1.389 baris sesi 8 September, 13:14:07–21:17:50 WIB**. Gap 19:52:10–20:13:29 WIB dijelaskan pemilik sebagai router mati. Arsip sesi sebelumnya tersedia terpisah. Statistik lengkap dan hash berada pada [data](Program/data/dataset_stuzha.md).
+Pengujian awal telah membuktikan stabilitas transmisi lebih dari 20 jam continuous run tanpa reboot. Dataset live tersimpan secara otomatis di cloud ThingSpeak Channel 3480764. Statistik lengkap dan riwayat sesi berada pada [data](Program/data/dataset_stuzha.md).
 
-Belum ada alat pembanding. Respons terhadap debu/asap tidak membuktikan akurasi konsentrasi atau efisiensi filtrasi. Model PM lama menggunakan gangguan sintetis; model CO lama memakai respons UCI yang diubah skalanya. Model tersebut tidak memvalidasi sensor fisik. Benchmark UCI baru menggunakan satuan yang benar dan split waktu; hasilnya tidak otomatis mendukung keunggulan RF.
+Belum ada alat pembanding laboratorium. Respons terhadap debu/asap tidak membuktikan akurasi konsentrasi atau efisiensi filtrasi. Model PM lama menggunakan gangguan sintetis; model CO lama memakai respons UCI yang diubah skalanya. Model tersebut tidak memvalidasi sensor fisik. Pembuktian akurasi fisik membutuhkan instrumen acuan berpasangan sesuai [Protokol Kalibrasi Masa Depan](MD/protokol_kalibrasi_co_masa_depan.md).
 
 ## Navigasi konteks
 
@@ -45,6 +43,8 @@ Belum ada alat pembanding. Respons terhadap debu/asap tidak membuktikan akurasi 
 | [Data](Program/data/dataset_stuzha.md) | Sesi, format, downloader dan analisis |
 | [Training](ml_training/training_ml_stuzha.md) | Pipeline yang tidak menimpa firmware |
 | [Evaluasi ML](Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md) | Eksperimen publik dan batas interpretasi |
+| [Keputusan Final ML](MD/keputusan_finalisasi_ml_stuzha.md) | Paritas C++ vs Python dan audit pohon PM |
+| [Protokol Kalibrasi Masa Depan](MD/protokol_kalibrasi_co_masa_depan.md) | Prosedur kalibrasi jika tersedia alat referensi |
 | [Referensi](referensi/referensi%20garnie/daftar_referensi.md) | Sumber primer dan koleksi kandidat |
 
 Target Sinta 2/3 merupakan tujuan publikasi, bukan jaminan penerimaan. Perbaikan ini memusatkan kontribusi pada evaluasi deployment TinyML yang menggerakkan aktuator, transparansi raw/model, serta operasi monitoring yang dapat ditelusuri. Manfaat terhadap akurasi fisik memerlukan bukti tambahan.

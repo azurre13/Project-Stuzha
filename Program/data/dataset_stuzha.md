@@ -64,4 +64,16 @@ ML median2832,5us (2,83ms), p953533us, maksimum4584us pada snapshot yang diterim
 
 Suhu24,8–26,3°C; RH53,3–64,0%; PM model nominal10,26–20,00; CO model nominal2,64–3,07ppm; indeks39,72–55,64. Kategori Baik6rekaman dan Sedang88rekaman. Perintah kipas14,90% pada seluruh snapshot. Rekaman20detik tidak membuktikan seluruh dwell/transisi1detik; jangan menyimpulkan respons mekanik atau kalibrasi dari grafik ini.
 
-[Grafik uji indoor](downloads/grafik_uji_20260910_002359.png). Perubahan tampilan serial pengguna mempertahankan kontrak cloud. Inisialisasi kanal buzzer15 yang hilang dikembalikan pada kandidat lokal berikutnya; kandidat itu belum di-upload karena port USB tidak tersedia saat pemeriksaan.
+[Grafik uji indoor](downloads/grafik_uji_20260910_002359.png). Perubahan tampilan serial pengguna mempertahankan kontrak cloud. Inisialisasi kanal buzzer 15 yang hilang dikembalikan pada kandidat lokal berikutnya; kandidat itu belum di-upload karena port USB tidak tersedia saat pemeriksaan.
+
+## Sesi Pengujian Kontinu 5 Hari (10–15 September 2026)
+
+Firmware v4.0.0 build `a945ea070fcc` berhasil di-upload pada 10 September 2026 pukul 20:00 WIB dan langsung menjalankan pengujian stres kontinu. 
+
+- **Snapshot Dataset:** [`Program/data/downloads/stuzha_dataset_20260910-20260915.csv`](downloads/stuzha_dataset_20260910-20260915.csv)
+- **Durasi Observasi:** 10 September 2026 pukul 20:06 WIB – 15 September 2026 pukul 23:50 WIB (**123,75 Jam / 5 Hari 3 Jam 45 Menit**).
+- **Jumlah Sampel:** 22.117 baris feed dalam satu sesi boot berkelanjutan (Boot ID `f27413f0`).
+- **Reliabilitas:** **0 kali reboot**, **zero memory leak** (RAM heap stabil pada ~199 KB), dan tingkat keberhasilan transmisi cloud sebesar **99,61%** (hanya 87 kegagalan kirim dari 22.199 kali percobaan).
+- **Visualisasi:** [Grafik 5 Hari](downloads/grafik_uji_5hari_20260910_20260915.png).
+- **Laporan Lengkap:** [Laporan Pengambilan Data 5 Hari](../../MD/laporan_pengambilan_data_5hari.md).
+
