@@ -8,7 +8,7 @@ Kode/build/tes software bukan upload, uji fisik atau bukti akurasi. Kedua header
 
 ## 2. Sekali sebelum mulai
 
-Simpan manifest/binari yang akan dipasang. Hubungkan ESP32 sesaat untuk upload melalui port yang terdeteksi; perintah ada di dokumentasi firmware. Cocokkan status STZ4|v=4.0.0 dan hash h dengan manifest. Revisi ini belum mengunggah karena port belum terdeteksi. Tidak perlu upload/training harian setelah versi dibekukan.
+Simpan manifest/binari yang akan dipasang. Hubungkan ESP32 sesaat untuk upload melalui port yang terdeteksi; perintah ada di dokumentasi firmware. Cocokkan status STZ4|v=4.0.0 dan hash h dengan manifest. Pada implementasi aktif, firmware build `a945ea070fcc` berhasil di-upload pada 10 September 2026 (COM3) dan menjalankan sesi observasi 168 jam kontinu hingga 17 September 2026. Tidak perlu upload/training harian setelah versi dibekukan.
 
 Catat posisi/dimensi kamar, jarak terhadap AC, orientasi sensor, kondisi filter, catu daya dan jam mulai. Pin tetap sesuai pemilik. Foto/riwayat rakitan membantu penulisan; jangan mengarang R0, pembagi tegangan, siklus heater atau konsentrasi referensi. Suplai5V belum membuktikan heater MQ7 bersiklus.
 

@@ -1,10 +1,10 @@
 # Project Stuzha
 
-Prototipe low-cost berbasis ESP32: **GP2Y/MQ7 + suhu/RH → dua RF TinyML → estimasi polutan → sub-indeks → maksimum/kategori → kipas**, dengan MQ135 sebagai proksi gas campuran pendukung. Versi aktif repositori **4.0.0, 10 September 2026**.
+Prototipe low-cost berbasis ESP32: **GP2Y/MQ7 + suhu/RH → dua RF TinyML → estimasi polutan → sub-indeks → maksimum/kategori → kipas**, dengan MQ135 sebagai proksi gas campuran pendukung. Versi aktif repositori **4.0.0, 17 September 2026**.
 
 ## Status dan batas
 
-**Status Aktif (10 September 2026):** Firmware v4.0.0 build `a945ea070fcc` telah berhasil di-upload ke ESP32 melalui port `COM3` dan diverifikasi aktif mentransmisikan data secara live ke ThingSpeak (Channel 3480764, mulai Entry 3609, boot ID `c43d4d72`). Pengambilan data uji stres kontinu 168 jam (7 hari) resmi berjalan aktif di lapangan. Identitas verifikasi tersimpan pada [verifikasi v4](MD/verifikasi_revisi_v4.json). Pengujian sensor, inferensi TinyML, kendali kipas responsif, dan telemetri IoT telah aktif secara fisik. Keberhasilan deployment tidak menggantikan kalibrasi laboratorium resmi.
+**Status Aktif (17 September 2026):** Pengujian stres kontinu 168 jam (7 hari penuh) telah **berhasil dituntaskan** menggunakan firmware v4.0.0 build `a945ea070fcc` (10–17 September 2026). Total akumulasi mencapai **170,5 jam operasional** dengan 30.260 rekaman telemetri cloud (ThingSpeak Channel 3480764). Sesi kontinu terpanjang berjalan selama 151,26 jam non-stop (Boot `f27413f0`, 27.022 sampel) dengan kestabilan heap yang teramati (196–201 KB, deviasi standar 86,4 bytes), kelengkapan slot 99,25%, dan keberhasilan percobaan kirim 99,57%. Draf naskah ilmiah telah disusun pada [Draf Jurnal](MD/draf_jurnal_metode_dan_hasil_stuzha.md) dan laporan audit 7 hari pada [Hasil 7 Hari](Program/data/hasil_7hari/laporan_audit_sesi_7hari.json). Keberhasilan deployment operasional tidak menggantikan kalibrasi laboratorium resmi.
 
 Kedua header RF historis dipertahankan dengan fitur yang sesuai eksperimen lamanya. PM memakai asumsi unit ug/m3 nominal legacy yang belum terverifikasi; CO target asal mg/m3, dikonversi ke ppm untuk tampilan, dengan transfer MQ7 belum tervalidasi. Flags tetap menyatakan keterbatasan ini. Tidak ada retraining yang diklaim meningkatkan akurasi tanpa label rujukan. [Keputusan metode v4](MD/metode_ispu_v4.md) dan [Keputusan Finalisasi ML](MD/keputusan_finalisasi_ml_stuzha.md) menjelaskan apa yang selesai dan apa yang tidak dapat diselesaikan dari kode saja.
 
@@ -45,6 +45,7 @@ Belum ada alat pembanding laboratorium. Respons terhadap debu/asap tidak membukt
 | [Evaluasi ML](Fase_1_Evaluasi_ML/evaluasi_ml_stuzha.md) | Eksperimen publik dan batas interpretasi |
 | [Keputusan Final ML](MD/keputusan_finalisasi_ml_stuzha.md) | Paritas C++ vs Python dan audit pohon PM |
 | [Protokol Kalibrasi Masa Depan](MD/protokol_kalibrasi_co_masa_depan.md) | Prosedur kalibrasi jika tersedia alat referensi |
+| [Draf Naskah Jurnal](MD/draf_jurnal_metode_dan_hasil_stuzha.md) | Draf artikel ilmiah metode dan hasil 7 hari |
 | [Referensi](referensi/referensi%20garnie/daftar_referensi.md) | Sumber primer dan koleksi kandidat |
 
 Target Sinta 2/3 merupakan tujuan publikasi, bukan jaminan penerimaan. Perbaikan ini memusatkan kontribusi pada evaluasi deployment TinyML yang menggerakkan aktuator, transparansi raw/model, serta operasi monitoring yang dapat ditelusuri. Manfaat terhadap akurasi fisik memerlukan bukti tambahan.

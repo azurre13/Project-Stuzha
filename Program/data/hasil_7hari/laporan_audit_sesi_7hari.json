@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "title": "Audit Komprehensif Sesi 7 Hari Project Stuzha",
+    "date": "2026-09-17",
+    "source_csv": "C:\\Users\\daffa\\Documents\\Project Stuzha\\Program\\data\\downloads\\stuzha_dataset_20260910-20260917.csv",
+    "total_raw_rows": 30260,
+    "overall_time_range": {
+      "start": "2026-09-10T20:01:51+07:00",
+      "end": "2026-09-17T22:33:57+07:00"
+    }
+  },
+  "boots": [
+    {
+      "boot_id": "c43d4d72",
+      "rows": 13,
+      "start_time_wib": "2026-09-10T20:01:51+07:00",
+      "end_time_wib": "2026-09-10T20:05:51+07:00",
+      "start_uptime_hours": 0.03343472222222222,
+      "end_uptime_hours": 0.10020416666666666,
+      "reset_code": 1,
+      "firmware_hash": "a945ea070fcc"
+    },
+    {
+      "boot_id": "f27413f0",
+      "rows": 27022,
+      "start_time_wib": "2026-09-10T20:06:28+07:00",
+      "end_time_wib": "2026-09-17T03:21:46+07:00",
+      "start_uptime_hours": 0.005336666666666667,
+      "end_uptime_hours": 151.2587838888889,
+      "reset_code": 1,
+      "firmware_hash": "a945ea070fcc"
+    },
+    {
+      "boot_id": "2ee94f8f",
+      "rows": 2842,
+      "start_time_wib": "2026-09-17T03:22:08+07:00",
+      "end_time_wib": "2026-09-17T20:21:25+07:00",
+      "start_uptime_hours": 0.005331111111111111,
+      "end_uptime_hours": 16.993189444444443,
+      "reset_code": 1,
+      "firmware_hash": "a945ea070fcc"
+    },
+    {
+      "boot_id": "9f05ffe4",
+      "rows": 18,
+      "start_time_wib": "2026-09-17T20:22:00+07:00",
+      "end_time_wib": "2026-09-17T20:27:41+07:00",
+      "start_uptime_hours": 0.005333888888888889,
+      "end_uptime_hours": 0.10017,
+      "reset_code": 7,
+      "firmware_hash": "a945ea070fcc"
+    },
+    {
+      "boot_id": "37cbdc54",
+      "rows": 365,
+      "start_time_wib": "2026-09-17T20:28:32+07:00",
+      "end_time_wib": "2026-09-17T22:33:57+07:00",
+      "start_uptime_hours": 0.005333888888888889,
+      "end_uptime_hours": 2.095458888888889,
+      "reset_code": 1,
+      "firmware_hash": "a945ea070fcc"
+    }
+  ],
+  "commissioning_boot_c43d4d72": {
+    "rows": 13,
+    "duration_hours": 0.10020416666666666
+  },
+  "main_continuous_boot_f27413f0": {
+    "rows": 27022,
+    "duration_hours": 151.2587838888889,
+    "telemetry_reconciliation": {
+      "total_slots_span": 27226,
+      "received_feeds": 27022,
+      "slot_completeness_pct": 99.251,
+      "recorded_attempts": 27135,
+      "recorded_failures": 118,
+      "recorded_skipped_slots": 91,
+      "attempt_success_rate_pct": 99.565,
+      "unattempted_slot_explanation": "75-91 slot tidak dicoba saat ESP32 menunggu rekoneksi Wi-Fi tanpa buffer antrean persisten"
+    },
+    "heap_stability": {
+      "initial_bytes": 201348,
+      "final_bytes": 199132,
+      "min_bytes": 196728,
+      "max_bytes": 201348,
+      "std_bytes": 86.41,
+      "assessment": "Heap stabil dalam fluktuasi sempit tanpa penurunan progresif"
+    },
+    "category_distribution": {
+      "2.0": 26842,
+      "3.0": 179,
+      "0.0": 1
+    },
+    "fan_level_command_distribution": {
+      "2": 26797,
+      "3": 223,
+      "5": 1,
+      "4": 1
+    },
+    "commanded_pwm_distribution": {
+      "14.90196": 26797,
+      "21.960785": 223,
+      "85.098038": 1,
+      "50.196079": 1
+    },
+    "sensor_and_model_stats": {
+      "min": {
+        "field1": 22.2,
+        "field2": 39.5,
+        "field3": 20.462,
+        "field4": 2.684,
+        "field5": 56.218,
+        "field6": 14.902,
+        "field7": 1179.41,
+        "gp_adc": 937.87,
+        "mq7_adc": 2103.42,
+        "heap_bytes": 196728.0
+      },
+      "mean": {
+        "field1": 25.924,
+        "field2": 55.515,
+        "field3": 33.8,
+        "field4": 4.049,
+        "field5": 73.702,
+        "field6": 14.964,
+        "field7": 1616.251,
+        "gp_adc": 1033.069,
+        "mq7_adc": 2559.357,
+        "heap_bytes": 199145.389
+      },
+      "50%": {
+        "field1": 25.4,
+        "field2": 55.7,
+        "field3": 30.672,
+        "field4": 3.814,
+        "field5": 69.397,
+        "field6": 14.902,
+        "field7": 1597.595,
+        "gp_adc": 1021.94,
+        "mq7_adc": 2536.575,
+        "heap_bytes": 199140.0
+      },
+      "max": {
+        "field1": 31.5,
+        "field2": 75.5,
+        "field3": 80.253,
+        "field4": 7.438,
+        "field5": 126.161,
+        "field6": 85.098,
+        "field7": 3403.95,
+        "gp_adc": 4095.0,
+        "mq7_adc": 3743.83,
+        "heap_bytes": 201348.0
+      },
+      "std": {
+        "field1": 1.991,
+        "field2": 7.254,
+        "field3": 5.641,
+        "field4": 0.798,
+        "field5": 7.946,
+        "field6": 0.797,
+        "field7": 234.563,
+        "gp_adc": 49.207,
+        "mq7_adc": 198.576,
+        "heap_bytes": 86.412
+      }
+    }
+  },
+  "saturation_event_20260913_021306": {
+    "timestamp_wib": "2026-09-13T02:13:06+07:00",
+    "gp_adc": 4095.0,
+    "ispu_field5": null,
+    "category_field8": 0.0,
+    "pwm_field6": 85.098038,
+    "fan_level": 5,
+    "flags": 22930,
+    "raw_status": "STZ4|v=4.0.0|h=a945ea070fcc|m=d7f32c60|b=f27413f0|u=194815312|r=1|l=5|f=22930|s=194555|n=100|j=1|i=5|e=9708,23,32|q=9740|k=199140|a=4095.00,2611.29|d=30.2,4.07,68.4,100|c=0"
+  },
+  "operational_context": {
+    "physical_fan_state": "Status fisik motor tidak diketahui (kabel dicabut pada periode malam/istirahat tanpa RPM sensor fisik)",
+    "thermal_ac_pattern": "Suhu ruangan 22.2-31.1 C mencerminkan siklus pendingin ruangan kamar (AC dimatikan saat penghuni keluar)",
+    "model_feature_coupling": "T dan RH adalah fitur input langsung ke Random Forest PM dan CO; korelasi bukan bukti kalibrasi fisik sensor"
+  }
+}

@@ -32,12 +32,12 @@ Ini pekerjaan lapangan yang belum dapat digantikan tes host. Tidak ada kewajiban
 
 ## Selama dan setelah tujuh hari
 
-- [ ] Rekam kondisi/kejadian di logbook dan simpan snapshot unduhan harian jika memungkinkan.
-- [ ] Pertahankan firmware, posisi dan susunan perangkat; perubahan yang diperlukan membuat sesi/versi baru.
-- [ ] Unduh akhir, simpan hash dan laporan kualitas, jelaskan gap termasuk router/power.
-- [ ] Analisis pola harian/aktivitas, kestabilan, perubahan keluaran RF terhadap raw/T/RH, transisi kipas, flags dan distribusi latensi yang benar-benar terekam.
-- [ ] Isi hasil Bab 3/bab hasil sesuai struktur kampus/jurnal, bukan hasil yang diprediksi AI.
-- [ ] Pilih jurnal sesuai scope dan periksa referensi pembanding dari teks aslinya sebelum submit.
+- [x] Rekam kondisi/kejadian di logbook dan simpan snapshot unduhan harian (snapshot 5 hari dan 7 hari tersimpan).
+- [x] Pertahankan firmware, posisi dan susunan perangkat; sesi 7 hari tuntas pada build `a945ea070fcc`.
+- [x] Unduh akhir, simpan hash dan laporan kualitas ([laporan_audit_sesi_7hari.json](../Program/data/hasil_7hari/laporan_audit_sesi_7hari.json)).
+- [x] Analisis pola harian/aktivitas, kestabilan heap (std 86,4 B), transisi kipas, kejadian saturasi 13 September, dan telemetri (slot completeness 99,25%).
+- [x] Susun draf metode dan hasil monitoring untuk naskah jurnal ([draf_jurnal_metode_dan_hasil_stuzha.md](draf_jurnal_metode_dan_hasil_stuzha.md)).
+- [ ] Pilih target jurnal (Sinta 2/3) sesuai scope dan finalisasi submit.
 
 ## Bukan prasyarat studi ini
 

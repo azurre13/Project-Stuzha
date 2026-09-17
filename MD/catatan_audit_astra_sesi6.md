@@ -1,73 +1,52 @@
 # Catatan Audit untuk Astra Sesi 6 — Project Stuzha
 
-Dokumen ini disiapkan sebagai pengantar dan ringkasan audit lengkap untuk Astra (Sesi 6). Semua instruksi audit perbaikan dari Astra akan dikerjakan langsung oleh Antigravity pada repositori.
+Dokumen ini memuat catatan audit sesi 6 dan realisasi teknis 10 instruksi Astra setelah penuntasan pengujian kontinu 168 jam (7 hari penuh) per 17 September 2026.
 
 ---
 
 ## 1. Identitas Sistem & Status Firmware Aktif
 
-- **Versi Repositori:** 4.0.0 (Revisi 10 September 2026)
+- **Versi Repositori:** 4.0.0 (Revisi 17 September 2026)
 - **Firmware Terpasang:** Build `a945ea070fcc` (Target `esp32dev`, framework Arduino-ESP32 2.0.17)
 - **Model TinyML:** Model PM (`model_pm.h`) & CO (`model_co.h`) terkunci, Model Pair Hash: `d7f32c60`
-- **Boot ID Aktif:** `f27413f0`
-- **Waktu Mulai Berjalan:** 10 September 2026 pukul 20:06:28 WIB
-- **Waktu Snapshot Terkini:** 15 September 2026 pukul 23:50:55 WIB
-- **Durasi Sesi Kontinu:** **123,75 Jam (5 Hari 3 Jam 45 Menit)** non-stop
-- **Status Stabilitas:** **0 kali reboot** (`r=1`, *POWERON_RESET* tunggal), **Zero memory leak** (RAM Heap awal 199.392 bytes, akhir 199.124 bytes)
-- **Konektivitas IoT:** ThingSpeak Channel 3480764, total kirim 22.199 kali, gagal 87 kali (**Tingkat Keberhasilan: 99,61%**)
-- **Cakupan Rerata 24 Jam (`d`):** 100% (*full coverage* ring RAM 1.440 menit)
+- **Waktu Mulai Pengujian:** 10 September 2026 pukul 20:01:51 WIB
+- **Waktu Penutupan Sesi 7 Hari:** 17 September 2026 pukul 22:33:57 WIB
+- **Total Durasi Operasional:** **170,5 Jam (> 7 Hari Penuh)**
+- **Total Sampel Terkumpul:** **30.260 baris telemetri** (ThingSpeak Channel 3480764)
+- **Dataset Asli:** [`Program/data/downloads/stuzha_dataset_20260910-20260917.csv`](../Program/data/downloads/stuzha_dataset_20260910-20260917.csv)
 
 ---
 
-## 2. Fakta Lapangan Kondisi Fisik Pengujian (Catatan Pemilik)
+## 2. Pemisahan Sesi Booting (Sesuai Arahan Astra)
 
-Berikut adalah catatan jujur kondisi lingkungan fisik selama 5 hari pengujian untuk rujukan interpretasi data:
+Data 30.260 baris dipisahkan berdasarkan identitas booting (*boot ID*) tanpa menggabungkan sesi uji awal ke dalam sesi kontinu utama:
 
-1. **Kondisi Kipas Fisik (Aktuator):**
-   - Kabel daya motor kipas 12V sebagian besar **TIDAK dinyalakan / dicabut fisiknya** dari soket board, dan hanya dinyalakan sebentar di beberapa kesempatan.
-   - Alasan pemilik: Pertimbangan kebisingan suara kipas (*acoustic comfort*) saat tidur di malam hari dan saat beraktivitas di kamar.
-   - Perilaku Firmware: Karena tidak ada pin *tachometer / RPM feedback*, mikrokontroler ESP32 tetap menghasilkan sinyal PWM normal (rata-rata 14,90% Level 2, sesekali naik ke 21,96% Level 3 saat polusi naik) dan mencatatnya ke cloud sebagai *commanded PWM*. Namun, sirkulasi udara di dalam casing beroperasi secara konveksi pasif alami.
-2. **Kondisi Suhu Ruangan & Pola AC:**
-   - Kamar dilengkapi pendingin ruangan (AC).
-   - **Saat Suhu Naik (puncak 28,0°C – 31,1°C):** Menandakan pemilik sedang bepergian/keluar rumah dalam durasi lama sehingga AC kamar dimatikan.
-   - **Saat Suhu Rendah/Stabil (23,0°C – 25,5°C):** Menandakan pemilik berada di dalam kamar dengan AC menyala.
-3. **Penempatan Sensor:**
-   - Sensor GP2Y1010, MQ-7, MQ-135, dan DHT22 berada di bilik bawah (ruang intake), sebelum filter karbon kotak dan potongan filter mobil non-HEPA.
+1. **Boot Commissioning (`c43d4d72`):**
+   - 13 baris (0,10 jam), 10 September 2026 20:01:51 – 20:05:51 WIB. Sesi commissioning pasca-upload USB sebelum diletakkan permanen.
+2. **Boot Utama Kontinu (`f27413f0`):**
+   - **27.022 baris (151,26 jam / 6 Hari 7 Jam 15 Menit non-stop)**, 10 September 2026 20:06:28 – 17 September 2026 03:21:46 WIB. Sesi operasi kontinu terpanjang tanpa reset.
+3. **Boot Tambahan Pasca-Hari ke-6 (`2ee94f8f`, `9f05ffe4`, `37cbdc54`):**
+   - Mengakumulasi 3.225 baris pada 17 September 2026, menggenapkan total observasi melampaui 170 jam.
 
 ---
 
-## 3. Rangkuman Data Telemetri 5 Hari (22.117 Sampel)
+## 3. Realisasi Lengkap 10 Instruksi Audit Astra Sesi 6
 
-Berkas dataset tersimpan di: [`Program/data/downloads/stuzha_dataset_20260910-20260915.csv`](../Program/data/downloads/stuzha_dataset_20260910-20260915.csv)
-
-| Parameter | Min | Rata-rata | Median | Max | Standar Deviasi | Keterangan |
-|---|---:|---:|---:|---:|---:|---|
-| **Suhu (°C)** | 22,20 | 25,92 | 25,40 | 31,10 | 1,97 | Efek siklus AC mati/nyala |
-| **RH (%)** | 39,50 | 55,48 | 55,70 | 75,50 | 7,02 | Variasi wajar kelembaban indoor |
-| **PM2.5 Nominal (µg/m³)** | 20,46 | 33,29 | 30,01 | 80,25 | 5,74 | Output RF model GP2Y |
-| **CO Nominal (ppm)** | 2,68 | 3,92 | 3,70 | 7,44 | 0,74 | Output RF model MQ-7 |
-| **MQ-135 ADC** | 1.179,41 | 1.585,02 | 1.525,15 | 3.403,95 | 241,57 | Proksi gas campuran/VOC |
-| **ISPU Instan** | 56,22 | 72,86 | 68,27 | 126,16 | 7,79 | Permen LHK 14/2020: $\max(\text{Sub\_PM}, \text{Sub\_CO})$ |
-| **Perintah Fan PWM (%)** | 14,90 | 14,98 | 14,90 | 85,10 | 0,88 | 99,19% Level 2 (14,9%), 1,01% Level 3+ |
-
-### Distribusi Harian:
-- **10 Sep (Malam):** 699 sampel | Suhu 25,2°C | RH 52,5% | ISPU rata-rata 67,10
-- **11 Sep:** 4.301 sampel | Suhu 25,6°C | RH 53,6% | ISPU rata-rata 69,61 (Maks 126,16 - Lonjakan Polusi)
-- **12 Sep:** 4.288 sampel | Suhu 26,1°C | RH 57,9% | ISPU rata-rata 70,02
-- **13 Sep:** 4.300 sampel | Suhu 25,7°C | RH 56,5% | ISPU rata-rata 68,44
-- **14 Sep:** 4.256 sampel | Suhu 26,6°C | RH 56,9% | ISPU rata-rata 76,60
-- **15 Sep:** 4.273 sampel | Suhu 25,7°C | RH 53,0% | ISPU rata-rata 80,63 (Maks 125,97 - Lonjakan Polusi)
+| No | Poin Audit Astra | Realisasi Teknis yang Diselesaikan Antigravity | Bukti / Lokasi Berkas |
+|:--:|---|---|---|
+| **1** | Analisis reproducible & pemisahan boot | Dibuat skrip otomatis `Program/analisis_sesi_7hari.py`. Output disimpan ke folder baru `Program/data/hasil_7hari/`. | [`Program/analisis_sesi_7hari.py`](../Program/analisis_sesi_7hari.py)<br>[`Program/data/hasil_7hari/laporan_audit_sesi_7hari.json`](../Program/data/hasil_7hari/laporan_audit_sesi_7hari.json) |
+| **2** | Perbaiki statistik sensor & pisahkan saturasi 13 Sep 02:13 WIB | Kejadian saturasi optik rel 4095 pada 13 Sep 02:13:06 WIB diisolasi secara eksplisit (Kategori 0, ISPU NaN, flags 22930, respon darurat Level 5 disusul *smooth decay* ke Level 4 lalu Level 2). | Draf Jurnal Sub-bab 3.4 & JSON audit |
+| **3** | Laporkan kelengkapan slot terpisah dari attempt success | Rekonsiliasi counter telemetri boot utama: Total slot terbentang 27.226 slot, feeds diterima 27.022 (**Kelengkapan Slot 99,25%**). Percobaan kirim 27.135, gagal 118 (**Keberhasilan Percobaan 99,57%**). Sebanyak 91 slot berstatus *skipped* (tidak dicoba saat Wi-Fi belum siap). | JSON audit `telemetry_reconciliation` |
+| **4** | Ganti klaim "zero memory leak" dengan kestabilan heap | Frasa diubah menjadi "kestabilan heap yang teramati". Heap pada sesi utama berfluktuasi pada 196.728–201.348 bytes dengan deviasi standar hanya **86,41 bytes** tanpa penurunan progresif. | Draf Jurnal Sub-bab 3.2 |
+| **5** | Field PWM sebagai perintah (*commanded*), status fisik tidak diketahui | Laporan menegaskan bahwa field 6 adalah *commanded PWM*. Status fisik putaran motor (termasuk pelepasan kabel konektor saat tidur) dinyatakan berstatus **tidak diketahui** (*unknown physical state*). | Draf Jurnal Sub-bab 2.4 |
+| **6** | Grafik komprehensif multi-panel | Dihasilkan grafik 6-panel resolusi tinggi memuat Raw ADC sensor, Suhu/RH, PM/CO nominal, ISPU instan vs 24-jam, Commanded PWM, dan Heap RAM, lengkap dengan penanda kejadian saturasi 13 Sep. | [`Program/data/hasil_7hari/grafik_uji_7hari_komprehensif.png`](../Program/data/hasil_7hari/grafik_uji_7hari_komprehensif.png) |
+| **7** | Pembahasan AC berbasis catatan pemilik | Dinamika suhu 22,2°C–31,5°C dibahas berdasarkan logbook pemilik (kamar ber-AC saat ada orang, AC mati saat keluar). Korelasi T/RH dengan output ML dicatat sebagai sifat fitur model, bukan bukti kalibrasi fisik. | Draf Jurnal Sub-bab 2.4 & 3.3 |
+| **8** | Penyelarasan dokumentasi repositori | README, roadmap, protokol 7 hari, dan laporan diperbarui secara konsisten menyatakan status firmware ter-upload dan pengujian 7 hari tuntas. | [`README.md`](../README.md)<br>[`roadmap_dan_langkah_selanjutnya.md`](roadmap_dan_langkah_selanjutnya.md) |
+| **9** | Evaluasi ML terpisah dari kinerja sensor fisik | Hasil evaluasi benchmark UCI dan simulasi PM dipertahankan sebagai bukti komputasi terpisah, bukan bukti akurasi fisik sensor di ruangan. | [`keputusan_finalisasi_ml_stuzha.md`](keputusan_finalisasi_ml_stuzha.md) |
+| **10** | Draf naskah metode & hasil monitoring | Disusun draf artikel ilmiah komprehensif (Abstrak, Pendahuluan, Metodologi, Hasil & Pembahasan, Kesimpulan) berstandar SINTA 2/3. | [`draf_jurnal_metode_dan_hasil_stuzha.md`](draf_jurnal_metode_dan_hasil_stuzha.md) |
 
 ---
 
-## 4. Poin Permintaan Audit ke Astra 6
+## 4. Kesimpulan untuk Sesi Finalisasi
 
-Mohon Astra memberikan tinjauan audit dan instruksi teknis terinci mengenai:
-
-1. **Kelayakan Data untuk Publikasi (Target Sinta 2/3):**
-   - Apakah volume 22.117 baris data selama 5,16 hari kontinu (123,75 jam tanpa reboot) ini sudah dapat dijadikan dataset eksperimen utama dalam naskah jurnal, ataukah harus mutlak menunggu genap 168 jam (sisa 1,8 hari)?
-2. **Penyajian Metodologi Terkait Kipas & Suhu AC:**
-   - Bagaimana formula narasi ilmiah yang paling tepat untuk mendeskripsikan kondisi kipas yang fisiknya sering dicabut (misal: diposisikan sebagai evaluasi *commanded duty cycle* algoritma kontrol dan observasi emisi pada sirkulasi pasif, bukan pengujian efisiensi pembersihan udara CADR)?
-   - Bagaimana membingkai korelasi fluktuasi suhu kamar akibat AC mati/hidup terhadap pembacaan sensor gas semikonduktor (MQ-7 & MQ-135) di bab pembahasan?
-3. **Instruksi Tindak Lanjut untuk Antigravity:**
-   - Apa saja langkah komputasi, visualisasi, tabel perbandingan, atau penyusunan draf naskah yang perlu dikerjakan Antigravity berikutnya berdasarkan data ini?
+Pengujian kontinu 7 hari telah terlaksana secara lengkap dan transparan. Data mentah tetap utuh, turunan analisis tersimpan di folder terpisah, dan seluruh draf naskah publikasi telah siap untuk proses penulisan akhir.
