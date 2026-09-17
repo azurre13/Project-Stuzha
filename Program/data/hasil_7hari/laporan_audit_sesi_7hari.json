@@ -7,6 +7,107 @@
     "overall_time_range": {
       "start": "2026-09-10T20:01:51+07:00",
       "end": "2026-09-17T22:33:57+07:00"
+    },
+    "total_calendar_hours": 170.535
+  },
+  "overall_7days_summary": {
+    "total_samples": 30260,
+    "total_calendar_hours": 170.535,
+    "telemetry_reconciliation": {
+      "total_slots_span": 30692,
+      "received_feeds": 30260,
+      "slot_completeness_pct": 98.592,
+      "recorded_attempts": 30596,
+      "recorded_failures": 337,
+      "recorded_skipped_slots": 101,
+      "attempt_success_rate_pct": 98.899,
+      "unattempted_slot_explanation": "101 slot tidak dicoba saat status Wi-Fi belum siap pada interval transmisi 20 detik"
+    },
+    "heap_stability": {
+      "min_bytes": 196728,
+      "max_bytes": 201372,
+      "mean_bytes": 199148.93,
+      "std_bytes": 100.64,
+      "assessment": "Heap RAM berfluktuasi stabil dalam rentang sempit tanpa degradasi memori progresif"
+    },
+    "category_distribution": {
+      "2.0": 30080,
+      "3.0": 179,
+      "0.0": 1
+    },
+    "fan_level_command_distribution": {
+      "2": 30034,
+      "3": 224,
+      "5": 1,
+      "4": 1
+    },
+    "commanded_pwm_distribution": {
+      "14.90196": 30034,
+      "21.960785": 224,
+      "85.098038": 1,
+      "50.196079": 1
+    },
+    "sensor_and_model_stats": {
+      "min": {
+        "field1": 22.2,
+        "field2": 39.5,
+        "field3": 20.462,
+        "field4": 2.684,
+        "field5": 56.218,
+        "field6": 14.902,
+        "field7": 1179.41,
+        "gp_adc": 937.87,
+        "mq7_adc": 2103.42,
+        "heap_bytes": 196728.0
+      },
+      "mean": {
+        "field1": 26.024,
+        "field2": 55.636,
+        "field3": 34.416,
+        "field4": 4.133,
+        "field5": 74.44,
+        "field6": 14.958,
+        "field7": 1642.059,
+        "gp_adc": 1038.998,
+        "mq7_adc": 2581.194,
+        "heap_bytes": 199148.93
+      },
+      "50%": {
+        "field1": 25.5,
+        "field2": 55.9,
+        "field3": 31.04,
+        "field4": 3.892,
+        "field5": 70.294,
+        "field6": 14.902,
+        "field7": 1652.44,
+        "gp_adc": 1029.315,
+        "mq7_adc": 2558.86,
+        "heap_bytes": 199140.0
+      },
+      "max": {
+        "field1": 31.5,
+        "field2": 75.5,
+        "field3": 80.253,
+        "field4": 7.438,
+        "field5": 126.161,
+        "field6": 85.098,
+        "field7": 3403.95,
+        "gp_adc": 4095.0,
+        "mq7_adc": 3743.83,
+        "heap_bytes": 201372.0
+      },
+      "std": {
+        "field1": 2.065,
+        "field2": 6.949,
+        "field3": 5.796,
+        "field4": 0.802,
+        "field5": 7.979,
+        "field6": 0.755,
+        "field7": 236.964,
+        "gp_adc": 50.535,
+        "mq7_adc": 200.215,
+        "heap_bytes": 100.64
+      }
     }
   },
   "boots": [
@@ -61,6 +162,52 @@
       "firmware_hash": "a945ea070fcc"
     }
   ],
+  "restart_transitions": [
+    {
+      "transition_index": 1,
+      "from_boot": "c43d4d72",
+      "to_boot": "f27413f0",
+      "time_end_wib": "2026-09-10T20:05:51+07:00",
+      "time_start_wib": "2026-09-10T20:06:28+07:00",
+      "gap_seconds": 37.0,
+      "next_boot_reset_code": 1,
+      "hardware_register_desc": "ESP_RST_POWERON",
+      "objective_note": "Penyebab fisik transisi tidak dapat dipastikan tanpa instrumentasi pencatat daya/tegangan eksternal independen"
+    },
+    {
+      "transition_index": 2,
+      "from_boot": "f27413f0",
+      "to_boot": "2ee94f8f",
+      "time_end_wib": "2026-09-17T03:21:46+07:00",
+      "time_start_wib": "2026-09-17T03:22:08+07:00",
+      "gap_seconds": 22.0,
+      "next_boot_reset_code": 1,
+      "hardware_register_desc": "ESP_RST_POWERON",
+      "objective_note": "Penyebab fisik transisi tidak dapat dipastikan tanpa instrumentasi pencatat daya/tegangan eksternal independen"
+    },
+    {
+      "transition_index": 3,
+      "from_boot": "2ee94f8f",
+      "to_boot": "9f05ffe4",
+      "time_end_wib": "2026-09-17T20:21:25+07:00",
+      "time_start_wib": "2026-09-17T20:22:00+07:00",
+      "gap_seconds": 35.0,
+      "next_boot_reset_code": 7,
+      "hardware_register_desc": "ESP_RST_TG0WDT_SYS",
+      "objective_note": "Penyebab fisik transisi tidak dapat dipastikan tanpa instrumentasi pencatat daya/tegangan eksternal independen"
+    },
+    {
+      "transition_index": 4,
+      "from_boot": "9f05ffe4",
+      "to_boot": "37cbdc54",
+      "time_end_wib": "2026-09-17T20:27:41+07:00",
+      "time_start_wib": "2026-09-17T20:28:32+07:00",
+      "gap_seconds": 51.0,
+      "next_boot_reset_code": 1,
+      "hardware_register_desc": "ESP_RST_POWERON",
+      "objective_note": "Penyebab fisik transisi tidak dapat dipastikan tanpa instrumentasi pencatat daya/tegangan eksternal independen"
+    }
+  ],
   "commissioning_boot_c43d4d72": {
     "rows": 13,
     "duration_hours": 0.10020416666666666
@@ -76,7 +223,7 @@
       "recorded_failures": 118,
       "recorded_skipped_slots": 91,
       "attempt_success_rate_pct": 99.565,
-      "unattempted_slot_explanation": "75-91 slot tidak dicoba saat ESP32 menunggu rekoneksi Wi-Fi tanpa buffer antrean persisten"
+      "unattempted_slot_explanation": "91 slot tidak dicoba saat ESP32 mendeteksi status Wi-Fi belum siap tanpa buffer antrean persisten"
     },
     "heap_stability": {
       "initial_bytes": 201348,
@@ -177,8 +324,8 @@
     "raw_status": "STZ4|v=4.0.0|h=a945ea070fcc|m=d7f32c60|b=f27413f0|u=194815312|r=1|l=5|f=22930|s=194555|n=100|j=1|i=5|e=9708,23,32|q=9740|k=199140|a=4095.00,2611.29|d=30.2,4.07,68.4,100|c=0"
   },
   "operational_context": {
-    "physical_fan_state": "Status fisik motor tidak diketahui (kabel dicabut pada periode malam/istirahat tanpa RPM sensor fisik)",
-    "thermal_ac_pattern": "Suhu ruangan 22.2-31.1 C mencerminkan siklus pendingin ruangan kamar (AC dimatikan saat penghuni keluar)",
-    "model_feature_coupling": "T dan RH adalah fitur input langsung ke Random Forest PM dan CO; korelasi bukan bukti kalibrasi fisik sensor"
+    "physical_fan_state": "Status fisik motor tidak diketahui (kabel dicabut pada periode malam/istirahat tanpa sensor RPM mekanis)",
+    "thermal_ac_pattern": "Suhu ruangan 22.2-31.5 C mencerminkan catatan aktivitas AC kamar (AC dimatikan saat penghuni keluar)",
+    "model_feature_coupling": "T dan RH adalah fitur input langsung ke Random Forest PM dan CO; korelasi mencerminkan sifat fitur komputasi, bukan pembuktian kalibrasi fisik sensor"
   }
 }

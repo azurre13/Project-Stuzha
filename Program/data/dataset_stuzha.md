@@ -66,14 +66,31 @@ Suhu24,8–26,3°C; RH53,3–64,0%; PM model nominal10,26–20,00; CO model nomi
 
 [Grafik uji indoor](downloads/grafik_uji_20260910_002359.png). Perubahan tampilan serial pengguna mempertahankan kontrak cloud. Inisialisasi kanal buzzer 15 yang hilang dikembalikan pada kandidat lokal berikutnya; kandidat itu belum di-upload karena port USB tidak tersedia saat pemeriksaan.
 
-## Sesi Pengujian Kontinu 5 Hari (10–15 September 2026)
+## Sesi Pengujian Kontinu 5 Hari (10–15 September 2026, Checkpoint Interim)
 
-Firmware v4.0.0 build `a945ea070fcc` berhasil di-upload pada 10 September 2026 pukul 20:00 WIB dan langsung menjalankan pengujian stres kontinu. 
+Firmware v4.0.0 build `a945ea070fcc` di-upload pada 10 September 2026 pukul 20:00 WIB untuk pengujian lapangan kamar tidur. 
 
-- **Snapshot Dataset:** [`Program/data/downloads/stuzha_dataset_20260910-20260915.csv`](downloads/stuzha_dataset_20260910-20260915.csv)
-- **Durasi Observasi:** 10 September 2026 pukul 20:06 WIB – 15 September 2026 pukul 23:50 WIB (**123,75 Jam / 5 Hari 3 Jam 45 Menit**).
-- **Jumlah Sampel:** 22.117 baris feed dalam satu sesi boot berkelanjutan (Boot ID `f27413f0`).
-- **Reliabilitas:** **0 kali reboot**, **zero memory leak** (RAM heap stabil pada ~199 KB), dan tingkat keberhasilan transmisi cloud sebesar **99,61%** (hanya 87 kegagalan kirim dari 22.199 kali percobaan).
-- **Visualisasi:** [Grafik 5 Hari](downloads/grafik_uji_5hari_20260910_20260915.png).
-- **Laporan Lengkap:** [Laporan Pengambilan Data 5 Hari](../../MD/laporan_pengambilan_data_5hari.md).
+- **Snapshot Dataset Interim:** [`Program/data/downloads/stuzha_dataset_20260910-20260915.csv`](downloads/stuzha_dataset_20260910-20260915.csv)
+- **Durasi Observasi Interim:** 10 September 2026 pukul 20:06 WIB – 15 September 2026 pukul 23:50 WIB (123,75 Jam).
+- **Jumlah Sampel Interim:** 22.117 baris feed dalam sesi berjalan berkelanjutan (Boot ID `f27413f0`).
+- **Pengamatan Reliabilitas Interim:** Sesi berjalan tanpa interupsi reset hingga jam ke-123, kestabilan heap RAM teramati pada rentang ~199 KB, keberhasilan percobaan transmisi 99,61% (87 kegagalan dari 22.199 percobaan), dan 75 slot dilewati (*skipped*).
+- **Laporan Interim:** [Laporan Pengambilan Data 5 Hari](../../MD/laporan_pengambilan_data_5hari.md).
+
+## Sesi Pengujian Kontinu 7 Hari Lengkap (10–17 September 2026)
+
+Pengujian penuh 168 jam telah rampung dan mengakumulasi data selama 170,535 jam kalender:
+
+- **Dataset Final:** [`Program/data/downloads/stuzha_dataset_20260910-20260917.csv`](downloads/stuzha_dataset_20260910-20260917.csv)
+- **Rentang Waktu Observasi:** 10 September 2026 20:01:51 WIB – 17 September 2026 22:33:57 WIB (**170,535 Jam / 7 Hari 2 Jam 32 Menit**).
+- **Total Baris Telemetri:** **30.260 rekaman valid** (Thingspeak Channel 3480764).
+- **Sesi Booting & Rekonsiliasi Restart:** Terdistribusi ke dalam 5 sesi booting dengan 4 transisi jeda waktu (22,0–51,0 detik). Tiga kali transisi mencatat kode register reset `r=1` (`ESP_RST_POWERON`) dan satu kali kode `r=7` (`ESP_RST_TG0WDT_SYS`). Penyebab fisik eksternal di balik kejadian restart tidak dipastikan secara spekulatif karena sistem tidak memiliki instrumentasi pencatat daya/tegangan eksternal independen. Sesi kontinu terpanjang berjalan selama **151,26 jam non-stop (27.022 sampel, Boot `f27413f0`)**.
+- **Kestabilan Heap Teramati:** Rentang 196.728–201.372 bytes dengan deviasi standar **100,64 bytes** secara kumulatif (dan 86,41 bytes pada sesi utama) tanpa tren penurunan progresif.
+- **Kinerja Telemetri Kumulatif 7 Hari:**
+  - Total slot terbentang: 30.692 slot.
+  - Feeds diterima: 30.260 baris (**Kelengkapan Slot: 98,59%**).
+  - Percobaan pengiriman: 30.596 kali (**Keberhasilan Percobaan: 98,90%**, 337 kegagalan jaringan).
+  - Slot dilewati (*skipped*): 101 slot saat status Wi-Fi belum siap.
+- **Visualisasi & Audit:** [Grafik Komprehensif 7 Hari](hasil_7hari/grafik_uji_7hari_komprehensif.png) dan [Audit JSON](hasil_7hari/laporan_audit_sesi_7hari.json).
+- **Laporan Lengkap & Draf Naskah:** [Laporan Pengambilan Data 7 Hari](../../MD/laporan_pengambilan_data_7hari.md) dan [Draf Jurnal](../../MD/draf_jurnal_metode_dan_hasil_stuzha.md).
+
 

@@ -140,9 +140,45 @@ def run_analysis():
     level_dist_main = df_main["fan_level"].value_counts(dropna=False).to_dict()
     pwm_dist_main = df_main["field6"].value_counts(dropna=False).to_dict()
 
-    # Statistik Sensor dan Model pada Boot Utama
+    cat_dist_overall = df["field8"].value_counts(dropna=False).to_dict()
+    level_dist_overall = df["fan_level"].value_counts(dropna=False).to_dict()
+    pwm_dist_overall = df["field6"].value_counts(dropna=False).to_dict()
+
+    # Statistik Sensor dan Model
     sensor_cols = ["field1", "field2", "field3", "field4", "field5", "field6", "field7", "gp_adc", "mq7_adc", "heap_bytes"]
     stats_main = df_main[sensor_cols].describe().T[["min", "mean", "50%", "max", "std"]].round(3).to_dict()
+    stats_overall = df[sensor_cols].describe().T[["min", "mean", "50%", "max", "std"]].round(3).to_dict()
+
+    # Rekonsiliasi Telemetri Kumulatif 7 Hari (Seluruh 5 Boot)
+    total_slots_overall = sum(int(grp["telemetry_slot"].iloc[-1] - grp["telemetry_slot"].iloc[0] + 1) for _, grp in df.groupby("boot_id", sort=False))
+    received_feeds_overall = len(df)
+    slot_completeness_overall_pct = (received_feeds_overall / total_slots_overall) * 100.0
+    attempts_overall = sum(int(grp["telemetry_attempts"].iloc[-1]) for _, grp in df.groupby("boot_id", sort=False))
+    failures_overall = sum(int(grp["telemetry_failures"].iloc[-1]) for _, grp in df.groupby("boot_id", sort=False))
+    skipped_overall = sum(int(grp["telemetry_skipped"].iloc[-1]) for _, grp in df.groupby("boot_id", sort=False))
+    attempt_success_overall_pct = ((attempts_overall - failures_overall) / attempts_overall) * 100.0
+
+    # Rincian Transisi Restart Tanpa Spekulasi Penyebab Fisik
+    restart_transitions = []
+    boot_groups = list(df.groupby("boot_id", sort=False))
+    for i in range(len(boot_groups) - 1):
+        b1_id, g1 = boot_groups[i]
+        b2_id, g2 = boot_groups[i + 1]
+        t1 = pd.to_datetime(g1["Timestamp_WIB"].iloc[-1])
+        t2 = pd.to_datetime(g2["Timestamp_WIB"].iloc[0])
+        gap_sec = round((t2 - t1).total_seconds(), 1)
+        r_code = int(g2["reset_code"].iloc[0]) if not pd.isna(g2["reset_code"].iloc[0]) else None
+        restart_transitions.append({
+            "transition_index": i + 1,
+            "from_boot": b1_id,
+            "to_boot": b2_id,
+            "time_end_wib": str(g1["Timestamp_WIB"].iloc[-1]),
+            "time_start_wib": str(g2["Timestamp_WIB"].iloc[0]),
+            "gap_seconds": gap_sec,
+            "next_boot_reset_code": r_code,
+            "hardware_register_desc": "ESP_RST_POWERON" if r_code == 1 else ("ESP_RST_TG0WDT_SYS" if r_code == 7 else f"CODE_{r_code}"),
+            "objective_note": "Penyebab fisik transisi tidak dapat dipastikan tanpa instrumentasi pencatat daya/tegangan eksternal independen"
+        })
 
     # Rekapitulasi JSON
     audit_report = {
@@ -154,9 +190,36 @@ def run_analysis():
             "overall_time_range": {
                 "start": df["Timestamp_WIB"].iloc[0],
                 "end": df["Timestamp_WIB"].iloc[-1]
-            }
+            },
+            "total_calendar_hours": 170.535
+        },
+        "overall_7days_summary": {
+            "total_samples": total_raw_rows,
+            "total_calendar_hours": 170.535,
+            "telemetry_reconciliation": {
+                "total_slots_span": total_slots_overall,
+                "received_feeds": received_feeds_overall,
+                "slot_completeness_pct": round(slot_completeness_overall_pct, 3),
+                "recorded_attempts": attempts_overall,
+                "recorded_failures": failures_overall,
+                "recorded_skipped_slots": skipped_overall,
+                "attempt_success_rate_pct": round(attempt_success_overall_pct, 3),
+                "unattempted_slot_explanation": "101 slot tidak dicoba saat status Wi-Fi belum siap pada interval transmisi 20 detik"
+            },
+            "heap_stability": {
+                "min_bytes": int(df["heap_bytes"].min()),
+                "max_bytes": int(df["heap_bytes"].max()),
+                "mean_bytes": round(float(df["heap_bytes"].mean()), 2),
+                "std_bytes": round(float(df["heap_bytes"].std()), 2),
+                "assessment": "Heap RAM berfluktuasi stabil dalam rentang sempit tanpa degradasi memori progresif"
+            },
+            "category_distribution": cat_dist_overall,
+            "fan_level_command_distribution": level_dist_overall,
+            "commanded_pwm_distribution": pwm_dist_overall,
+            "sensor_and_model_stats": stats_overall
         },
         "boots": boot_summary,
+        "restart_transitions": restart_transitions,
         "commissioning_boot_c43d4d72": {
             "rows": len(df_comm),
             "duration_hours": float(df_comm["uptime_hours"].iloc[-1]) if not df_comm.empty else 0
@@ -172,7 +235,7 @@ def run_analysis():
                 "recorded_failures": failures_main,
                 "recorded_skipped_slots": skipped_main,
                 "attempt_success_rate_pct": round(attempt_success_pct, 3),
-                "unattempted_slot_explanation": "75-91 slot tidak dicoba saat ESP32 menunggu rekoneksi Wi-Fi tanpa buffer antrean persisten"
+                "unattempted_slot_explanation": "91 slot tidak dicoba saat ESP32 mendeteksi status Wi-Fi belum siap tanpa buffer antrean persisten"
             },
             "heap_stability": {
                 "initial_bytes": int(df_main["heap_bytes"].iloc[0]),
@@ -189,9 +252,9 @@ def run_analysis():
         },
         "saturation_event_20260913_021306": sat_info,
         "operational_context": {
-            "physical_fan_state": "Status fisik motor tidak diketahui (kabel dicabut pada periode malam/istirahat tanpa RPM sensor fisik)",
-            "thermal_ac_pattern": "Suhu ruangan 22.2-31.1 C mencerminkan siklus pendingin ruangan kamar (AC dimatikan saat penghuni keluar)",
-            "model_feature_coupling": "T dan RH adalah fitur input langsung ke Random Forest PM dan CO; korelasi bukan bukti kalibrasi fisik sensor"
+            "physical_fan_state": "Status fisik motor tidak diketahui (kabel dicabut pada periode malam/istirahat tanpa sensor RPM mekanis)",
+            "thermal_ac_pattern": "Suhu ruangan 22.2-31.5 C mencerminkan catatan aktivitas AC kamar (AC dimatikan saat penghuni keluar)",
+            "model_feature_coupling": "T dan RH adalah fitur input langsung ke Random Forest PM dan CO; korelasi mencerminkan sifat fitur komputasi, bukan pembuktian kalibrasi fisik sensor"
         }
     }
 
